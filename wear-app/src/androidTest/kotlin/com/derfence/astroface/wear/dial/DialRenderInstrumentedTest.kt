@@ -22,7 +22,6 @@ class DialRenderInstrumentedTest {
     @Test
     fun renderersProduceVisiblePixels() {
         assertTrue(Dial24hRenderer().render().hasVisiblePixel())
-        assertTrue(Dial12hRenderer().render().hasVisiblePixel())
         assertTrue(
             Hour24hHandRenderer(
                 clock = Clock.fixed(Instant.parse("2026-07-07T10:00:00Z"), ZoneOffset.UTC)

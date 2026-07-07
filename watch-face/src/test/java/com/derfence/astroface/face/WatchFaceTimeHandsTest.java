@@ -18,7 +18,9 @@ public class WatchFaceTimeHandsTest {
 
         assertEquals(0, document.getElementsByTagName("HourHand").getLength());
         assertEquals(0, document.getElementsByTagName("Transform").getLength());
+        assertEquals(2, document.getElementsByTagName("ComplicationSlot").getLength());
         assertNull(partImageNamed(document, "TwentyFourHourHand"));
+        assertNull(complicationSlotWithId(document, "2"));
 
         Element hourHandSlot = complicationSlotWithId(document, "3");
         assertNotNull(hourHandSlot);

@@ -8,7 +8,6 @@ import com.derfence.astroface.wear.status.RequestStatusRepository
 object DialUpdateRequester {
     fun requestAll(context: Context) {
         request(context, Dial24hDataSourceService::class.java)
-        request(context, Dial12hDataSourceService::class.java)
         request(context, Hour24hHandDataSourceService::class.java)
         RequestStatusRepository.markManualRefresh(context.applicationContext)
     }

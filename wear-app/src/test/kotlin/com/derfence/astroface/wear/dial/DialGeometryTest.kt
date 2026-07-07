@@ -6,7 +6,6 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
 import org.junit.Test
 
 class DialGeometryTest {
@@ -30,14 +29,6 @@ class DialGeometryTest {
         assertEquals(0f, midnight.angleDegrees, 0.001f)
         assertEquals(DialGeometry.center, point.x, 0.001f)
         assertEquals(DialGeometry.center - 100f, point.y, 0.001f)
-    }
-
-    @Test
-    fun twelveHourDialHasTwelveIndexesWithoutLabels() {
-        val ticks = DialGeometry.twelveHourTicks()
-
-        assertEquals(12, ticks.size)
-        ticks.forEach { assertNull(it.label) }
     }
 
     @Test

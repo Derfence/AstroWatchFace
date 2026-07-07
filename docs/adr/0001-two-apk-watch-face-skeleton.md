@@ -19,6 +19,6 @@ The watch face has no dial calculation logic. ADR 0003 refines the original skel
 
 ## Consequences
 
-- The generated 24 h and 12 h dials can evolve independently from the Face.
+- The generated 24 h dial and 24 h hour hand can evolve independently from the Face.
 - The Face remains compatible with the WFF resource-only model.
 - Future astronomical calculations belong in `wear-app` or a shared calculation module, not in `watch-face`.

@@ -14,7 +14,7 @@ Un essai avec une `PartImage` WFF pilotée par `Transform target="angle"` compil
 
 ## Décision
 
-Remplacer l'aiguille `HourHand` visible par un troisième slot de complication plein écran, non personnalisable, fourni par `Hour24hHandDataSourceService`.
+Remplacer l'aiguille `HourHand` visible par un slot de complication plein écran dédié, non personnalisable, fourni par `Hour24hHandDataSourceService`.
 
 Le renderer `Hour24hHandRenderer` dessine une image transparente 450 x 450 contenant uniquement l'aiguille des heures. Son angle est calculé côté `wear-app` avec la même convention que le cadran 24h : 00:00 en haut, 06:00 à droite, 12:00 en bas et 18:00 à gauche. La précision retenue est la minute.
 
@@ -27,5 +27,5 @@ Remplacer la trotteuse lisse `Sweep` par `Tick`, afin que `SecondHand` avance pa
 - `watch-face` reste sans code et ne reçoit pas de dépendance de production.
 - L'aiguille des heures dépend d'une source de complication supplémentaire dans `wear-app`, à réinstaller avec la Face.
 - Le contrat visuel devient : 00:00 en haut, 06:00 à droite, 12:00 en bas, 18:00 à gauche pour l'aiguille des heures.
-- Les services `Dial12h...` restent stables techniquement, mais leurs libellés utilisateur deviennent des repères analogiques afin de ne plus suggérer une lecture horaire principale en 12h.
+- La seconde échelle analogique précédente est supprimée, car l'aiguille 24h la rend inutile.
 - Un test JVM vérifie la structure XML WFF attendue pour éviter une régression vers `HourHand`, `Transform` ou `Sweep`.

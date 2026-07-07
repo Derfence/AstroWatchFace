@@ -39,7 +39,7 @@ L'utilisateur veut consulter rapidement, depuis sa montre :
 - Le cadran 24h garde une échelle civile absolue, mais les barres astronomiques représentent les 24 prochaines heures à partir du moment de rendu.
 - Un séparateur visuel "maintenant" distingue le début de la fenêtre glissante du retour à +24h.
 - Le cadran 24h affiche des repères horaires simples : petites barres perpendiculaires à chaque heure, chiffres toutes les 3h.
-- Les icônes astronomiques peuvent être placées entre les repères analogiques intérieurs et le cadran extérieur 24h si le rendu est plus esthétique.
+- Les icônes astronomiques peuvent être placées entre le centre et le cadran extérieur 24h si le rendu est plus esthétique.
 - Le "lever/coucher astronomique" désigne le passage du Soleil à -18° sous l'horizon.
 - La position de la Polaire est une indication visuelle simple et esthétique, pas un outil de mise en station précis.
 - La Polaire est représentée par un élément graphique simple, cercle ou étoile, placé sur l'anneau 12h.
@@ -222,11 +222,10 @@ La face pourrait être organisée en couches :
 
 1. Fond sombre, très sobre, compatible Always-On Display.
 2. Cadran extérieur 24h pour les événements de temps.
-3. Zone intermédiaire pour les icônes astronomiques, entre l'anneau 24h et les repères analogiques intérieurs si le rendu le permet.
-4. Repères analogiques intérieurs pour aider la lecture des aiguilles.
-5. Zone centrale avec constellations en arrière-plan.
-6. Zone centrale supérieure avec phase de Lune, date et batterie.
-7. Aiguilles analogiques au-dessus des informations de fond : heures en 24h, minutes classiques, secondes saccadées.
+3. Zone intermédiaire pour les icônes astronomiques, entre l'anneau 24h et le centre si le rendu le permet.
+4. Zone centrale avec constellations en arrière-plan.
+5. Zone centrale supérieure avec phase de Lune, date et batterie.
+6. Aiguilles analogiques au-dessus des informations de fond : heures en 24h, minutes classiques, secondes saccadées.
 
 ### Barres de couleurs sur le contour
 
@@ -290,7 +289,7 @@ Recommandation :
 - Prévoir deux anneaux visuels :
   - Anneau temporel externe pour les événements de la journée.
   - Anneau céleste interne ou semi-anneau pour les positions dans le ciel.
-- Étudier une disposition des icônes entre les repères analogiques intérieurs et le cadran 24h, car cela peut mieux séparer les informations tout en gardant un rendu compact.
+- Étudier une disposition des icônes entre le centre et le cadran 24h, car cela peut mieux séparer les informations tout en gardant un rendu compact.
 - Utiliser une couleur spécifique par objet : Soleil jaune/blanc chaud, Lune blanc froid, Mars rouge, Vénus blanc/ivoire, Jupiter orangé clair, Saturne jaune pâle, Uranus bleu-vert, Neptune bleu.
 - Utiliser de petites icônes graphiques plutôt que des symboles astronomiques textuels seuls.
 - Placer ces icônes sur un cercle céleste complet.
@@ -481,7 +480,7 @@ Responsabilités :
 
 État d'implémentation :
 
-- La Face WFF assemble trois complications plein écran : cadran 24h, repères analogiques et aiguille des heures 24h.
+- La Face WFF assemble deux complications plein écran : cadran 24h et aiguille des heures 24h.
 - Les aiguilles minutes et secondes restent des aiguilles WFF natives ; la seconde utilise un mouvement à ticks.
 
 ### mobile-app, optionnelle
@@ -556,7 +555,7 @@ Mitigation :
 
 ### Double lecture temps et direction
 
-Le projet combine une aiguille des heures 24h, des repères analogiques intérieurs, un cadran extérieur 24h pour les barres, et des icônes dont la position correspond à une direction astronomique.
+Le projet combine une aiguille des heures 24h, un cadran extérieur 24h pour les barres, et des icônes dont la position correspond à une direction astronomique.
 
 Mitigation :
 

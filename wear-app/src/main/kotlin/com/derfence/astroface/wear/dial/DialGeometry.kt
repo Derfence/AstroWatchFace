@@ -29,9 +29,6 @@ object DialGeometry {
     fun twentyFourHourTicks(): List<DialTick> =
         ticks(total = 24, labelEvery = 3) { it.toString().padStart(2, '0') }
 
-    fun twelveHourTicks(): List<DialTick> =
-        ticks(total = 12, labelEvery = 0) { "" }
-
     fun point(radius: Float, angleDegrees: Float): DialPoint {
         val radians = angleDegrees * PI / 180.0
         return DialPoint(
