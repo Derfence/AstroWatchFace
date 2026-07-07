@@ -6,7 +6,7 @@ import android.graphics.Color
 import android.graphics.Paint
 
 class Dial12hRenderer : DialRenderer {
-    override val contentDescription = "Cadran AstroFace 12 heures"
+    override val contentDescription = "Repères analogiques AstroFace"
 
     override fun render(): Bitmap {
         val bitmap = Bitmap.createBitmap(

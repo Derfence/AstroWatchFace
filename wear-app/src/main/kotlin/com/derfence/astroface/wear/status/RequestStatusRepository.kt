@@ -10,16 +10,19 @@ object RequestStatusRepository {
     private const val prefsName = "astroface_requests"
     private const val key24h = "last_24h"
     private const val key12h = "last_12h"
+    private const val key24hHand = "last_24h_hand"
     private const val keyManualRefresh = "last_manual_refresh"
 
     enum class DialKey {
         DIAL_24H,
-        DIAL_12H
+        DIAL_12H,
+        HOUR_24H_HAND
     }
 
     data class Status(
         val last24h: String?,
         val last12h: String?,
+        val last24hHand: String?,
         val lastManualRefresh: String?
     )
 
@@ -27,7 +30,7 @@ object RequestStatusRepository {
         val value = "${timestamp()} - instance ${request.complicationInstanceId}, " +
             "type ${request.complicationType}"
         context.preferences().edit()
-            .putString(if (dialKey == DialKey.DIAL_24H) key24h else key12h, value)
+            .putString(keyFor(dialKey), value)
             .apply()
     }
 
@@ -42,9 +45,17 @@ object RequestStatusRepository {
         return Status(
             last24h = prefs.getString(key24h, null),
             last12h = prefs.getString(key12h, null),
+            last24hHand = prefs.getString(key24hHand, null),
             lastManualRefresh = prefs.getString(keyManualRefresh, null)
         )
     }
+
+    private fun keyFor(dialKey: DialKey): String =
+        when (dialKey) {
+            DialKey.DIAL_24H -> key24h
+            DialKey.DIAL_12H -> key12h
+            DialKey.HOUR_24H_HAND -> key24hHand
+        }
 
     private fun Context.preferences() =
         getSharedPreferences(prefsName, Context.MODE_PRIVATE)

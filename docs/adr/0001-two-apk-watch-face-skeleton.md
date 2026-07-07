@@ -12,10 +12,10 @@ AstroFace must keep the watch face rendering simple while allowing the Wear OS a
 
 Use two Android application modules:
 
-- `watch-face`: a Watch Face Format APK with `android:hasCode="false"`. It renders the black background, two full-screen `PHOTO_IMAGE` complication slots, and the analog hands.
-- `wear-app`: a Wear OS app with two `ComplicationDataSourceService` implementations. Each service renders one transparent 450 x 450 bitmap and returns it as `PhotoImageComplicationData`.
+- `watch-face`: a Watch Face Format APK with `android:hasCode="false"`. It renders the black background, full-screen `PHOTO_IMAGE` complication slots, and the WFF-native analog hands.
+- `wear-app`: a Wear OS app with `ComplicationDataSourceService` implementations. Each service renders one transparent 450 x 450 bitmap and returns it as `PhotoImageComplicationData`.
 
-The watch face has no dial calculation logic. Its only time-aware logic is the WFF analog hand rendering.
+The watch face has no dial calculation logic. ADR 0003 refines the original skeleton by moving the 24 h hour hand into a generated complication image while keeping minute and second hands in WFF.
 
 ## Consequences
 

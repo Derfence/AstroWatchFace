@@ -2,8 +2,9 @@
 
 AstroFace est un squelette Wear OS en deux APK :
 
-- `wear-app` calcule et fournit les cadrans 24 h et 12 h via deux sources de complication `PHOTO_IMAGE`. Le cadran 24 h calcule localement les événements Soleil/Lune pour le point GPS fixe documenté.
-- `watch-face` est une Face WFF sans code, responsable de l'assemblage visuel et des aiguilles.
+- `wear-app` calcule et fournit le cadran 24 h, les repères analogiques et l'aiguille des heures 24 h via trois sources de complication `PHOTO_IMAGE`. Le cadran 24 h calcule localement les événements Soleil/Lune pour le point GPS fixe documenté.
+- `watch-face` est une Face WFF sans code, responsable de l'assemblage visuel, de l'aiguille des minutes et de la trotteuse.
+- L'aiguille des heures fait un tour en 24 h, l'aiguille des minutes fait un tour en 60 minutes, et la trotteuse avance par sauts d'une seconde.
 
 ## Build
 
@@ -20,4 +21,4 @@ adb install wear-app/build/outputs/apk/debug/wear-app-debug.apk
 adb install watch-face/build/outputs/apk/debug/watch-face-debug.apk
 ```
 
-Ensuite, sélectionne AstroFace comme face active sur la montre. L'app Wear OS affiche un diagnostic avec les deux services et la dernière demande reçue par la Face.
+Ensuite, sélectionne AstroFace comme face active sur la montre. L'app Wear OS affiche un diagnostic avec les trois services et la dernière demande reçue par la Face.

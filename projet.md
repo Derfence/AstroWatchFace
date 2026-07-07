@@ -2,7 +2,7 @@
 
 ## Résumé
 
-AstroFace est une face de montre pour Samsung Galaxy Watch4 Classic affichant l'heure avec des aiguilles analogiques et des informations astronomiques calculées pour un point GPS fixe :
+AstroFace est une face de montre pour Samsung Galaxy Watch4 Classic affichant l'heure avec une aiguille des heures en 24h, une aiguille des minutes classique, une trotteuse saccadée et des informations astronomiques calculées pour un point GPS fixe :
 
 - Latitude : 45°39'56.5"N, soit 45.665694° N
 - Longitude : 2°56'39.1"E, soit 2.944194° E
@@ -21,7 +21,7 @@ La solution cible recommandée est hybride :
 
 L'utilisateur veut consulter rapidement, depuis sa montre :
 
-- L'heure actuelle avec une lecture analogique classique.
+- L'heure actuelle avec une lecture analogique 24h pour les heures, classique pour les minutes et saccadée pour les secondes.
 - Les moments importants de la journée astronomique : lever/coucher du Soleil, lever/coucher de la Lune, début/fin de nuit astronomique.
 - La phase de la Lune.
 - La position utile de la Polaire sur l'anneau 12h.
@@ -31,7 +31,7 @@ L'utilisateur veut consulter rapidement, depuis sa montre :
 ## Décisions actées
 
 - La montre cible est une Galaxy Watch4 Classic 46 mm.
-- Le cadran horaire principal reste analogique en 12h, avec aiguilles classiques.
+- La lecture horaire principale reste analogique, avec une aiguille des heures qui fait un tour en 24h, une aiguille des minutes qui fait un tour en 60 minutes et une trotteuse qui saute à chaque seconde.
 - Les barres astronomiques utilisent un cadran extérieur en 24h.
 - Les barres astronomiques représentent des périodes continues.
 - Les heures exactes des événements ne sont pas affichées en texte ; elles se lisent uniquement via l'anneau 24h.
@@ -39,7 +39,7 @@ L'utilisateur veut consulter rapidement, depuis sa montre :
 - Le cadran 24h garde une échelle civile absolue, mais les barres astronomiques représentent les 24 prochaines heures à partir du moment de rendu.
 - Un séparateur visuel "maintenant" distingue le début de la fenêtre glissante du retour à +24h.
 - Le cadran 24h affiche des repères horaires simples : petites barres perpendiculaires à chaque heure, chiffres toutes les 3h.
-- Les icônes astronomiques peuvent être placées entre le cadran analogique 12h et le cadran extérieur 24h si le rendu est plus esthétique.
+- Les icônes astronomiques peuvent être placées entre les repères analogiques intérieurs et le cadran extérieur 24h si le rendu est plus esthétique.
 - Le "lever/coucher astronomique" désigne le passage du Soleil à -18° sous l'horizon.
 - La position de la Polaire est une indication visuelle simple et esthétique, pas un outil de mise en station précis.
 - La Polaire est représentée par un élément graphique simple, cercle ou étoile, placé sur l'anneau 12h.
@@ -60,20 +60,20 @@ L'utilisateur veut consulter rapidement, depuis sa montre :
 - Les icônes astronomiques utilisent la couleur principale de l'objet représenté.
 - Les icônes astronomiques sont de petites icônes graphiques, pas seulement des symboles textuels.
 - L'anneau céleste est un cercle complet avec 12h = Sud et 3h = Ouest.
-- La trotteuse est visible en mode actif.
+- La trotteuse est visible en mode actif et avance par sauts d'une seconde, sans mouvement lisse.
 - Le cadran 24h affiche des chiffres toutes les 3h en première intention.
 - Le format de date retenu est de type "sam. 04 juil.".
 - La batterie est affichée avec une icône et un pourcentage.
 - Le style global visé est celui d'un instrument scientifique.
 - La publication reste possible plus tard.
-- En Always-On Display, le cadran conserve la parité fonctionnelle avec le mode actif, trotteuse et overlay astronomique compris.
+- En Always-On Display, le cadran conserve la parité fonctionnelle avec le mode actif, trotteuse saccadée et overlay astronomique compris.
 - L'architecture cible doit privilégier une face + une app Wear OS associée, sans app téléphone en première version.
 
 ## Périmètre fonctionnel
 
 ### Inclus
 
-- Face analogique avec aiguilles heures, minutes et secondes.
+- Face analogique avec aiguille des heures 24h, aiguille des minutes 60 minutes et trotteuse par sauts d'une seconde.
 - Calculs astronomiques pour un seul point GPS fixe.
 - Affichage des événements astronomiques sur le contour de l'horloge sous forme de barres colorées.
 - Affichage d'icônes astronomiques sur le contour.
@@ -222,11 +222,11 @@ La face pourrait être organisée en couches :
 
 1. Fond sombre, très sobre, compatible Always-On Display.
 2. Cadran extérieur 24h pour les événements de temps.
-3. Zone intermédiaire pour les icônes astronomiques, entre le 24h et le 12h si le rendu le permet.
-4. Cadran analogique 12h avec index horaires.
+3. Zone intermédiaire pour les icônes astronomiques, entre l'anneau 24h et les repères analogiques intérieurs si le rendu le permet.
+4. Repères analogiques intérieurs pour aider la lecture des aiguilles.
 5. Zone centrale avec constellations en arrière-plan.
 6. Zone centrale supérieure avec phase de Lune, date et batterie.
-7. Aiguilles analogiques au-dessus des informations de fond.
+7. Aiguilles analogiques au-dessus des informations de fond : heures en 24h, minutes classiques, secondes saccadées.
 
 ### Barres de couleurs sur le contour
 
@@ -258,7 +258,18 @@ Décision :
 
 - Le cadran extérieur est un cadran 24h absolu.
 - 00h est placé en haut, à 12h.
-- Le cadran analogique principal reste en 12h classique.
+- L'aiguille des heures partage la convention 24h : 00h en haut, 06h à droite, 12h en bas, 18h à gauche.
+- L'aiguille des minutes reste classique : un tour en 60 minutes.
+- La trotteuse avance par sauts à chaque seconde : un tour en 60 secondes, sans mouvement lisse.
+
+### Aiguilles horaires
+
+Décision :
+
+- L'aiguille des heures est une aiguille 24h et fait un tour complet en 24 heures.
+- L'aiguille des minutes est une aiguille classique et fait un tour complet en 60 minutes.
+- La trotteuse est une aiguille à ticks : elle reste immobile entre deux secondes et saute au repère suivant à chaque seconde.
+- La lecture attendue est : 00:00 en haut, 06:00 à droite, 12:00 en bas, 18:00 à gauche pour l'aiguille des heures.
 
 ### Icônes sur le contour
 
@@ -279,7 +290,7 @@ Recommandation :
 - Prévoir deux anneaux visuels :
   - Anneau temporel externe pour les événements de la journée.
   - Anneau céleste interne ou semi-anneau pour les positions dans le ciel.
-- Étudier une disposition des icônes entre le cadran 12h et le cadran 24h, car cela peut mieux séparer les informations tout en gardant un rendu compact.
+- Étudier une disposition des icônes entre les repères analogiques intérieurs et le cadran 24h, car cela peut mieux séparer les informations tout en gardant un rendu compact.
 - Utiliser une couleur spécifique par objet : Soleil jaune/blanc chaud, Lune blanc froid, Mars rouge, Vénus blanc/ivoire, Jupiter orangé clair, Saturne jaune pâle, Uranus bleu-vert, Neptune bleu.
 - Utiliser de petites icônes graphiques plutôt que des symboles astronomiques textuels seuls.
 - Placer ces icônes sur un cercle céleste complet.
@@ -321,7 +332,7 @@ Proposition :
 Objectif :
 
 - Conserver les mêmes fonctionnalités qu'en mode actif.
-- Garder l'overlay astronomique, le cadran 24h, la phase de Lune, la date, la batterie et la trotteuse visibles.
+- Garder l'overlay astronomique, le cadran 24h, la phase de Lune, la date, la batterie et la trotteuse saccadée visibles.
 - Vérifier sur appareil réel que Wear OS ne force pas une limitation ambient non déclarée par le WFF.
 
 ## Architecture technique envisagée
@@ -456,16 +467,22 @@ Responsabilités :
 - Exposer les données à la watch face.
 - Gérer éventuellement les préférences simples.
 - En première implémentation, calculer à chaque rendu du cadran 24h une fenêtre glissante de 24h pour lever/coucher du Soleil, passages à -18° et visibilité lunaire.
+- Fournir aussi l'aiguille des heures 24h sous forme d'image transparente plein écran, afin de conserver une rotation 24h fiable sans code dans la Face.
 
 ### watch-face
 
 Responsabilités :
 
-- Rendu analogique.
+- Assemblage des éléments analogiques : aiguille des heures 24h fournie par complication, aiguille des minutes 60 minutes et secondes à ticks en WFF.
 - Rendu des anneaux temporels.
 - Rendu des icônes astronomiques.
 - Rendu AOD.
 - Lecture des données précalculées ou complications.
+
+État d'implémentation :
+
+- La Face WFF assemble trois complications plein écran : cadran 24h, repères analogiques et aiguille des heures 24h.
+- Les aiguilles minutes et secondes restent des aiguilles WFF natives ; la seconde utilise un mouvement à ticks.
 
 ### mobile-app, optionnelle
 
@@ -496,12 +513,15 @@ Questions à clarifier :
 ## Critères d'acceptation proposés
 
 - L'heure analogique est lisible en moins d'une seconde.
+- L'aiguille des heures fait un tour complet en 24h, avec 00:00 en haut, 06:00 à droite, 12:00 en bas et 18:00 à gauche.
+- L'aiguille des minutes fait un tour complet en 60 minutes.
+- La trotteuse fait un tour complet en 60 secondes et avance par sauts d'une seconde, sans balayage lisse.
 - Les informations astronomiques principales restent lisibles sur une Galaxy Watch4 Classic.
 - Les calculs utilisent exclusivement le point GPS fixe fourni.
 - Aucune donnée météo n'est affichée.
 - Les heures sont affichées en heure locale Europe/Paris.
 - Le mode Always-On Display reste lisible et conserve la parité fonctionnelle avec le mode actif.
-- En Always-On Display, l'heure, la date, la batterie, la trotteuse, le cadran 24h, l'overlay astronomique et la phase de Lune restent affichés.
+- En Always-On Display, l'heure, la date, la batterie, la trotteuse saccadée, le cadran 24h, l'overlay astronomique et la phase de Lune restent affichés.
 - Les cas sans lever/coucher de Lune dans la journée sont gérés sans erreur visuelle.
 - Toutes les planètes, y compris Uranus et Neptune, sont présentes sur le cadran.
 - Le Soleil et la Lune sont présents avec les icônes de position céleste.
@@ -526,7 +546,7 @@ Questions à clarifier :
 
 ### Surcharge visuelle
 
-Le projet combine heure analogique, arcs temporels, icônes planétaires, Polaire, phase lunaire et constellations. Sur un écran de 450 px, le risque principal est une face trop dense.
+Le projet combine heure analogique 24h, arcs temporels, icônes planétaires, Polaire, phase lunaire et constellations. Sur un écran de 450 px, le risque principal est une face trop dense.
 
 Mitigation :
 
@@ -536,7 +556,7 @@ Mitigation :
 
 ### Double lecture temps et direction
 
-Le projet combine un cadran analogique 12h, un cadran extérieur 24h pour les barres, et des icônes dont la position correspond à une direction astronomique.
+Le projet combine une aiguille des heures 24h, des repères analogiques intérieurs, un cadran extérieur 24h pour les barres, et des icônes dont la position correspond à une direction astronomique.
 
 Mitigation :
 
@@ -562,7 +582,7 @@ Les visuels astronomiques détaillés peuvent mal se comporter en Always-On Disp
 Mitigation :
 
 - Garder la parité fonctionnelle dans le WFF.
-- Valider sur appareil réel que l'overlay, la trotteuse et les informations astronomiques restent visibles en AOD.
+- Valider sur appareil réel que l'overlay, la trotteuse saccadée et les informations astronomiques restent visibles en AOD.
 
 ## Questions de clarification
 
@@ -582,56 +602,57 @@ Mitigation :
 
 7. Question résolue : les barres utilisent un anneau 24h.
 8. Question résolue : 00h est placé à 12h.
-9. Souhaites-tu que l'anneau montre toute la journée civile ou seulement la période nuit/observation ?
-10. Question résolue : les barres affichent des périodes continues.
+9. Question résolue : l'aiguille des heures fait un tour en 24h, avec 00h en haut.
+10. Question résolue : l'aiguille des minutes fait un tour en 60 minutes.
+11. Question résolue : les barres affichent des périodes continues.
 
 ### Soleil et nuit astronomique
 
-11. Question résolue : "lever/coucher astronomique" correspond au passage du Soleil à -18°.
-12. Veux-tu aussi afficher les crépuscules civil (-6°) et nautique (-12°), ou seulement astronomique (-18°) ?
-13. Question résolue : les heures exactes se lisent uniquement via l'anneau 24h, sans texte dédié.
+12. Question résolue : "lever/coucher astronomique" correspond au passage du Soleil à -18°.
+13. Veux-tu aussi afficher les crépuscules civil (-6°) et nautique (-12°), ou seulement astronomique (-18°) ?
+14. Question résolue : les heures exactes se lisent uniquement via l'anneau 24h, sans texte dédié.
 
 ### Lune
 
-14. Question résolue pour la V1 : phase de Lune sous forme de symbole simple.
-15. Veux-tu afficher le pourcentage d'illumination ?
-16. Veux-tu afficher l'âge de la Lune, par exemple J+7 après nouvelle lune ?
-17. Si la Lune ne se lève ou ne se couche pas pendant la journée locale, comment veux-tu le représenter ?
+15. Question résolue pour la V1 : phase de Lune sous forme de symbole simple.
+16. Veux-tu afficher le pourcentage d'illumination ?
+17. Veux-tu afficher l'âge de la Lune, par exemple J+7 après nouvelle lune ?
+18. Si la Lune ne se lève ou ne se couche pas pendant la journée locale, comment veux-tu le représenter ?
 
 ### Polaire
 
-18. Question résolue : la Polaire est un élément graphique simple, cercle ou étoile, sur l'anneau 12h.
-19. Question résolue : l'affichage ne sert pas à aligner réellement une monture équatoriale.
-20. Question résolue : la Polaire est affichée sur l'anneau 12h.
+19. Question résolue : la Polaire est un élément graphique simple, cercle ou étoile, sur l'anneau 12h.
+20. Question résolue : l'affichage ne sert pas à aligner réellement une monture équatoriale.
+21. Question résolue : la Polaire est affichée sur l'anneau 12h.
 
 ### Planètes
 
-21. Question résolue : Uranus et Neptune doivent être affichées.
-22. Question résolue : toutes les planètes restent visibles sur le cadran.
-23. Question résolue : seule l'information d'azimut est affichée, pas la hauteur.
-24. Question résolue : utiliser de petites icônes graphiques colorées, sans noms permanents.
-25. Question résolue : utiliser un cercle complet avec 12h = Sud et 3h = Ouest.
+22. Question résolue : Uranus et Neptune doivent être affichées.
+23. Question résolue : toutes les planètes restent visibles sur le cadran.
+24. Question résolue : seule l'information d'azimut est affichée, pas la hauteur.
+25. Question résolue : utiliser de petites icônes graphiques colorées, sans noms permanents.
+26. Question résolue : utiliser un cercle complet avec 12h = Sud et 3h = Ouest.
 
 ### Constellations
 
-26. Question résolue : constellations autour du zénith à minuit, zénith au centre de la montre.
-27. Question résolue : afficher le tracé d'étoiles uniquement.
-28. Question résolue : afficher toutes les constellations dans le rayon prédéfini de 30°.
-29. Question résolue : rayon de 30° autour du zénith.
+27. Question résolue : constellations autour du zénith à minuit, zénith au centre de la montre.
+28. Question résolue : afficher le tracé d'étoiles uniquement.
+29. Question résolue : afficher toutes les constellations dans le rayon prédéfini de 30°.
+30. Question résolue : rayon de 30° autour du zénith.
 
 ### Interface
 
-30. Question résolue : esthétique d'instrument scientifique.
-31. Question résolue : palette noir, rouge et blanc, avec icônes dans la couleur principale de l'objet.
-32. Question résolue : trotteuse visible en mode actif.
-33. Question résolue : afficher la date à l'intérieur de l'horloge.
-34. Question résolue : afficher la batterie à l'intérieur de l'horloge.
-35. Question résolue : date au format "sam. 04 juil.".
-36. Question résolue : batterie affichée avec icône et pourcentage.
+31. Question résolue : esthétique d'instrument scientifique.
+32. Question résolue : palette noir, rouge et blanc, avec icônes dans la couleur principale de l'objet.
+33. Question résolue : trotteuse visible en mode actif et saccadée, avec un saut à chaque seconde.
+34. Question résolue : afficher la date à l'intérieur de l'horloge.
+35. Question résolue : afficher la batterie à l'intérieur de l'horloge.
+36. Question résolue : date au format "sam. 04 juil.".
+37. Question résolue : batterie affichée avec icône et pourcentage.
 
 ### Technique
 
-37. Veux-tu que le projet reste modifiable principalement dans Watch Face Studio ?
-38. Question résolue en intention : l'outil sera choisi selon l'architecture la plus adaptée.
-39. Question résolue : publication possible plus tard.
-40. Question résolue en première intention : les calculs doivent être faits hors ligne.
+38. Veux-tu que le projet reste modifiable principalement dans Watch Face Studio ?
+39. Question résolue en intention : l'outil sera choisi selon l'architecture la plus adaptée.
+40. Question résolue : publication possible plus tard.
+41. Question résolue en première intention : les calculs doivent être faits hors ligne.

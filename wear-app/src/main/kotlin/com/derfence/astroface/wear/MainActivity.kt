@@ -25,13 +25,13 @@ class MainActivity : Activity() {
         }
 
         val refreshButton = Button(this).apply {
-            text = "Rafraîchir les cadrans"
+            text = "Rafraîchir les éléments"
             setOnClickListener {
                 DialUpdateRequester.requestAll(this@MainActivity)
                 refreshStatus()
                 Toast.makeText(
                     this@MainActivity,
-                    "Demande envoyée aux deux cadrans",
+                    "Demande envoyée aux éléments",
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -66,13 +66,17 @@ class MainActivity : Activity() {
         statusView.text = buildString {
             appendLine()
             appendLine("Service 24 h : prêt")
-            appendLine("Service 12 h : prêt")
+            appendLine("Service repères analogiques : prêt")
+            appendLine("Service aiguille 24 h : prêt")
             appendLine()
             appendLine("Dernière requête 24 h :")
             appendLine(status.last24h ?: "aucune")
             appendLine()
-            appendLine("Dernière requête 12 h :")
+            appendLine("Dernière requête repères analogiques :")
             appendLine(status.last12h ?: "aucune")
+            appendLine()
+            appendLine("Dernière requête aiguille 24 h :")
+            appendLine(status.last24hHand ?: "aucune")
             appendLine()
             appendLine("Dernier rafraîchissement manuel :")
             appendLine(status.lastManualRefresh ?: "aucun")
