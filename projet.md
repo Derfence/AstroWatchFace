@@ -36,6 +36,8 @@ L'utilisateur veut consulter rapidement, depuis sa montre :
 - Les barres astronomiques représentent des périodes continues.
 - Les heures exactes des événements ne sont pas affichées en texte ; elles se lisent uniquement via l'anneau 24h.
 - Sur le cadran 24h, minuit est placé à 12h.
+- Le cadran 24h garde une échelle civile absolue, mais les barres astronomiques représentent les 24 prochaines heures à partir du moment de rendu.
+- Un séparateur visuel "maintenant" distingue le début de la fenêtre glissante du retour à +24h.
 - Le cadran 24h affiche des repères horaires simples : petites barres perpendiculaires à chaque heure, chiffres toutes les 3h.
 - Les icônes astronomiques peuvent être placées entre le cadran analogique 12h et le cadran extérieur 24h si le rendu est plus esthétique.
 - Le "lever/coucher astronomique" désigne le passage du Soleil à -18° sous l'horizon.
@@ -440,6 +442,11 @@ Contraintes :
 - Tests unitaires faciles.
 - Entrées explicites : date, heure, latitude, longitude, fuseau horaire.
 
+État d'implémentation :
+
+- Différé pour le premier incrément d'affichage Soleil/Lune.
+- La logique de calcul vit provisoirement dans `wear-app`, dans un package Kotlin pur `astro`, afin de pouvoir être extraite plus tard sans changer le rendu.
+
 ### wear-app
 
 Responsabilités :
@@ -448,6 +455,7 @@ Responsabilités :
 - Stocker un cache local.
 - Exposer les données à la watch face.
 - Gérer éventuellement les préférences simples.
+- En première implémentation, calculer à chaque rendu du cadran 24h une fenêtre glissante de 24h pour lever/coucher du Soleil, passages à -18° et visibilité lunaire.
 
 ### watch-face
 

@@ -27,6 +27,7 @@ android {
 dependencies {
     implementation "androidx.wear.watchface:watchface-complications-data:1.2.1"
     implementation "androidx.wear.watchface:watchface-complications-data-source:1.2.1"
+    implementation "io.github.cosinekitty:astronomy:2.1.19"
 
     testImplementation "junit:junit:4.13.2"
 

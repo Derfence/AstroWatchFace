@@ -35,7 +35,7 @@
                 android:value="LARGE_IMAGE" />
             <meta-data
                 android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
-                android:value="0" />
+                android:value="900" />
         </service>
 
         <service
