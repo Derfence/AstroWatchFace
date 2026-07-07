@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">AstroFace Data</string>
+    <string name="dial_24h_service_label">AstroFace cadran 24 h</string>
+    <string name="dial_12h_service_label">AstroFace cadran 12 h</string>
+</resources>

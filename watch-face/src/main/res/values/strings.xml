@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">AstroFace</string>
+    <string name="slot_24h_name">Cadran 24 h</string>
+    <string name="slot_12h_name">Cadran 12 h</string>
+</resources>
