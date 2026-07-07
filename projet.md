@@ -189,6 +189,14 @@ Points d'attention :
 - Les positions doivent être mises à jour pour l'instant courant.
 - Une optimisation pourra être étudiée : calcul complet quotidien à heure fixe, puis calcul rapide au moment de l'affichage si cette approximation est pertinente et réellement différente en coût d'un calcul complet.
 
+État d'implémentation :
+
+- Les positions célestes sont rendues par une complication image plein écran dédiée, fournie par `wear-app`.
+- Le rendu utilise un anneau céleste distinct du cadran temporel 24h.
+- L'anneau céleste affiche un cercle blanc discret pour enfermer les planètes, avec les lettres `S`, `O`, `N` et `E` comme seuls repères cardinaux.
+- Les icônes sont graphiques et colorées : Vénus est affichée en croissant ambré, Mars avec une petite calotte, Mercure en brun-gris minéral et Neptune en disque bleu simple.
+- La fréquence de mise à jour déclarée est de 15 minutes.
+
 ### Constellations
 
 Donnée souhaitée :
@@ -456,6 +464,7 @@ Contraintes :
 
 - Différé pour le premier incrément d'affichage Soleil/Lune.
 - La logique de calcul vit provisoirement dans `wear-app`, dans un package Kotlin pur `astro`, afin de pouvoir être extraite plus tard sans changer le rendu.
+- Les positions du Soleil, de la Lune et des planètes sont aussi calculées provisoirement dans `wear-app`, avec Astronomy Engine.
 
 ### wear-app
 
@@ -480,7 +489,7 @@ Responsabilités :
 
 État d'implémentation :
 
-- La Face WFF assemble deux complications plein écran : cadran 24h et aiguille des heures 24h.
+- La Face WFF assemble trois complications plein écran : cadran 24h, positions célestes et aiguille des heures 24h.
 - Les aiguilles minutes et secondes restent des aiguilles WFF natives ; la seconde utilise un mouvement à ticks.
 
 ### mobile-app, optionnelle

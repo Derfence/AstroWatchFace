@@ -8,6 +8,10 @@ import com.derfence.astroface.wear.astro.AstroEvent
 import com.derfence.astroface.wear.astro.AstroEventSource
 import com.derfence.astroface.wear.astro.AstroObserver
 import com.derfence.astroface.wear.astro.AstroWindowCalculator
+import com.derfence.astroface.wear.astro.CelestialBody
+import com.derfence.astroface.wear.astro.CelestialPosition
+import com.derfence.astroface.wear.astro.CelestialPositionSnapshot
+import com.derfence.astroface.wear.astro.CelestialPositionSource
 import com.derfence.astroface.wear.complication.DialComplicationDataFactory
 import java.time.Clock
 import java.time.Instant
@@ -25,6 +29,12 @@ class DialRenderInstrumentedTest {
         assertTrue(
             Hour24hHandRenderer(
                 clock = Clock.fixed(Instant.parse("2026-07-07T10:00:00Z"), ZoneOffset.UTC)
+            ).render().hasVisiblePixel()
+        )
+        assertTrue(
+            CelestialOverlayRenderer(
+                clock = Clock.fixed(Instant.parse("2026-07-07T10:00:00Z"), ZoneOffset.UTC),
+                positionSource = FakeCelestialPositionSource()
             ).render().hasVisiblePixel()
         )
     }
@@ -46,6 +56,16 @@ class DialRenderInstrumentedTest {
         val bitmap = renderer.render()
 
         assertTrue(bitmap.hasWarmAstroArcPixel())
+    }
+
+    @Test
+    fun celestialOverlayPlacesSouthAzimuthAtTop() {
+        val bitmap = CelestialOverlayRenderer(
+            clock = Clock.fixed(Instant.parse("2026-07-07T10:00:00Z"), ZoneOffset.UTC),
+            positionSource = FakeCelestialPositionSource()
+        ).render()
+
+        assertTrue(bitmap.hasWarmPixelNear(225, 65))
     }
 
     private fun Bitmap.hasVisiblePixel(): Boolean {
@@ -84,6 +104,27 @@ class DialRenderInstrumentedTest {
         return false
     }
 
+    private fun Bitmap.hasWarmPixelNear(centerX: Int, centerY: Int): Boolean {
+        var x = centerX - 8
+        while (x <= centerX + 8) {
+            var y = centerY - 8
+            while (y <= centerY + 8) {
+                val pixel = getPixel(x, y)
+                if (
+                    Color.alpha(pixel) > 0 &&
+                    Color.red(pixel) > 220 &&
+                    Color.green(pixel) > 170 &&
+                    Color.blue(pixel) < 140
+                ) {
+                    return true
+                }
+                y += 1
+            }
+            x += 1
+        }
+        return false
+    }
+
     private class FakeAstroEventSource : AstroEventSource {
         override fun eventsBetween(
             start: Instant,
@@ -94,5 +135,21 @@ class DialRenderInstrumentedTest {
         override fun sunAltitudeDegrees(time: Instant, observer: AstroObserver): Double = 12.0
 
         override fun moonAltitudeDegrees(time: Instant, observer: AstroObserver): Double = -2.0
+    }
+
+    private class FakeCelestialPositionSource : CelestialPositionSource {
+        override fun positionsAt(
+            time: Instant,
+            observer: AstroObserver
+        ): CelestialPositionSnapshot =
+            CelestialPositionSnapshot(
+                calculatedAt = time,
+                positions = listOf(
+                    CelestialPosition(CelestialBody.SUN, 180.0),
+                    CelestialPosition(CelestialBody.MOON, 270.0),
+                    CelestialPosition(CelestialBody.MARS, 0.0),
+                    CelestialPosition(CelestialBody.NEPTUNE, 90.0)
+                )
+            )
     }
 }

@@ -18,9 +18,8 @@ public class WatchFaceTimeHandsTest {
 
         assertEquals(0, document.getElementsByTagName("HourHand").getLength());
         assertEquals(0, document.getElementsByTagName("Transform").getLength());
-        assertEquals(2, document.getElementsByTagName("ComplicationSlot").getLength());
+        assertEquals(3, document.getElementsByTagName("ComplicationSlot").getLength());
         assertNull(partImageNamed(document, "TwentyFourHourHand"));
-        assertNull(complicationSlotWithId(document, "2"));
 
         Element hourHandSlot = complicationSlotWithId(document, "3");
         assertNotNull(hourHandSlot);
@@ -37,6 +36,22 @@ public class WatchFaceTimeHandsTest {
         Element hourHandImage = firstChild(hourHandSlot, "PartImage");
         assertEquals("Hour24hHandImage", hourHandImage.getAttribute("name"));
         assertEquals("[COMPLICATION.PHOTO_IMAGE]", firstChild(hourHandImage, "Image").getAttribute("resource"));
+
+        Element celestialOverlaySlot = complicationSlotWithId(document, "2");
+        assertNotNull(celestialOverlaySlot);
+        assertEquals("@string/slot_celestial_overlay_name", celestialOverlaySlot.getAttribute("displayName"));
+        assertEquals("PHOTO_IMAGE EMPTY", celestialOverlaySlot.getAttribute("supportedTypes"));
+
+        Element overlayPolicy = firstChild(celestialOverlaySlot, "DefaultProviderPolicy");
+        assertEquals(
+            "com.derfence.astroface.wear/com.derfence.astroface.wear.complication.CelestialOverlayDataSourceService",
+            overlayPolicy.getAttribute("primaryProvider")
+        );
+        assertEquals("PHOTO_IMAGE", overlayPolicy.getAttribute("primaryProviderType"));
+
+        Element overlayImage = firstChild(celestialOverlaySlot, "PartImage");
+        assertEquals("CelestialOverlayImage", overlayImage.getAttribute("name"));
+        assertEquals("[COMPLICATION.PHOTO_IMAGE]", firstChild(overlayImage, "Image").getAttribute("resource"));
 
         assertEquals(1, document.getElementsByTagName("MinuteHand").getLength());
         assertEquals(0, document.getElementsByTagName("Sweep").getLength());

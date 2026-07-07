@@ -45,6 +45,9 @@ object DialGeometry {
     fun angleForInstant(instant: Instant, zoneId: ZoneId): Float =
         angleForTime(instant.atZone(zoneId).toLocalTime())
 
+    fun angleForAzimuth(azimuthDegrees: Double): Float =
+        normalizeDegrees(azimuthDegrees - SOUTH_AZIMUTH_DEGREES).toFloat()
+
     fun arcSegmentsFor(
         start: Instant,
         end: Instant,
@@ -93,9 +96,9 @@ object DialGeometry {
         val endAngle = angleForTime(end.toLocalTime())
         val sweep = when {
             end.toLocalTime() == LocalTime.MIDNIGHT && end.toLocalDate().isAfter(start.toLocalDate()) ->
-                FULL_CIRCLE_DEGREES - startAngle
+                FULL_CIRCLE_DEGREES_FLOAT - startAngle
             endAngle >= startAngle -> endAngle - startAngle
-            else -> FULL_CIRCLE_DEGREES - startAngle + endAngle
+            else -> FULL_CIRCLE_DEGREES_FLOAT - startAngle + endAngle
         }
 
         if (sweep > 0.001f) {
@@ -106,6 +109,13 @@ object DialGeometry {
     private fun minOfInstant(first: Instant, second: Instant): Instant =
         if (first <= second) first else second
 
+    private fun normalizeDegrees(angleDegrees: Double): Double {
+        val remainder = angleDegrees % FULL_CIRCLE_DEGREES
+        return if (remainder < 0.0) remainder + FULL_CIRCLE_DEGREES else remainder
+    }
+
     private const val SECONDS_PER_DAY = 24 * 60 * 60
-    private const val FULL_CIRCLE_DEGREES = 360f
+    private const val FULL_CIRCLE_DEGREES_FLOAT = 360f
+    private const val FULL_CIRCLE_DEGREES = 360.0
+    private const val SOUTH_AZIMUTH_DEGREES = 180.0
 }

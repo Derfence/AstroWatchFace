@@ -4,7 +4,6 @@ import io.github.cosinekitty.astronomy.Aberration
 import io.github.cosinekitty.astronomy.Body
 import io.github.cosinekitty.astronomy.Direction
 import io.github.cosinekitty.astronomy.EquatorEpoch
-import io.github.cosinekitty.astronomy.Observer
 import io.github.cosinekitty.astronomy.Refraction
 import io.github.cosinekitty.astronomy.Time
 import io.github.cosinekitty.astronomy.equator
@@ -117,15 +116,6 @@ class AstronomyEngineAstroEventSource : AstroEventSource {
             refraction
         ).altitude
     }
-
-    private fun AstroObserver.toAstronomyObserver(): Observer =
-        Observer(latitude, longitude, elevationMeters)
-
-    private fun Instant.toAstronomyTime(): Time =
-        Time.fromMillisecondsSince1970(toEpochMilli())
-
-    private fun Time.toInstant(): Instant =
-        Instant.ofEpochMilli(toMillisecondsSince1970())
 
     companion object {
         private const val MILLIS_PER_DAY = 86_400_000.0

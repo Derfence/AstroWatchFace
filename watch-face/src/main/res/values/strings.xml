@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">AstroFace</string>
     <string name="slot_24h_name">Cadran 24 h</string>
+    <string name="slot_celestial_overlay_name">Positions célestes</string>
     <string name="slot_24h_hand_name">Aiguille 24 h</string>
 </resources>

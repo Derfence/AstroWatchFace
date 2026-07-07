@@ -9,16 +9,19 @@ import java.util.Locale
 object RequestStatusRepository {
     private const val prefsName = "astroface_requests"
     private const val key24h = "last_24h"
+    private const val keyCelestialOverlay = "last_celestial_overlay"
     private const val key24hHand = "last_24h_hand"
     private const val keyManualRefresh = "last_manual_refresh"
 
     enum class DialKey {
         DIAL_24H,
+        CELESTIAL_OVERLAY,
         HOUR_24H_HAND
     }
 
     data class Status(
         val last24h: String?,
+        val lastCelestialOverlay: String?,
         val last24hHand: String?,
         val lastManualRefresh: String?
     )
@@ -41,6 +44,7 @@ object RequestStatusRepository {
         val prefs = context.preferences()
         return Status(
             last24h = prefs.getString(key24h, null),
+            lastCelestialOverlay = prefs.getString(keyCelestialOverlay, null),
             last24hHand = prefs.getString(key24hHand, null),
             lastManualRefresh = prefs.getString(keyManualRefresh, null)
         )
@@ -49,6 +53,7 @@ object RequestStatusRepository {
     private fun keyFor(dialKey: DialKey): String =
         when (dialKey) {
             DialKey.DIAL_24H -> key24h
+            DialKey.CELESTIAL_OVERLAY -> keyCelestialOverlay
             DialKey.HOUR_24H_HAND -> key24hHand
         }
 

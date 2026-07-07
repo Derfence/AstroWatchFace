@@ -52,3 +52,25 @@ data class RollingAstroWindow(
     val events: List<AstroEvent>,
     val intervals: List<AstroInterval>
 )
+
+enum class CelestialBody {
+    SUN,
+    MOON,
+    MERCURY,
+    VENUS,
+    MARS,
+    JUPITER,
+    SATURN,
+    URANUS,
+    NEPTUNE
+}
+
+data class CelestialPosition(
+    val body: CelestialBody,
+    val azimuthDegrees: Double
+)
+
+data class CelestialPositionSnapshot(
+    val calculatedAt: Instant,
+    val positions: List<CelestialPosition>
+)

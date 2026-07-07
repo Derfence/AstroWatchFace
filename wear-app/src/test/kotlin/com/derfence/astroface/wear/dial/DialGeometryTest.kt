@@ -41,6 +41,20 @@ class DialGeometryTest {
     }
 
     @Test
+    fun azimuthMapsToCelestialRingConvention() {
+        assertEquals(0f, DialGeometry.angleForAzimuth(180.0), 0.001f)
+        assertEquals(90f, DialGeometry.angleForAzimuth(270.0), 0.001f)
+        assertEquals(180f, DialGeometry.angleForAzimuth(0.0), 0.001f)
+        assertEquals(270f, DialGeometry.angleForAzimuth(90.0), 0.001f)
+    }
+
+    @Test
+    fun azimuthAnglesAreNormalized() {
+        assertEquals(0f, DialGeometry.angleForAzimuth(540.0), 0.001f)
+        assertEquals(90f, DialGeometry.angleForAzimuth(-90.0), 0.001f)
+    }
+
+    @Test
     fun angleUsesCivilTimeAcrossDaylightSavingOverlap() {
         val zoneId = ZoneId.of("Europe/Paris")
         val repeatedTime = LocalDateTime.of(2026, 10, 25, 2, 30)
