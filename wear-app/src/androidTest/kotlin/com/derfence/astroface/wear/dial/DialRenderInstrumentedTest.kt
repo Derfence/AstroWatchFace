@@ -1,7 +1,9 @@
 package com.derfence.astroface.wear.dial
 
 import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Paint
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.wear.watchface.complications.data.ComplicationType
 import com.derfence.astroface.wear.astro.AstroEvent
@@ -12,11 +14,16 @@ import com.derfence.astroface.wear.astro.CelestialBody
 import com.derfence.astroface.wear.astro.CelestialPosition
 import com.derfence.astroface.wear.astro.CelestialPositionSnapshot
 import com.derfence.astroface.wear.astro.CelestialPositionSource
+import com.derfence.astroface.wear.astro.ConstellationLine
+import com.derfence.astroface.wear.astro.ConstellationSnapshot
+import com.derfence.astroface.wear.astro.ConstellationSource
+import com.derfence.astroface.wear.astro.SkyPoint
 import com.derfence.astroface.wear.complication.DialComplicationDataFactory
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneOffset
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -25,7 +32,7 @@ import org.junit.runner.RunWith
 class DialRenderInstrumentedTest {
     @Test
     fun renderersProduceVisiblePixels() {
-        assertTrue(Dial24hRenderer().render().hasVisiblePixel())
+        assertTrue(Dial24hRenderer(constellationSource = FakeConstellationSource()).render().hasVisiblePixel())
         assertTrue(
             Hour24hHandRenderer(
                 clock = Clock.fixed(Instant.parse("2026-07-07T10:00:00Z"), ZoneOffset.UTC)
@@ -41,7 +48,9 @@ class DialRenderInstrumentedTest {
 
     @Test
     fun complicationFactoryReturnsPhotoImageData() {
-        val data = DialComplicationDataFactory.create(Dial24hRenderer())
+        val data = DialComplicationDataFactory.create(
+            Dial24hRenderer(constellationSource = FakeConstellationSource())
+        )
 
         assertEquals(ComplicationType.PHOTO_IMAGE, data.type)
     }
@@ -50,7 +59,8 @@ class DialRenderInstrumentedTest {
     fun render24hShowsInjectedAstroArcColor() {
         val renderer = Dial24hRenderer(
             clock = Clock.fixed(Instant.parse("2026-07-07T10:00:00Z"), ZoneOffset.UTC),
-            astroWindowCalculator = AstroWindowCalculator(FakeAstroEventSource())
+            astroWindowCalculator = AstroWindowCalculator(FakeAstroEventSource()),
+            constellationSource = FakeConstellationSource()
         )
 
         val bitmap = renderer.render()
@@ -66,6 +76,58 @@ class DialRenderInstrumentedTest {
         ).render()
 
         assertTrue(bitmap.hasWarmPixelNear(225, 65))
+    }
+
+    @Test
+    fun constellationBackgroundExtendsAcrossFullWatchRadius() {
+        val bitmap = Bitmap.createBitmap(
+            DialGeometry.canvasSize,
+            DialGeometry.canvasSize,
+            Bitmap.Config.ARGB_8888
+        )
+        ConstellationBackgroundRenderer().render(
+            Canvas(bitmap),
+            Paint(Paint.ANTI_ALIAS_FLAG),
+            listOf(
+                ConstellationLine(
+                    constellationId = "Test",
+                    from = SkyPoint(azimuthDegrees = 180.0, zenithDistanceDegrees = 0.0),
+                    to = SkyPoint(azimuthDegrees = 180.0, zenithDistanceDegrees = 90.0)
+                )
+            )
+        )
+
+        assertTrue(bitmap.hasConstellationPixelInsideCentralRadius())
+        assertTrue(bitmap.hasConstellationPixelOutsideCentralRadius())
+        assertFalse(bitmap.hasConstellationPixelOutsideWatchRadius())
+    }
+
+    @Test
+    fun constellationBackgroundUsesSkyMapOrientation() {
+        val bitmap = Bitmap.createBitmap(
+            DialGeometry.canvasSize,
+            DialGeometry.canvasSize,
+            Bitmap.Config.ARGB_8888
+        )
+        ConstellationBackgroundRenderer().render(
+            Canvas(bitmap),
+            Paint(Paint.ANTI_ALIAS_FLAG),
+            listOf(
+                ConstellationLine(
+                    constellationId = "North",
+                    from = SkyPoint(azimuthDegrees = 0.0, zenithDistanceDegrees = 0.0),
+                    to = SkyPoint(azimuthDegrees = 0.0, zenithDistanceDegrees = 20.0)
+                ),
+                ConstellationLine(
+                    constellationId = "West",
+                    from = SkyPoint(azimuthDegrees = 270.0, zenithDistanceDegrees = 0.0),
+                    to = SkyPoint(azimuthDegrees = 270.0, zenithDistanceDegrees = 20.0)
+                )
+            )
+        )
+
+        assertTrue(bitmap.hasConstellationPixelNear(225, 175))
+        assertTrue(bitmap.hasConstellationPixelNear(275, 225))
     }
 
     private fun Bitmap.hasVisiblePixel(): Boolean {
@@ -125,6 +187,84 @@ class DialRenderInstrumentedTest {
         return false
     }
 
+    private fun Bitmap.hasConstellationPixelInsideCentralRadius(): Boolean {
+        var x = 0
+        while (x < width) {
+            var y = 0
+            while (y < height) {
+                if (isInsideCentralRadius(x, y) && getPixel(x, y).isConstellationPixel()) {
+                    return true
+                }
+                y += 1
+            }
+            x += 1
+        }
+        return false
+    }
+
+    private fun Bitmap.hasConstellationPixelOutsideCentralRadius(): Boolean {
+        var x = 0
+        while (x < width) {
+            var y = 0
+            while (y < height) {
+                if (!isInsideCentralRadius(x, y) && getPixel(x, y).isConstellationPixel()) {
+                    return true
+                }
+                y += 1
+            }
+            x += 1
+        }
+        return false
+    }
+
+    private fun Bitmap.hasConstellationPixelOutsideWatchRadius(): Boolean {
+        var x = 0
+        while (x < width) {
+            var y = 0
+            while (y < height) {
+                if (!isInsideWatchRadius(x, y) && getPixel(x, y).isConstellationPixel()) {
+                    return true
+                }
+                y += 1
+            }
+            x += 1
+        }
+        return false
+    }
+
+    private fun Bitmap.hasConstellationPixelNear(centerX: Int, centerY: Int): Boolean {
+        var x = centerX - 3
+        while (x <= centerX + 3) {
+            var y = centerY - 3
+            while (y <= centerY + 3) {
+                if (getPixel(x, y).isConstellationPixel()) {
+                    return true
+                }
+                y += 1
+            }
+            x += 1
+        }
+        return false
+    }
+
+    private fun isInsideCentralRadius(x: Int, y: Int): Boolean {
+        val dx = x - 225
+        val dy = y - 225
+        return dx * dx + dy * dy <= 110 * 110
+    }
+
+    private fun isInsideWatchRadius(x: Int, y: Int): Boolean {
+        val dx = x - 225
+        val dy = y - 225
+        return dx * dx + dy * dy <= 226 * 226
+    }
+
+    private fun Int.isConstellationPixel(): Boolean =
+        Color.alpha(this) > 0 &&
+            Color.red(this) > 120 &&
+            Color.green(this) < 100 &&
+            Color.blue(this) < 100
+
     private class FakeAstroEventSource : AstroEventSource {
         override fun eventsBetween(
             start: Instant,
@@ -150,6 +290,27 @@ class DialRenderInstrumentedTest {
                     CelestialPosition(CelestialBody.MARS, 0.0),
                     CelestialPosition(CelestialBody.NEPTUNE, 90.0)
                 )
+            )
+    }
+
+    private class FakeConstellationSource(
+        private val lines: List<ConstellationLine> = listOf(
+            ConstellationLine(
+                constellationId = "Test",
+                from = SkyPoint(azimuthDegrees = 180.0, zenithDistanceDegrees = 4.0),
+                to = SkyPoint(azimuthDegrees = 270.0, zenithDistanceDegrees = 12.0)
+            )
+        )
+    ) : ConstellationSource {
+        override fun constellationsAt(
+            time: Instant,
+            observer: AstroObserver
+        ): ConstellationSnapshot =
+            ConstellationSnapshot(
+                calculatedAt = time,
+                refreshInstant = Instant.parse("2026-07-07T04:00:00Z"),
+                targetMidnight = Instant.parse("2026-07-07T22:00:00Z"),
+                lines = lines
             )
     }
 }

@@ -30,7 +30,8 @@ class CelestialOverlayRenderer(
         )
         val canvas = Canvas(bitmap)
         val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-        val snapshot = positionSource.positionsAt(clock.instant(), observer)
+        val now = clock.instant()
+        val snapshot = positionSource.positionsAt(now, observer)
 
         drawSkyRing(canvas, paint)
         drawCompassLabels(canvas, paint)

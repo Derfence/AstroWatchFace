@@ -192,8 +192,10 @@ Points d'attention :
 État d'implémentation :
 
 - Les positions célestes sont rendues par une complication image plein écran dédiée, fournie par `wear-app`.
-- Le rendu utilise un anneau céleste distinct du cadran temporel 24h.
+- Le rendu utilise un overlay céleste distinct du cadran temporel 24h.
 - L'anneau céleste affiche un cercle blanc discret pour enfermer les planètes, avec les lettres `S`, `O`, `N` et `E` comme seuls repères cardinaux.
+- Chaque corps céleste est placé sur sa propre orbite de montre concentrique, avec un espacement radial fixe : Soleil, Lune, puis Mercure, Vénus, Mars, Jupiter, Saturne, Uranus et Neptune.
+- Chaque corps céleste affiche une petite queue colorée le long de son orbite ; la queue devient linéairement plus transparente à mesure qu'elle s'éloigne du corps.
 - Les icônes sont graphiques et colorées : Vénus est affichée en croissant ambré, Mars avec une petite calotte, Mercure en brun-gris minéral et Neptune en disque bleu simple.
 - La fréquence de mise à jour déclarée est de 15 minutes.
 

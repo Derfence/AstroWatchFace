@@ -14,9 +14,13 @@ Ces positions représentent une direction dans le ciel, tandis que le cadran 24 
 
 Ajouter une complication plein écran dédiée dans `watch-face`, fournie par `CelestialOverlayDataSourceService` dans `wear-app`.
 
-Le service génère un bitmap transparent 450 x 450 contenant uniquement l'anneau céleste et les icônes des objets. Le calcul reste dans le package Kotlin pur `astro`, avec Astronomy Engine déjà présent dans le projet.
+Le service génère un bitmap transparent 450 x 450 contenant uniquement l'overlay céleste et les icônes des objets. Le calcul reste dans le package Kotlin pur `astro`, avec Astronomy Engine déjà présent dans le projet.
 
 L'anneau céleste est rendu comme un cercle blanc discret, placé autour des lettres cardinales avec un rayon `COMPASS_LABEL_RADIUS + 8`. Les repères cardinaux sont les lettres `S`, `O`, `N` et `E`, sans barres ni graduations, pour éviter de confondre la lecture directionnelle avec le cadran temporel 24 h.
+
+Les corps célestes sont placés sur des orbites de montre concentriques, séparées par un espacement radial fixe. L'ordre retenu est Soleil, Lune, puis les planètes dans l'ordre de leur distance au Soleil : Mercure, Vénus, Mars, Jupiter, Saturne, Uranus et Neptune.
+
+Chaque corps affiche une petite queue colorée le long de son orbite. La queue utilise un dégradé angulaire linéaire : transparente à son extrémité éloignée, puis progressivement plus opaque jusqu'au corps céleste.
 
 Les icônes restent de petites formes graphiques colorées plutôt que des symboles astronomiques textuels. Vénus est représentée par un croissant ambré, Mars par un disque rouge avec une petite calotte, Mercure par un disque brun-gris minéral, Neptune par un disque bleu simple, tandis que Soleil, Lune, Jupiter, Saturne et Uranus conservent leur rendu dédié.
 
@@ -27,6 +31,6 @@ La fréquence de mise à jour déclarée est de 15 minutes. Le mouvement apparen
 - `watch-face` reste une Face Watch Face Format sans code.
 - Le cadran temporel 24 h et les positions célestes peuvent évoluer indépendamment.
 - Les lettres cardinales et le cercle céleste appartiennent à l'overlay des positions, pas au cadran temporel.
+- L'espacement radial des orbites améliore la séparation visuelle des icônes sans représenter la hauteur des objets.
 - Les positions sont calculées hors ligne, sans météo, réseau ou géolocalisation dynamique.
 - Les objets sous l'horizon sont affichés comme les autres, conformément au contrat produit.
-- Un léger décalage radial peut être utilisé pour limiter les chevauchements d'icônes, sans représenter la hauteur.
