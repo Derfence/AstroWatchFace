@@ -117,18 +117,19 @@ class StatusOverlayRenderer(
     }
 
     private fun drawBattery(canvas: Canvas, paint: Paint, battery: BatteryStatus) {
-        val color = if (battery.isLow) LOW_BATTERY_COLOR else STATUS_TEXT_COLOR
+        val fillColor = batteryColor(battery.percent)
         val fillWidth = BATTERY_FILL_WIDTH * ((battery.percent ?: 0) / 100f)
 
         paint.style = Paint.Style.STROKE
         paint.strokeWidth = 1.4f
-        paint.color = color
+        paint.color = STATUS_TEXT_COLOR
         canvas.drawRoundRect(BATTERY_BODY_BOUNDS, 2f, 2f, paint)
 
         paint.style = Paint.Style.FILL
         canvas.drawRoundRect(BATTERY_TERMINAL_BOUNDS, 1f, 1f, paint)
 
         if (battery.percent != null && fillWidth > 0f) {
+            paint.color = fillColor
             canvas.drawRoundRect(
                 RectF(
                     BATTERY_BODY_BOUNDS.left + 2f,
@@ -142,6 +143,15 @@ class StatusOverlayRenderer(
             )
         }
     }
+
+    private fun batteryColor(percent: Int?): Int =
+        when {
+            percent == null -> STATUS_TEXT_COLOR
+            percent > HIGH_BATTERY_THRESHOLD_PERCENT -> HIGH_BATTERY_COLOR
+            percent <= LOW_BATTERY_THRESHOLD_PERCENT -> LOW_BATTERY_COLOR
+            percent <= WARNING_BATTERY_THRESHOLD_PERCENT -> WARNING_BATTERY_COLOR
+            else -> STATUS_TEXT_COLOR
+        }
 
     private fun drawDate(canvas: Canvas, paint: Paint, dateLabel: String) {
         paint.style = Paint.Style.FILL
@@ -190,7 +200,12 @@ class StatusOverlayRenderer(
             TOP_STATUS_Y + 2f
         )
         private const val BATTERY_FILL_WIDTH = 20f
+        private const val HIGH_BATTERY_THRESHOLD_PERCENT = 80
+        private const val WARNING_BATTERY_THRESHOLD_PERCENT = 30
+        private const val LOW_BATTERY_THRESHOLD_PERCENT = 20
         private val STATUS_TEXT_COLOR = Color.rgb(245, 245, 242)
+        private val HIGH_BATTERY_COLOR = Color.rgb(64, 210, 112)
+        private val WARNING_BATTERY_COLOR = Color.rgb(255, 149, 42)
         private val LOW_BATTERY_COLOR = Color.rgb(229, 57, 53)
         private val MOON_LIGHT_COLOR = Color.rgb(235, 238, 242)
         private val MOON_SHADOW_COLOR = Color.rgb(8, 8, 10)

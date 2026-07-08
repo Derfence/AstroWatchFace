@@ -18,7 +18,7 @@ Cette couche rend un bitmap transparent 450 x 450 contenant uniquement les infor
 
 - phase de Lune sous forme de disque à ombre continue ;
 - date locale Europe/Paris au format compact français, par exemple `sam. 04 juil.` ;
-- batterie sous forme d'icône seule, avec accent rouge à partir de 20 %.
+- batterie sous forme d'icône seule, remplie en continu et colorée selon son niveau.
 
 La couche est placée dans `watchface.xml` après l'overlay des positions célestes et avant l'aiguille 24 h. Les aiguilles restent donc au-dessus de toutes les informations centrales.
 
@@ -33,4 +33,4 @@ La phase de Lune utilise Astronomy Engine déjà présent dans le projet. La pha
 - La date, la batterie et la phase de Lune peuvent évoluer visuellement sans mélanger les responsabilités du cadran 24 h.
 - La fréquence de mise à jour déclarée reste de 15 minutes pour la fraîcheur de la date et de la batterie, tandis que la phase lunaire porte une validité jusqu'au prochain coucher de Lune.
 - Le pourcentage d'illumination lunaire est calculé mais non affiché en V1, pour conserver un rendu central compact.
-- Le pourcentage de batterie n'est plus affiché ; les futures variations de l'icône porteront l'information détaillée.
+- Le pourcentage de batterie n'est plus affiché ; le remplissage continu indique le niveau, avec vert au-dessus de 80 %, blanc de 31 % à 80 %, orange de 21 % à 30 %, et rouge à 20 % ou moins.

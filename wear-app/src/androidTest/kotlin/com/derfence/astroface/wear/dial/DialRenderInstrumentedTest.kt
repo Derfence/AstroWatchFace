@@ -149,18 +149,38 @@ class DialRenderInstrumentedTest {
 
         assertTrue(bitmap.hasBrightPixelNear(183, 52))
         assertTrue(bitmap.hasBrightPixelNear(225, 285))
-        assertTrue(bitmap.hasBrightPixelNear(267, 52))
+        assertTrue(bitmap.hasGreenPixelNear(267, 52))
     }
 
     @Test
-    fun statusOverlayUsesRedAccentForLowBattery() {
-        val bitmap = StatusOverlayRenderer(
-            clock = Clock.fixed(Instant.parse("2026-07-07T10:00:00Z"), ZoneOffset.UTC),
-            statusSource = FakeWatchStatusSource(batteryPercent = 12)
-        ).render()
+    fun statusOverlayUsesBatteryColorThresholds() {
+        val green = renderStatusOverlay(batteryPercent = 81)
+        val white = renderStatusOverlay(batteryPercent = 80)
+        val orange = renderStatusOverlay(batteryPercent = 25)
+        val red = renderStatusOverlay(batteryPercent = 20)
 
-        assertTrue(bitmap.hasRedPixelNear(267, 52))
+        assertTrue(green.hasGreenPixelNear(267, 52))
+        assertTrue(green.hasBrightPixelNear(267, 52))
+        assertTrue(white.hasBrightPixelNear(267, 52))
+        assertTrue(orange.hasOrangePixelNear(267, 52))
+        assertTrue(orange.hasBrightPixelNear(267, 52))
+        assertTrue(red.hasRedPixelNear(267, 52))
+        assertTrue(red.hasBrightPixelNear(267, 52))
     }
+
+    @Test
+    fun statusOverlayBatteryFillReflectsExactPercent() {
+        val bitmap = renderStatusOverlay(batteryPercent = 50)
+
+        assertTrue(bitmap.getPixel(262, 52).isBrightPixel())
+        assertEquals(0, Color.alpha(bitmap.getPixel(274, 52)))
+    }
+
+    private fun renderStatusOverlay(batteryPercent: Int): Bitmap =
+        StatusOverlayRenderer(
+            clock = Clock.fixed(Instant.parse("2026-07-07T10:00:00Z"), ZoneOffset.UTC),
+            statusSource = FakeWatchStatusSource(batteryPercent = batteryPercent)
+        ).render()
 
     private fun Bitmap.hasVisiblePixel(): Boolean {
         var x = 0
@@ -284,12 +304,48 @@ class DialRenderInstrumentedTest {
         while (x <= centerX + 16) {
             var y = centerY - 12
             while (y <= centerY + 12) {
+                if (getPixel(x, y).isBrightPixel()) {
+                    return true
+                }
+                y += 1
+            }
+            x += 1
+        }
+        return false
+    }
+
+    private fun Bitmap.hasGreenPixelNear(centerX: Int, centerY: Int): Boolean {
+        var x = centerX - 20
+        while (x <= centerX + 46) {
+            var y = centerY - 12
+            while (y <= centerY + 12) {
                 val pixel = getPixel(x, y)
                 if (
                     Color.alpha(pixel) > 0 &&
-                    Color.red(pixel) > 190 &&
-                    Color.green(pixel) > 190 &&
-                    Color.blue(pixel) > 185
+                    Color.red(pixel) < 120 &&
+                    Color.green(pixel) > 170 &&
+                    Color.blue(pixel) in 70..160
+                ) {
+                    return true
+                }
+                y += 1
+            }
+            x += 1
+        }
+        return false
+    }
+
+    private fun Bitmap.hasOrangePixelNear(centerX: Int, centerY: Int): Boolean {
+        var x = centerX - 20
+        while (x <= centerX + 46) {
+            var y = centerY - 12
+            while (y <= centerY + 12) {
+                val pixel = getPixel(x, y)
+                if (
+                    Color.alpha(pixel) > 0 &&
+                    Color.red(pixel) > 220 &&
+                    Color.green(pixel) in 110..180 &&
+                    Color.blue(pixel) < 90
                 ) {
                     return true
                 }
@@ -320,6 +376,12 @@ class DialRenderInstrumentedTest {
         }
         return false
     }
+
+    private fun Int.isBrightPixel(): Boolean =
+        Color.alpha(this) > 0 &&
+            Color.red(this) > 190 &&
+            Color.green(this) > 190 &&
+            Color.blue(this) > 185
 
     private fun isInsideCentralRadius(x: Int, y: Int): Boolean {
         val dx = x - 225

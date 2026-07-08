@@ -4,18 +4,14 @@ import com.derfence.astroface.wear.astro.MoonPhaseSnapshot
 import com.derfence.astroface.wear.astro.MoonPhaseSource
 import java.time.Instant
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class WatchStatusTest {
     @Test
-    fun batteryStatusIsBoundedAndLowAtTwentyPercent() {
+    fun batteryStatusIsBounded() {
         assertEquals(100, BatteryStatus.fromPercent(145).percent)
         assertEquals(0, BatteryStatus.fromPercent(-8).percent)
-        assertTrue(BatteryStatus.fromPercent(20).isLow)
-        assertFalse(BatteryStatus.fromPercent(21).isLow)
     }
 
     @Test
@@ -23,7 +19,6 @@ class WatchStatusTest {
         val status = BatteryStatus.fromPercent(null)
 
         assertNull(status.percent)
-        assertFalse(status.isLow)
     }
 
     @Test
