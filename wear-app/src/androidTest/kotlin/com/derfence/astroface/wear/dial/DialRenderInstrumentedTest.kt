@@ -17,7 +17,6 @@ import com.derfence.astroface.wear.astro.CelestialPositionSource
 import com.derfence.astroface.wear.astro.ConstellationLine
 import com.derfence.astroface.wear.astro.ConstellationSnapshot
 import com.derfence.astroface.wear.astro.ConstellationSource
-import com.derfence.astroface.wear.astro.MoonPhaseKind
 import com.derfence.astroface.wear.astro.MoonPhaseSnapshot
 import com.derfence.astroface.wear.astro.SkyPoint
 import com.derfence.astroface.wear.complication.DialComplicationDataFactory
@@ -391,7 +390,7 @@ class DialRenderInstrumentedTest {
 
     private class FakeWatchStatusSource(
         private val batteryPercent: Int = 83,
-        private val moonPhaseKind: MoonPhaseKind = MoonPhaseKind.FULL
+        private val phaseAngleDegrees: Double = 180.0
     ) : WatchStatusSource {
         override fun statusAt(time: Instant): WatchStatus =
             WatchStatus(
@@ -399,9 +398,10 @@ class DialRenderInstrumentedTest {
                 battery = BatteryStatus.fromPercent(batteryPercent),
                 moonPhase = MoonPhaseSnapshot(
                     calculatedAt = time,
-                    phaseAngleDegrees = 180.0,
+                    targetTime = time.plusSeconds(3600),
+                    phaseAngleDegrees = phaseAngleDegrees,
                     illuminationPercent = 100,
-                    kind = moonPhaseKind
+                    validUntil = time.plusSeconds(7200)
                 )
             )
     }

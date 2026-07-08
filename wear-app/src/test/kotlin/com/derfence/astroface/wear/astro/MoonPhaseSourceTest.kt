@@ -7,23 +7,28 @@ import org.junit.Test
 
 class MoonPhaseSourceTest {
     @Test
-    fun phaseAnglesMapToEightDisplayBuckets() {
-        assertEquals(MoonPhaseKind.NEW, MoonPhaseKind.fromAngleDegrees(0.0))
-        assertEquals(MoonPhaseKind.WAXING_CRESCENT, MoonPhaseKind.fromAngleDegrees(23.0))
-        assertEquals(MoonPhaseKind.FIRST_QUARTER, MoonPhaseKind.fromAngleDegrees(68.0))
-        assertEquals(MoonPhaseKind.WAXING_GIBBOUS, MoonPhaseKind.fromAngleDegrees(113.0))
-        assertEquals(MoonPhaseKind.FULL, MoonPhaseKind.fromAngleDegrees(158.0))
-        assertEquals(MoonPhaseKind.WANING_GIBBOUS, MoonPhaseKind.fromAngleDegrees(203.0))
-        assertEquals(MoonPhaseKind.LAST_QUARTER, MoonPhaseKind.fromAngleDegrees(248.0))
-        assertEquals(MoonPhaseKind.WANING_CRESCENT, MoonPhaseKind.fromAngleDegrees(293.0))
-        assertEquals(MoonPhaseKind.NEW, MoonPhaseKind.fromAngleDegrees(338.0))
-    }
+    fun phaseTargetsNextMoonriseAfterPreviousMoonset() {
+        val now = Instant.parse("2026-07-08T12:00:00Z")
+        val previousMoonset = Instant.parse("2026-07-08T05:00:00Z")
+        val targetMoonrise = Instant.parse("2026-07-08T21:00:00Z")
+        val nextMoonset = Instant.parse("2026-07-09T06:00:00Z")
+        val source = AstronomyEngineMoonPhaseSource(
+            observer = AstroObserver.DEFAULT,
+            moonRiseSetSource = FakeMoonRiseSetSource(
+                previousMoonset = previousMoonset,
+                nextMoonset = nextMoonset,
+                nextMoonrise = targetMoonrise
+            ),
+            moonPhaseCalculator = FakeMoonPhaseCalculator()
+        )
 
-    @Test
-    fun phaseAnglesAreNormalizedBeforeMapping() {
-        assertEquals(MoonPhaseKind.NEW, MoonPhaseKind.fromAngleDegrees(-5.0))
-        assertEquals(MoonPhaseKind.NEW, MoonPhaseKind.fromAngleDegrees(720.0))
-        assertEquals(MoonPhaseKind.WANING_CRESCENT, MoonPhaseKind.fromAngleDegrees(-45.0))
+        val phase = source.phaseAt(now)
+
+        assertEquals(now, phase.calculatedAt)
+        assertEquals(targetMoonrise, phase.targetTime)
+        assertEquals(nextMoonset, phase.validUntil)
+        assertEquals(123.0, phase.phaseAngleDegrees, 0.001)
+        assertEquals(67, phase.illuminationPercent)
     }
 
     @Test
@@ -32,8 +37,32 @@ class MoonPhaseSourceTest {
             .phaseAt(Instant.parse("2026-07-07T22:00:00Z"))
 
         assertEquals(Instant.parse("2026-07-07T22:00:00Z"), snapshot.calculatedAt)
+        assertTrue(snapshot.targetTime.isAfter(snapshot.calculatedAt))
         assertTrue(snapshot.phaseAngleDegrees >= 0.0)
         assertTrue(snapshot.phaseAngleDegrees < 360.0)
         assertTrue(snapshot.illuminationPercent in 0..100)
+    }
+
+    private class FakeMoonRiseSetSource(
+        private val previousMoonset: Instant?,
+        private val nextMoonset: Instant?,
+        private val nextMoonrise: Instant?
+    ) : MoonRiseSetSource {
+        override fun previousMoonsetAtOrBefore(time: Instant, observer: AstroObserver): Instant? =
+            previousMoonset
+
+        override fun nextMoonsetAfter(time: Instant, observer: AstroObserver): Instant? =
+            nextMoonset
+
+        override fun nextMoonriseAfter(time: Instant, observer: AstroObserver): Instant? =
+            nextMoonrise
+    }
+
+    private class FakeMoonPhaseCalculator : MoonPhaseCalculator {
+        override fun phaseAt(time: Instant): MoonPhaseValues =
+            MoonPhaseValues(
+                phaseAngleDegrees = 123.0,
+                illuminationPercent = 67
+            )
     }
 }

@@ -317,7 +317,7 @@ Données affichées :
 
 Recommandation :
 
-- Afficher une phase de Lune sous forme de symbole simple pour commencer.
+- Afficher une phase de Lune sous forme de disque à ombre continue.
 - Placer les constellations en arrière-plan, avec un tracé rouge sombre ou blanc très atténué.
 - Placer la phase de Lune, la date et la batterie au-dessus des constellations.
 - Donner à ces trois informations des zones stables, avec contraste plus fort que les constellations.
@@ -328,13 +328,15 @@ Recommandation :
 
 - La date, la batterie et la phase de Lune sont rendues par une complication image plein écran dédiée, fournie par `wear-app`.
 - Cette couche de statut central est placée au-dessus du cadran 24h, des constellations et des positions célestes, mais sous les aiguilles.
-- La phase de Lune est représentée par un symbole simple à 8 états.
+- La phase de Lune est représentée par un rendu continu de l'ombre.
+- La phase affichée est calculée pour le prochain lever de Lune suivant le dernier coucher de Lune.
+- La donnée de phase est déclarée valide jusqu'au prochain coucher de Lune, moment où la cible bascule vers le lever suivant.
 - La phase de Lune et l'icône de batterie sont placées de part et d'autre de l'indicateur `00` du cadran 24h.
 - La date utilise le format compact français prévu, par exemple `sam. 04 juil.`.
 - La date est placée sous le centre de la montre, avec un décalage vertical initial de `60f`.
 - La batterie est affichée sous forme d'icône seule ; l'accent devient rouge à partir de 20 %.
 - Aucun fond semi-transparent n'est dessiné derrière ces informations.
-- La fréquence de mise à jour déclarée est de 15 minutes.
+- La fréquence de mise à jour déclarée reste de 15 minutes pour garder la date et la batterie fraîches, mais la validité de la phase expire au prochain coucher de Lune.
 
 ### Hiérarchie visuelle centrale
 

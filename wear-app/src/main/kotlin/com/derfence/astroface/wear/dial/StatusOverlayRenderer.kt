@@ -4,19 +4,28 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Path
 import android.graphics.RectF
 import android.graphics.Typeface
 import com.derfence.astroface.wear.astro.AstroObserver
-import com.derfence.astroface.wear.astro.MoonPhaseKind
 import com.derfence.astroface.wear.status.BatteryStatus
+import com.derfence.astroface.wear.status.WatchStatus
 import com.derfence.astroface.wear.status.WatchStatusSource
 import java.time.Clock
+import java.time.Instant
+import kotlin.math.PI
+import kotlin.math.abs
+import kotlin.math.cos
 
 class StatusOverlayRenderer(
     private val clock: Clock = Clock.system(AstroObserver.DEFAULT.zoneId),
     private val statusSource: WatchStatusSource
 ) : DialRenderer {
     override val contentDescription = "Date, batterie et phase de Lune AstroFace"
+    override val validUntil: Instant?
+        get() = lastRenderedStatus?.moonPhase?.validUntil
+
+    private var lastRenderedStatus: WatchStatus? = null
 
     override fun render(): Bitmap {
         val bitmap = Bitmap.createBitmap(
@@ -27,25 +36,26 @@ class StatusOverlayRenderer(
         val canvas = Canvas(bitmap)
         val paint = Paint(Paint.ANTI_ALIAS_FLAG)
         val status = statusSource.statusAt(clock.instant())
+        lastRenderedStatus = status
 
-        drawMoonPhase(canvas, paint, status.moonPhase.kind)
+        drawMoonPhase(canvas, paint, status.moonPhase.phaseAngleDegrees)
         drawBattery(canvas, paint, status.battery)
         drawDate(canvas, paint, status.dateLabel)
 
         return bitmap
     }
 
-    private fun drawMoonPhase(canvas: Canvas, paint: Paint, kind: MoonPhaseKind) {
-        when (kind) {
-            MoonPhaseKind.NEW -> drawNewMoon(canvas, paint)
-            MoonPhaseKind.WAXING_CRESCENT -> drawCrescent(canvas, paint, litRight = true)
-            MoonPhaseKind.FIRST_QUARTER -> drawHalfMoon(canvas, paint, litRight = true)
-            MoonPhaseKind.WAXING_GIBBOUS -> drawGibbous(canvas, paint, litRight = true)
-            MoonPhaseKind.FULL -> drawFullMoon(canvas, paint)
-            MoonPhaseKind.WANING_GIBBOUS -> drawGibbous(canvas, paint, litRight = false)
-            MoonPhaseKind.LAST_QUARTER -> drawHalfMoon(canvas, paint, litRight = false)
-            MoonPhaseKind.WANING_CRESCENT -> drawCrescent(canvas, paint, litRight = false)
-        }
+    private fun drawMoonPhase(canvas: Canvas, paint: Paint, phaseAngleDegrees: Double) {
+        val normalizedPhase = normalizePhaseAngle(phaseAngleDegrees)
+        val waxing = normalizedPhase <= FULL_MOON_PHASE_DEGREES
+        val terminatorWidth = (abs(cos(normalizedPhase * PI / 180.0)) * MOON_RADIUS * 2.0).toFloat()
+
+        canvas.save()
+        canvas.clipPath(moonClipPath())
+        drawNewMoon(canvas, paint)
+        drawLitMoonHalf(canvas, paint, litRight = waxing)
+        drawTerminatorCorrection(canvas, paint, normalizedPhase, terminatorWidth, waxing)
+        canvas.restore()
 
         paint.style = Paint.Style.STROKE
         paint.strokeWidth = 1.2f
@@ -59,14 +69,7 @@ class StatusOverlayRenderer(
         canvas.drawCircle(MOON_CENTER_X, MOON_CENTER_Y, MOON_RADIUS, paint)
     }
 
-    private fun drawFullMoon(canvas: Canvas, paint: Paint) {
-        paint.style = Paint.Style.FILL
-        paint.color = Color.rgb(235, 238, 242)
-        canvas.drawCircle(MOON_CENTER_X, MOON_CENTER_Y, MOON_RADIUS, paint)
-    }
-
-    private fun drawHalfMoon(canvas: Canvas, paint: Paint, litRight: Boolean) {
-        drawNewMoon(canvas, paint)
+    private fun drawLitMoonHalf(canvas: Canvas, paint: Paint, litRight: Boolean) {
         paint.style = Paint.Style.FILL
         paint.color = Color.rgb(235, 238, 242)
         canvas.drawArc(
@@ -78,20 +81,39 @@ class StatusOverlayRenderer(
         )
     }
 
-    private fun drawCrescent(canvas: Canvas, paint: Paint, litRight: Boolean) {
-        drawFullMoon(canvas, paint)
+    private fun drawTerminatorCorrection(
+        canvas: Canvas,
+        paint: Paint,
+        normalizedPhase: Double,
+        terminatorWidth: Float,
+        waxing: Boolean
+    ) {
+        if (terminatorWidth < MIN_TERMINATOR_WIDTH) {
+            return
+        }
         paint.style = Paint.Style.FILL
-        paint.color = Color.rgb(8, 8, 10)
-        val shadowOffset = if (litRight) -MOON_RADIUS * 0.45f else MOON_RADIUS * 0.45f
-        canvas.drawCircle(MOON_CENTER_X + shadowOffset, MOON_CENTER_Y, MOON_RADIUS * 0.98f, paint)
+        paint.color = terminatorCorrectionColor(normalizedPhase)
+        canvas.drawOval(
+            RectF(
+                MOON_CENTER_X - terminatorWidth / 2f,
+                MOON_CENTER_Y - MOON_RADIUS,
+                MOON_CENTER_X + terminatorWidth / 2f,
+                MOON_CENTER_Y + MOON_RADIUS
+            ),
+            paint
+        )
     }
 
-    private fun drawGibbous(canvas: Canvas, paint: Paint, litRight: Boolean) {
-        drawFullMoon(canvas, paint)
-        paint.style = Paint.Style.FILL
-        paint.color = Color.rgb(8, 8, 10)
-        val shadowOffset = if (litRight) -MOON_RADIUS * 1.25f else MOON_RADIUS * 1.25f
-        canvas.drawCircle(MOON_CENTER_X + shadowOffset, MOON_CENTER_Y, MOON_RADIUS * 0.98f, paint)
+    private fun terminatorCorrectionColor(normalizedPhase: Double): Int =
+        when {
+            normalizedPhase < FIRST_QUARTER_PHASE_DEGREES -> MOON_SHADOW_COLOR
+            normalizedPhase < LAST_QUARTER_PHASE_DEGREES -> MOON_LIGHT_COLOR
+            else -> MOON_SHADOW_COLOR
+        }
+
+    private fun normalizePhaseAngle(phaseAngleDegrees: Double): Double {
+        val remainder = phaseAngleDegrees % FULL_CIRCLE_DEGREES
+        return if (remainder < 0.0) remainder + FULL_CIRCLE_DEGREES else remainder
     }
 
     private fun drawBattery(canvas: Canvas, paint: Paint, battery: BatteryStatus) {
@@ -138,12 +160,22 @@ class StatusOverlayRenderer(
             MOON_CENTER_Y + MOON_RADIUS
         )
 
+    private fun moonClipPath(): Path =
+        Path().apply {
+            addCircle(MOON_CENTER_X, MOON_CENTER_Y, MOON_RADIUS, Path.Direction.CW)
+        }
+
     private companion object {
+        private const val FULL_CIRCLE_DEGREES = 360.0
+        private const val FIRST_QUARTER_PHASE_DEGREES = 90.0
+        private const val FULL_MOON_PHASE_DEGREES = 180.0
+        private const val LAST_QUARTER_PHASE_DEGREES = 270.0
         private const val TOP_STATUS_Y = 52f
         private const val SIDE_STATUS_OFFSET_X = 42f
         private const val MOON_CENTER_X = DialGeometry.center - SIDE_STATUS_OFFSET_X
         private const val MOON_CENTER_Y = TOP_STATUS_Y
         private const val MOON_RADIUS = 10f
+        private const val MIN_TERMINATOR_WIDTH = 0.05f
         private const val DATE_BASELINE = DialGeometry.center + 60f
         private val BATTERY_BODY_BOUNDS = RectF(
             DialGeometry.center + SIDE_STATUS_OFFSET_X - 12f,
@@ -160,5 +192,7 @@ class StatusOverlayRenderer(
         private const val BATTERY_FILL_WIDTH = 20f
         private val STATUS_TEXT_COLOR = Color.rgb(245, 245, 242)
         private val LOW_BATTERY_COLOR = Color.rgb(229, 57, 53)
+        private val MOON_LIGHT_COLOR = Color.rgb(235, 238, 242)
+        private val MOON_SHADOW_COLOR = Color.rgb(8, 8, 10)
     }
 }

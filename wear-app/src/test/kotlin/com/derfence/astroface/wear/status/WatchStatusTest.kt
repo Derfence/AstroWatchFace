@@ -1,6 +1,5 @@
 package com.derfence.astroface.wear.status
 
-import com.derfence.astroface.wear.astro.MoonPhaseKind
 import com.derfence.astroface.wear.astro.MoonPhaseSnapshot
 import com.derfence.astroface.wear.astro.MoonPhaseSource
 import java.time.Instant
@@ -38,7 +37,7 @@ class WatchStatusTest {
 
         assertEquals("sam. 04 juil.", status.dateLabel)
         assertEquals(83, status.battery.percent)
-        assertEquals(MoonPhaseKind.FULL, status.moonPhase.kind)
+        assertEquals(180.0, status.moonPhase.phaseAngleDegrees, 0.001)
     }
 
     private class FixedBatteryStatusSource(
@@ -53,9 +52,10 @@ class WatchStatusTest {
         override fun phaseAt(time: Instant): MoonPhaseSnapshot =
             MoonPhaseSnapshot(
                 calculatedAt = calculatedAt,
+                targetTime = calculatedAt,
                 phaseAngleDegrees = 180.0,
                 illuminationPercent = 100,
-                kind = MoonPhaseKind.FULL
+                validUntil = null
             )
     }
 }
