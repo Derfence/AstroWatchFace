@@ -111,7 +111,7 @@ class AstronomyEngineConstellationSource internal constructor(
 
     private companion object {
         private const val FULL_CIRCLE_DEGREES = 360.0
-        private const val ZENITH_RADIUS_DEGREES = 90.0
+        private const val ZENITH_RADIUS_DEGREES = 100.0
     }
 }
 

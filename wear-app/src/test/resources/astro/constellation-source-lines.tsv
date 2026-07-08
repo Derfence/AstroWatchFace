@@ -1,0 +1,223 @@
+# Normalized Stellarium modern constellation source lines.
+# commit=be3d960963f450ab0651e60f95cc3273a4f01638
+# source_sha256=1f2f5ffd6c9e25a7d0dcfdbf1f756e2db03dd3b8ed4ec016a2839b09f6b0fe1e
+# columns: constellationId<TAB>comma-separated star ids
+Aquila	hip_98036,hip_97649,hip_97278
+Aquila	hip_97649,hip_95501,hip_97804
+Aquila	hip_99473,hip_97804
+Aquila	hip_95501,hip_93747,hip_93244
+Aquila	hip_95501,hip_93805
+Andromeda	hip_677,hip_3092,hip_5447
+Andromeda	hip_9640,hip_5447,hip_4436,hip_3881
+Sculptor	hip_116231,hip_4577,hip_115102,hip_116231
+Ara	hip_88714,hip_85792,hip_83081,hip_82363,hip_85727,hip_85267,hip_85258,hip_88714
+Libra	hip_77853,hip_76333,hip_74785,hip_72622,hip_73714,hip_76333
+Cetus	hip_10324,hip_11484
+Cetus	hip_8102,hip_3419,hip_1562
+Cetus	hip_3419,hip_5364,hip_6537,hip_8645,hip_11345,hip_12390,hip_12770,hip_11783,hip_8102
+Cetus	hip_10826,hip_12390
+Cetus	hip_10826,hip_12387,hip_12706,hip_14135,hip_13954,hip_12828,hip_11484,hip_12093,hip_12706
+Aries	hip_13209,hip_9884,hip_8903,hip_8832
+Scutum	hip_92175,hip_92202,hip_92814,hip_90595,hip_91117,hip_92175
+Pyxis	hip_42515,hip_42828,hip_43409
+Bootes	hip_71795,hip_69673,hip_72105,hip_74666,hip_73555,hip_71075,hip_71053,hip_69673,hip_67927,hip_67459
+Caelum	hip_21060,hip_21770,hip_21861
+Chamaeleon	hip_40702,hip_51839,hip_60000
+Cancer	hip_43103,hip_42806,hip_40843
+Cancer	hip_42806,hip_42911,hip_40526
+Cancer	hip_42911,hip_44066
+Capricornus	hip_100064,hip_100345,hip_104139,hip_105515,hip_106985,hip_107556
+Capricornus	hip_105515,hip_105881,hip_104139
+Capricornus	hip_100345,hip_102485
+Capricornus	hip_104139,hip_102978
+Carina	hip_45238,hip_50099,hip_52419,hip_52468,hip_54463,hip_53253,hip_51232,hip_50371,hip_45556
+Carina	hip_42568,hip_41037,hip_30438
+Carina	hip_45080,hip_45556
+Carina	hip_45080,hip_42568
+Carina	hip_30438,hip_31685
+Carina	hip_41037,hip_39429
+Cassiopeia	hip_8886,hip_6686,hip_4427,hip_3179,hip_746
+Centaurus	hip_71683,hip_68702,hip_66657,hip_68002,hip_68282,hip_67472,hip_67464,hip_65936,hip_65109
+Centaurus	hip_67464,hip_68933
+Centaurus	hip_67472,hip_71352,hip_73334
+Centaurus	hip_68002,hip_61932,hip_60823,hip_59196,hip_56480,hip_56561
+Cepheus	hip_109492,hip_112724,hip_106032,hip_105199,hip_109492
+Cepheus	hip_112724,hip_116727,hip_106032
+Coma Berenices	hip_64241,hip_64394,hip_60742
+Canes Venatici	hip_61317,hip_63125
+Auriga	hip_28380,hip_28360,hip_24608,hip_23453,hip_23015
+Auriga	hip_25428,hip_23015
+Auriga	hip_25428,hip_28380
+Columba	hip_30277,hip_29807,hip_28199,hip_27628,hip_28328
+Columba	hip_27628,hip_26634,hip_25859
+Circinus	hip_71908,hip_75323
+Circinus	hip_71908,hip_74824
+Crater	hip_53740,hip_54682,hip_55705,hip_55282,hip_53740
+Crater	hip_55282,hip_55687,hip_56633,hip_58188,hip_57283,hip_55705
+Corona Australis	hip_91875,hip_92989,hip_93174,hip_93825,hip_94114,hip_94160,hip_94005,hip_93542,hip_92953
+Corona Australis	hip_91875,hip_90887
+Corona Borealis	hip_76127,hip_75695,hip_76267,hip_76952,hip_77512,hip_78159,hip_78493
+Corvus	hip_61174,hip_60965,hip_59803,hip_59316,hip_59199
+Corvus	hip_59316,hip_61359,hip_60965
+Crux	hip_61084,hip_60718
+Crux	hip_62434,hip_59747
+Cygnus	hip_94779,hip_95853,hip_97165,hip_100453,hip_102098
+Cygnus	hip_100453,hip_102488,hip_104732,hip_107310
+Cygnus	hip_100453,hip_98110,hip_95947
+Delphinus	hip_101421,hip_101769,hip_101958,hip_102532,hip_102281,hip_101769
+Dorado	hip_27100,hip_27890,hip_26069,hip_27100
+Dorado	hip_26069,hip_21281,hip_19893
+Draco	hip_87585,hip_87833,hip_85670,hip_85829,hip_87585,hip_94376,hip_97433,hip_94648,hip_89937,hip_83895,hip_80331,hip_78527,hip_75458,hip_68756,hip_61281,hip_56211
+Norma	hip_79509,hip_80000,hip_80582,hip_78639,hip_80000
+Norma	hip_78639,hip_79509
+Eridanus	hip_7588,hip_9007,hip_10602,hip_11407,hip_12413,hip_12486,hip_13847,hip_15510,hip_17797,hip_17874,hip_20042,hip_20535,hip_21393,hip_17651,hip_16611,hip_15474,hip_14146,hip_12843,hip_13701,hip_15197,hip_16537,hip_17378,hip_21444,hip_22109,hip_22701,hip_23875,hip_23972,hip_21594
+Sagitta	hip_96837,hip_97365,hip_96757
+Sagitta	hip_97365,hip_98337,hip_98920
+Fornax	hip_13147,hip_14879
+Gemini	hip_31681,hip_34088,hip_35550,hip_35350,hip_32362
+Gemini	hip_35550,hip_36962,hip_37740
+Gemini	hip_36962,hip_37826
+Gemini	hip_36962,hip_36046,hip_34693,hip_36850
+Gemini	hip_34693,hip_33018
+Gemini	hip_34693,hip_32246,hip_30883
+Gemini	hip_32246,hip_30343,hip_29655,hip_28734
+Camelopardalis	hip_16228,hip_18505,hip_22783
+Camelopardalis	hip_16228,hip_17959,hip_22783
+Camelopardalis	hip_17959,hip_25110
+Canis Major	hip_33160,hip_34045,hip_33347,hip_32349,hip_33977,hip_34444,hip_35037,hip_35904
+Canis Major	hip_33579,hip_33856,hip_34444
+Canis Major	hip_33856,hip_33165,hip_31592,hip_31416
+Canis Major	hip_31592,hip_30324
+Canis Major	hip_31592,hip_32349
+Canis Major	hip_33579,hip_32759
+Canis Major	hip_30122,hip_33579
+Canis Major	hip_33347,hip_33160
+Ursa Major	hip_67301,hip_65378,hip_62956,hip_59774,hip_54061,hip_53910,hip_58001,hip_59774
+Ursa Major	hip_58001,hip_57399,hip_54539,hip_50372
+Ursa Major	hip_54539,hip_50801
+Ursa Major	hip_53910,hip_48402,hip_46853,hip_44471
+Ursa Major	hip_46853,hip_44127
+Ursa Major	hip_48402,hip_48319,hip_41704,hip_46733,hip_54061
+Grus	hip_114131,hip_110997,hip_109268,hip_112122,hip_114421,hip_114131
+Grus	hip_112122,hip_113638
+Grus	hip_112122,hip_112623
+Grus	hip_109268,hip_109111,hip_108085
+Hercules	hip_86414,hip_87808,hip_85112,hip_84606,hip_84380,hip_81833,hip_81126,hip_79992,hip_77760
+Hercules	hip_81833,hip_81693,hip_80816,hip_80170
+Hercules	hip_81693,hip_83207,hip_85693,hip_84379
+Hercules	hip_86974,hip_87933,hip_88794
+Hercules	hip_83207,hip_84380
+Hercules	hip_86974,hip_85693
+Horologium	hip_19747,hip_12484,hip_14240
+Hydra	hip_42799,hip_42402,hip_42313,hip_43109,hip_43234,hip_42799
+Hydra	hip_43234,hip_43813,hip_45336,hip_46776,hip_46509,hip_46390,hip_45751,hip_47452,hip_48356,hip_49841,hip_51069,hip_52943,hip_54204,hip_56343,hip_57936,hip_64166,hip_64962,hip_68895,hip_69415,hip_70306,hip_72571
+Hydrus	hip_2021,hip_17678,hip_12394,hip_11001,hip_9236
+Indus	hip_105319,hip_101772,hip_103227,hip_105319
+Lacerta	hip_109937,hip_111104,hip_111022,hip_110609,hip_110538,hip_111169,hip_111022
+Monoceros	hip_29651,hip_34769
+Monoceros	hip_30867,hip_34769,hip_32533,hip_30419,hip_31216,hip_31978
+Monoceros	hip_32533,hip_31978,hip_30665
+Monoceros	hip_34769,hip_39211,hip_39863
+Monoceros	hip_39211,hip_37447
+Lepus	hip_28910,hip_28103,hip_27288,hip_25985,hip_24305
+Lepus	hip_25985,hip_27654,hip_27072,hip_25606,hip_23685
+Lepus	hip_25985,hip_25606
+Lepus	hip_24305,hip_24845
+Lepus	hip_24305,hip_24327
+Lepus	hip_23685,hip_24305
+Lepus	hip_24327,hip_24244
+Lepus	hip_24845,hip_24873
+Leo	hip_57632,hip_54879,hip_49669,hip_49583,hip_50583,hip_54872,hip_57632
+Leo	hip_50583,hip_50335,hip_48455,hip_47908
+Leo	hip_54872,hip_54879
+Lupus	hip_77634,hip_78970,hip_78384,hip_77634
+Lupus	hip_78384,hip_76297,hip_75141,hip_75177
+Lupus	hip_75141,hip_73273
+Lupus	hip_76297,hip_76552,hip_74395,hip_71860
+Lupus	hip_74395,hip_71536
+Lupus	hip_71860,hip_70576
+Lupus	hip_71860,hip_73273
+Lynx	hip_45860,hip_45688,hip_44700,hip_44248,hip_41075,hip_36145,hip_33449,hip_30060
+Lyra	hip_91262,hip_91971,hip_92420,hip_93194,hip_92791,hip_91971
+Antlia	hip_51172,hip_48926
+Microscopium	hip_105140,hip_103738,hip_102831
+Musca	hip_62322,hip_57363,hip_61199,hip_61585,hip_62322
+Octans	hip_107089,hip_112405,hip_70638,hip_107089
+Apus	hip_72370,hip_81065,hip_81852
+Ophiuchus	hip_86032,hip_86742
+Ophiuchus	hip_84012,hip_86742
+Ophiuchus	hip_86032,hip_83000,hip_79882,hip_81377,hip_84012,hip_85755
+Orion	hip_26727,hip_26311,hip_25930
+Orion	hip_29434,hip_29426
+Orion	hip_29434,hip_28716,hip_27913
+Orion	hip_29426,hip_29038,hip_27913
+Orion	hip_29426,hip_28614,hip_27989,hip_26727,hip_27366,hip_24436,hip_25930,hip_25336,hip_26207,hip_27989
+Orion	hip_25336,hip_22449,hip_22549,hip_22730,hip_22797,hip_23123
+Orion	hip_22449,hip_22509,hip_22845
+Orion	hip_29038,hip_28614
+Pavo	hip_100751,hip_105858,hip_102395,hip_99240,hip_100751
+Pavo	hip_99240,hip_98495,hip_91792,hip_93015,hip_99240
+Pavo	hip_93015,hip_92609,hip_90098,hip_88866,hip_92609
+Pavo	hip_88866,hip_86929
+Pegasus	hip_1067,hip_113963
+Pegasus	hip_113881,hip_112158,hip_109352
+Pegasus	hip_113881,hip_112748,hip_112440,hip_109176,hip_107354
+Pegasus	hip_113963,hip_112447,hip_112029,hip_109427,hip_107315
+Pegasus	hip_677,hip_113881
+Pegasus	hip_677,hip_1067
+Pegasus	hip_113881,hip_113963
+Pictor	hip_32607,hip_27530,hip_27321
+Perseus	hip_17448,hip_18246,hip_18614,hip_18532,hip_17358,hip_15863,hip_14328,hip_13268
+Perseus	hip_15863,hip_14576,hip_14354,hip_13254
+Equuleus	hip_104521,hip_104858,hip_105570,hip_104987,hip_104521
+Canis Minor	hip_37279,hip_36188
+Leo Minor	hip_53229,hip_51233,hip_49593,hip_46952
+Leo Minor	hip_49593,hip_53229
+Vulpecula	hip_95771,hip_98543
+Ursa Minor	hip_11767,hip_85822,hip_82080,hip_77055,hip_79822,hip_75097,hip_72607,hip_77055
+Phoenix	hip_5348,hip_5165,hip_2072,hip_5348
+Phoenix	hip_5165,hip_7083,hip_8837,hip_5165,hip_6867,hip_2072,hip_2081,hip_765,hip_2072
+Pisces	hip_4889,hip_5742
+Pisces	hip_4889,hip_6193,hip_5742,hip_7097,hip_8198,hip_9487,hip_8833,hip_7884,hip_7007,hip_4906,hip_3760,hip_1645,hip_118268,hip_116771,hip_117245,hip_116928,hip_115738,hip_114971,hip_115227,hip_115830,hip_116771
+Piscis Austrinus	hip_113368,hip_111954,hip_108661,hip_107608,hip_109422,hip_111188,hip_113246
+Volans	hip_37504,hip_34481,hip_39794,hip_37504
+Volans	hip_39794,hip_35228
+Volans	hip_39794,hip_41312,hip_44382,hip_39794
+Puppis	hip_39757,hip_38146,hip_35264,hip_31685,hip_32768,hip_36377,hip_39429,hip_39757
+Reticulum	hip_19780,hip_19921,hip_18597,hip_17440,hip_19780
+Sagittarius	hip_89931,hip_90496
+Sagittarius	hip_89642,hip_90185,hip_88635,hip_87072
+Sagittarius	hip_88635,hip_89931,hip_90185,hip_93506,hip_92041,hip_89931
+Sagittarius	hip_92041,hip_90496,hip_89341
+Sagittarius	hip_93506,hip_93864,hip_92855,hip_92041
+Sagittarius	hip_92855,hip_93085,hip_93683,hip_94820,hip_95168
+Sagittarius	hip_93864,hip_96406,hip_98688,hip_98412,hip_98032,hip_95347
+Sagittarius	hip_98032,hip_95294
+Scorpius	hip_85927,hip_86670,hip_87073,hip_86228,hip_84143,hip_82671,hip_82514,hip_82396,hip_81266,hip_80763,hip_78401
+Scorpius	hip_80763,hip_78265
+Scorpius	hip_80763,hip_78820
+Serpens	hip_79593,hip_77516,hip_77622,hip_77070,hip_76276,hip_77233,hip_78072,hip_77450,hip_77233
+Serpens	hip_92946,hip_90441,hip_89962,hip_88670,hip_88048,hip_86565,hip_86263,hip_84880
+Sextans	hip_51437,hip_49641
+Mensa	hip_25918,hip_21949
+Taurus	hip_25428,hip_21881,hip_20889
+Taurus	hip_21421,hip_26451
+Taurus	hip_20205,hip_20455
+Taurus	hip_20205,hip_18724,hip_15900
+Taurus	hip_21421,hip_20889
+Taurus	hip_21421,hip_20894,hip_20205
+Taurus	hip_20889,hip_20648,hip_20455,hip_17847
+Telescopium	hip_90568,hip_90422
+Tucana	hip_110130,hip_114996,hip_1599
+Tucana	hip_114996,hip_2484
+Triangulum	hip_10670,hip_10064,hip_8796,hip_10670
+Triangulum Australe	hip_82273,hip_74946,hip_77952,hip_82273
+Aquarius	hip_106278,hip_109074,hip_110395,hip_110960,hip_111497,hip_112961,hip_114855,hip_115438
+Aquarius	hip_109074,hip_110003,hip_109139
+Aquarius	hip_110003,hip_111123,hip_112716,hip_113136,hip_114341
+Aquarius	hip_102618,hip_106278
+Virgo	hip_57380,hip_60129,hip_61941,hip_65474,hip_69427,hip_69701,hip_71957
+Virgo	hip_65474,hip_66249,hip_68520,hip_72220
+Virgo	hip_66249,hip_63090,hip_63608
+Virgo	hip_63090,hip_61941
+Vela	hip_39953,hip_42536,hip_42913,hip_45941,hip_48774,hip_52727,hip_51986,hip_50191,hip_46651,hip_44816,hip_39953

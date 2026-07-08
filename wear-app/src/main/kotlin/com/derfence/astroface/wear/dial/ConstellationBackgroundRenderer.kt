@@ -9,7 +9,7 @@ import com.derfence.astroface.wear.astro.SkyPoint
 
 class ConstellationBackgroundRenderer(
     private val screenRadius: Float = DialGeometry.center,
-    private val skyRadiusDegrees: Double = 90.0
+    private val skyRadiusDegrees: Double = 100.0
 ) {
     fun render(
         canvas: Canvas,

@@ -35,7 +35,7 @@ class AstronomyEngineConstellationSourceTest {
             assertTrue(line.from.azimuthDegrees < 360.0)
             assertTrue(line.to.azimuthDegrees >= 0.0)
             assertTrue(line.to.azimuthDegrees < 360.0)
-            assertTrue(line.from.zenithDistanceDegrees <= 90.0 || line.to.zenithDistanceDegrees <= 90.0)
+            assertTrue(line.from.zenithDistanceDegrees <= 100.0 || line.to.zenithDistanceDegrees <= 100.0)
         }
     }
 
