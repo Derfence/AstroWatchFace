@@ -9,6 +9,7 @@ object DialUpdateRequester {
     fun requestAll(context: Context) {
         request(context, Dial24hDataSourceService::class.java)
         request(context, CelestialOverlayDataSourceService::class.java)
+        request(context, StatusOverlayDataSourceService::class.java)
         request(context, Hour24hHandDataSourceService::class.java)
         RequestStatusRepository.markManualRefresh(context.applicationContext)
     }

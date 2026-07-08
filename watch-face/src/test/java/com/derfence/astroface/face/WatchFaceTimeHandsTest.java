@@ -18,7 +18,8 @@ public class WatchFaceTimeHandsTest {
 
         assertEquals(0, document.getElementsByTagName("HourHand").getLength());
         assertEquals(0, document.getElementsByTagName("Transform").getLength());
-        assertEquals(3, document.getElementsByTagName("ComplicationSlot").getLength());
+        assertEquals(4, document.getElementsByTagName("ComplicationSlot").getLength());
+        assertSlotOrder(document, "1", "2", "4", "3");
         assertNull(partImageNamed(document, "TwentyFourHourHand"));
 
         Element hourHandSlot = complicationSlotWithId(document, "3");
@@ -53,6 +54,22 @@ public class WatchFaceTimeHandsTest {
         assertEquals("CelestialOverlayImage", overlayImage.getAttribute("name"));
         assertEquals("[COMPLICATION.PHOTO_IMAGE]", firstChild(overlayImage, "Image").getAttribute("resource"));
 
+        Element statusOverlaySlot = complicationSlotWithId(document, "4");
+        assertNotNull(statusOverlaySlot);
+        assertEquals("@string/slot_status_overlay_name", statusOverlaySlot.getAttribute("displayName"));
+        assertEquals("PHOTO_IMAGE EMPTY", statusOverlaySlot.getAttribute("supportedTypes"));
+
+        Element statusPolicy = firstChild(statusOverlaySlot, "DefaultProviderPolicy");
+        assertEquals(
+            "com.derfence.astroface.wear/com.derfence.astroface.wear.complication.StatusOverlayDataSourceService",
+            statusPolicy.getAttribute("primaryProvider")
+        );
+        assertEquals("PHOTO_IMAGE", statusPolicy.getAttribute("primaryProviderType"));
+
+        Element statusImage = firstChild(statusOverlaySlot, "PartImage");
+        assertEquals("StatusOverlayImage", statusImage.getAttribute("name"));
+        assertEquals("[COMPLICATION.PHOTO_IMAGE]", firstChild(statusImage, "Image").getAttribute("resource"));
+
         assertEquals(1, document.getElementsByTagName("MinuteHand").getLength());
         assertEquals(0, document.getElementsByTagName("Sweep").getLength());
 
@@ -83,6 +100,15 @@ public class WatchFaceTimeHandsTest {
             }
         }
         return null;
+    }
+
+    private static void assertSlotOrder(Document document, String... expectedSlotIds) {
+        NodeList nodes = document.getElementsByTagName("ComplicationSlot");
+        assertEquals(expectedSlotIds.length, nodes.getLength());
+        for (int i = 0; i < expectedSlotIds.length; i += 1) {
+            Element element = (Element) nodes.item(i);
+            assertEquals(expectedSlotIds[i], element.getAttribute("slotId"));
+        }
     }
 
     private static Element complicationSlotWithId(Document document, String slotId) {

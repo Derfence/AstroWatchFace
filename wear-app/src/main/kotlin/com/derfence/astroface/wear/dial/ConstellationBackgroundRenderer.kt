@@ -32,8 +32,8 @@ class ConstellationBackgroundRenderer(
 
         paint.style = Paint.Style.STROKE
         paint.strokeCap = Paint.Cap.ROUND
-        paint.strokeWidth = 0.65f
-        paint.color = Color.argb(58, 210, 38, 46)
+        paint.strokeWidth = 0.8f
+        paint.color = Color.argb(72, 210, 38, 46)
 
         lines.forEach { line ->
             val from = pointForSkyPoint(line.from)
@@ -42,7 +42,7 @@ class ConstellationBackgroundRenderer(
         }
 
         paint.style = Paint.Style.FILL
-        paint.color = Color.argb(70, 245, 226, 226)
+        paint.color = Color.argb(88, 245, 226, 226)
         lines.forEach { line ->
             drawStar(canvas, paint, line.from)
             drawStar(canvas, paint, line.to)
@@ -57,7 +57,7 @@ class ConstellationBackgroundRenderer(
         }
 
         val screenPoint = pointForSkyPoint(point)
-        canvas.drawCircle(screenPoint.x, screenPoint.y, 0.95f, paint)
+        canvas.drawCircle(screenPoint.x, screenPoint.y, 1.1f, paint)
     }
 
     private fun pointForSkyPoint(point: SkyPoint): DialPoint {

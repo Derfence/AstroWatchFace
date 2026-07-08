@@ -63,7 +63,7 @@ L'utilisateur veut consulter rapidement, depuis sa montre :
 - La trotteuse est visible en mode actif et avance par sauts d'une seconde, sans mouvement lisse.
 - Le cadran 24h affiche des chiffres toutes les 3h en première intention.
 - Le format de date retenu est de type "sam. 04 juil.".
-- La batterie est affichée avec une icône et un pourcentage.
+- La batterie est affichée avec une icône seule.
 - Le style global visé est celui d'un instrument scientifique.
 - La publication reste possible plus tard.
 - En Always-On Display, le cadran conserve la parité fonctionnelle avec le mode actif, trotteuse saccadée et overlay astronomique compris.
@@ -234,7 +234,7 @@ La face pourrait être organisée en couches :
 2. Cadran extérieur 24h pour les événements de temps.
 3. Zone intermédiaire pour les icônes astronomiques, entre l'anneau 24h et le centre si le rendu le permet.
 4. Zone centrale avec constellations en arrière-plan.
-5. Zone centrale supérieure avec phase de Lune, date et batterie.
+5. Zones internes dédiées à la phase de Lune, à la date et à la batterie.
 6. Aiguilles analogiques au-dessus des informations de fond : heures en 24h, minutes classiques, secondes saccadées.
 
 ### Barres de couleurs sur le contour
@@ -324,17 +324,29 @@ Recommandation :
 - Éviter une image lunaire trop détaillée si elle devient illisible.
 - Afficher au maximum une ou deux informations textuelles courtes en plus de la date et de la batterie.
 
+État d'implémentation :
+
+- La date, la batterie et la phase de Lune sont rendues par une complication image plein écran dédiée, fournie par `wear-app`.
+- Cette couche de statut central est placée au-dessus du cadran 24h, des constellations et des positions célestes, mais sous les aiguilles.
+- La phase de Lune est représentée par un symbole simple à 8 états.
+- La phase de Lune et l'icône de batterie sont placées de part et d'autre de l'indicateur `00` du cadran 24h.
+- La date utilise le format compact français prévu, par exemple `sam. 04 juil.`.
+- La date est placée sous le centre de la montre, avec un décalage vertical initial de `60f`.
+- La batterie est affichée sous forme d'icône seule ; l'accent devient rouge à partir de 20 %.
+- Aucun fond semi-transparent n'est dessiné derrière ces informations.
+- La fréquence de mise à jour déclarée est de 15 minutes.
+
 ### Hiérarchie visuelle centrale
 
 Proposition :
 
 - Les constellations forment une couche de fond, très fine, peu lumineuse, sans texte.
-- La phase de Lune occupe une petite zone dédiée, par exemple en haut du centre ou à 6h interne selon l'équilibre avec les aiguilles.
-- La date est affichée au format "sam. 04 juil.", en texte blanc compact, dans un cartouche discret ou sur une ligne isolée.
-- La batterie est affichée avec une petite icône et un pourcentage, en blanc avec accent rouge si le niveau est bas.
+- La phase de Lune occupe une petite zone dédiée à gauche de l'indicateur `00` du cadran 24h.
+- La date est affichée au format "sam. 04 juil.", en texte blanc compact, sur une ligne isolée sous le centre de la montre.
+- La batterie est affichée à droite de l'indicateur `00`, avec une petite icône seule, en blanc avec accent rouge si le niveau est bas.
 - Les aiguilles passent au-dessus de tout, mais leur centre et leur largeur doivent éviter de masquer durablement la date, la batterie et la phase de Lune.
 - Le rouge sert d'accent et de langage astronomique, mais le blanc reste réservé aux informations à lire rapidement.
-- Les éléments centraux importants peuvent recevoir un léger masque noir semi-transparent derrière eux pour rester lisibles sans créer de gros pavés visuels.
+- Aucun masque noir semi-transparent n'est dessiné derrière ces informations.
 
 ## Mode Always-On Display
 
@@ -544,7 +556,7 @@ Questions à clarifier :
 - Le cadran extérieur 24h place minuit à 12h et affiche des repères horaires.
 - Les chiffres du cadran 24h sont affichés toutes les 3h en première intention.
 - La date utilise le format "sam. 04 juil.".
-- La batterie affiche une icône et un pourcentage.
+- La batterie affiche une icône seule.
 - Les icônes célestes sont de petites icônes graphiques colorées.
 - L'anneau céleste est un cercle complet avec 12h = Sud, 3h = Ouest, 6h = Nord et 9h = Est.
 - Le style visuel général évoque un instrument scientifique.
@@ -658,7 +670,7 @@ Mitigation :
 34. Question résolue : afficher la date à l'intérieur de l'horloge.
 35. Question résolue : afficher la batterie à l'intérieur de l'horloge.
 36. Question résolue : date au format "sam. 04 juil.".
-37. Question résolue : batterie affichée avec icône et pourcentage.
+37. Question résolue : batterie affichée avec icône seule.
 
 ### Technique
 
