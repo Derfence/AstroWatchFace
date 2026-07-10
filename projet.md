@@ -333,7 +333,7 @@ Recommandation :
 
 - La date, la batterie et la phase de Lune sont rendues par une complication image plein écran dédiée, fournie par `wear-app`.
 - Cette couche de statut central est placée au-dessus du cadran 24h, des constellations et des positions célestes, mais sous les aiguilles.
-- La phase de Lune est représentée par un rendu continu de l'ombre.
+- La phase de Lune est représentée par une Lune texturée procédurale avec un rendu continu de l'ombre dynamique.
 - La phase affichée est calculée pour le prochain lever de Lune suivant le dernier coucher de Lune.
 - La donnée de phase est déclarée valide jusqu'au prochain coucher de Lune, moment où la cible bascule vers le lever suivant.
 - L'icône de batterie remplace le libellé `00` du cadran 24h.
@@ -647,7 +647,7 @@ Mitigation :
 
 ### Lune
 
-15. Question résolue pour la V1 : phase de Lune sous forme de symbole simple.
+15. Question résolue pour la V1 : phase de Lune sous forme de Lune texturée avec ombre dynamique.
 16. Veux-tu afficher le pourcentage d'illumination ?
 17. Veux-tu afficher l'âge de la Lune, par exemple J+7 après nouvelle lune ?
 18. Si la Lune ne se lève ou ne se couche pas pendant la journée locale, comment veux-tu le représenter ?

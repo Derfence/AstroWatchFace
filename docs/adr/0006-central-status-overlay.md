@@ -16,7 +16,7 @@ Ajouter une complication image plein écran dédiée, `StatusOverlayDataSourceSe
 
 Cette couche rend un bitmap transparent 450 x 450 contenant uniquement les informations centrales immobiles :
 
-- phase de Lune sous forme de disque à ombre continue ;
+- phase de Lune sous forme de disque texturé, dérivé d'une texture SVG intégrée au rendu Canvas, avec ombre continue dynamique ;
 - date locale Europe/Paris au format compact français, par exemple `sam. 04 juil.` ;
 - batterie sous forme d'icône seule, remplie en continu et colorée selon son niveau.
 

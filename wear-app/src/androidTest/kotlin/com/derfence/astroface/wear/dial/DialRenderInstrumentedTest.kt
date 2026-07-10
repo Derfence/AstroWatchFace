@@ -203,10 +203,38 @@ class DialRenderInstrumentedTest {
         assertEquals(0, Color.alpha(bitmap.getPixel(232, 47)))
     }
 
-    private fun renderStatusOverlay(batteryPercent: Int): Bitmap =
+    @Test
+    fun statusOverlayMoonPhaseShadowTracksCardinalPhases() {
+        val newMoon = renderStatusOverlay(phaseAngleDegrees = 0.0)
+        val firstQuarter = renderStatusOverlay(phaseAngleDegrees = 90.0)
+        val fullMoon = renderStatusOverlay(phaseAngleDegrees = 180.0)
+        val lastQuarter = renderStatusOverlay(phaseAngleDegrees = 270.0)
+
+        assertTrue(newMoon.hasMoonShadowPixelNear(225, 173))
+        assertTrue(firstQuarter.hasMoonShadowPixelNear(213, 173))
+        assertTrue(firstQuarter.hasMoonLitPixelNear(237, 173))
+        assertTrue(fullMoon.hasMoonLitPixelNear(225, 173))
+        assertTrue(lastQuarter.hasMoonLitPixelNear(213, 173))
+        assertTrue(lastQuarter.hasMoonShadowPixelNear(237, 173))
+    }
+
+    @Test
+    fun statusOverlayFullMoonIncludesSurfaceTexture() {
+        val bitmap = renderStatusOverlay(phaseAngleDegrees = 180.0)
+
+        assertTrue(bitmap.hasFullMoonTextureVariation())
+    }
+
+    private fun renderStatusOverlay(
+        batteryPercent: Int = 83,
+        phaseAngleDegrees: Double = 180.0
+    ): Bitmap =
         StatusOverlayRenderer(
             clock = Clock.fixed(Instant.parse("2026-07-07T10:00:00Z"), ZoneOffset.UTC),
-            statusSource = FakeWatchStatusSource(batteryPercent = batteryPercent)
+            statusSource = FakeWatchStatusSource(
+                batteryPercent = batteryPercent,
+                phaseAngleDegrees = phaseAngleDegrees
+            )
         ).render()
 
     private fun Bitmap.hasVisiblePixel(): Boolean {
@@ -341,6 +369,55 @@ class DialRenderInstrumentedTest {
         return false
     }
 
+    private fun Bitmap.hasMoonLitPixelNear(centerX: Int, centerY: Int): Boolean {
+        var x = centerX - 3
+        while (x <= centerX + 3) {
+            var y = centerY - 3
+            while (y <= centerY + 3) {
+                if (getPixel(x, y).isMoonLitPixel()) {
+                    return true
+                }
+                y += 1
+            }
+            x += 1
+        }
+        return false
+    }
+
+    private fun Bitmap.hasMoonShadowPixelNear(centerX: Int, centerY: Int): Boolean {
+        var x = centerX - 3
+        while (x <= centerX + 3) {
+            var y = centerY - 3
+            while (y <= centerY + 3) {
+                if (getPixel(x, y).isMoonShadowPixel()) {
+                    return true
+                }
+                y += 1
+            }
+            x += 1
+        }
+        return false
+    }
+
+    private fun Bitmap.hasFullMoonTextureVariation(): Boolean {
+        val luminanceBuckets = mutableSetOf<Int>()
+        var x = 201
+        while (x <= 249) {
+            var y = 149
+            while (y <= 197) {
+                if (isInsideMoon(x, y)) {
+                    val pixel = getPixel(x, y)
+                    if (Color.alpha(pixel) > 0) {
+                        luminanceBuckets += pixel.moonLuminance() / 12
+                    }
+                }
+                y += 1
+            }
+            x += 1
+        }
+        return luminanceBuckets.size >= 5
+    }
+
     private fun Bitmap.hasGreenPixelNear(centerX: Int, centerY: Int): Boolean {
         var x = centerX - 20
         while (x <= centerX + 46) {
@@ -410,6 +487,21 @@ class DialRenderInstrumentedTest {
             Color.green(this) > 190 &&
             Color.blue(this) > 185
 
+    private fun Int.isMoonLitPixel(): Boolean =
+        Color.alpha(this) > 0 &&
+            Color.red(this) > 115 &&
+            Color.green(this) > 115 &&
+            Color.blue(this) > 110
+
+    private fun Int.isMoonShadowPixel(): Boolean =
+        Color.alpha(this) > 0 &&
+            Color.red(this) < 85 &&
+            Color.green(this) < 90 &&
+            Color.blue(this) < 95
+
+    private fun Int.moonLuminance(): Int =
+        (Color.red(this) * 299 + Color.green(this) * 587 + Color.blue(this) * 114) / 1000
+
     private fun isInsideCentralRadius(x: Int, y: Int): Boolean {
         val dx = x - 225
         val dy = y - 225
@@ -420,6 +512,12 @@ class DialRenderInstrumentedTest {
         val dx = x - 225
         val dy = y - 225
         return dx * dx + dy * dy <= 226 * 226
+    }
+
+    private fun isInsideMoon(x: Int, y: Int): Boolean {
+        val dx = x - 225
+        val dy = y - 173
+        return dx * dx + dy * dy <= 23 * 23
     }
 
     private fun Int.isConstellationPixel(): Boolean =
