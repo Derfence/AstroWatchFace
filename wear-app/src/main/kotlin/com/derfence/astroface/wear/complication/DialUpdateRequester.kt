@@ -11,6 +11,7 @@ object DialUpdateRequester {
         request(context, CelestialOverlayDataSourceService::class.java)
         request(context, StatusOverlayDataSourceService::class.java)
         request(context, Hour24hHandDataSourceService::class.java)
+        request(context, ModeOverlayDataSourceService::class.java)
         RequestStatusRepository.markManualRefresh(context.applicationContext)
     }
 

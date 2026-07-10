@@ -3,6 +3,7 @@ package com.derfence.astroface.face;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -18,8 +19,8 @@ public class WatchFaceTimeHandsTest {
 
         assertEquals(0, document.getElementsByTagName("HourHand").getLength());
         assertEquals(0, document.getElementsByTagName("Transform").getLength());
-        assertEquals(4, document.getElementsByTagName("ComplicationSlot").getLength());
-        assertSlotOrder(document, "1", "2", "4", "3");
+        assertEquals(5, document.getElementsByTagName("ComplicationSlot").getLength());
+        assertSlotOrder(document, "1", "2", "4", "3", "5");
         assertNull(partImageNamed(document, "TwentyFourHourHand"));
 
         Element hourHandSlot = complicationSlotWithId(document, "3");
@@ -70,6 +71,22 @@ public class WatchFaceTimeHandsTest {
         assertEquals("StatusOverlayImage", statusImage.getAttribute("name"));
         assertEquals("[COMPLICATION.PHOTO_IMAGE]", firstChild(statusImage, "Image").getAttribute("resource"));
 
+        Element modeOverlaySlot = complicationSlotWithId(document, "5");
+        assertNotNull(modeOverlaySlot);
+        assertEquals("@string/slot_mode_overlay_name", modeOverlaySlot.getAttribute("displayName"));
+        assertEquals("PHOTO_IMAGE EMPTY", modeOverlaySlot.getAttribute("supportedTypes"));
+
+        Element modePolicy = firstChild(modeOverlaySlot, "DefaultProviderPolicy");
+        assertEquals(
+            "com.derfence.astroface.wear/com.derfence.astroface.wear.complication.ModeOverlayDataSourceService",
+            modePolicy.getAttribute("primaryProvider")
+        );
+        assertEquals("PHOTO_IMAGE", modePolicy.getAttribute("primaryProviderType"));
+
+        Element modeImage = firstChild(modeOverlaySlot, "PartImage");
+        assertEquals("ModeOverlayImage", modeImage.getAttribute("name"));
+        assertEquals("[COMPLICATION.PHOTO_IMAGE]", firstChild(modeImage, "Image").getAttribute("resource"));
+
         assertEquals(1, document.getElementsByTagName("MinuteHand").getLength());
         assertEquals(0, document.getElementsByTagName("Sweep").getLength());
 
@@ -79,6 +96,17 @@ public class WatchFaceTimeHandsTest {
         Element tick = firstChild((Element) secondHands.item(0), "Tick");
         assertEquals("0.05", tick.getAttribute("duration"));
         assertEquals("1.0", tick.getAttribute("strength"));
+
+        assertPartImageOrder(document, "CenterCap", "ModeOverlayImage");
+
+        Element tapTarget = partDrawNamed(document, "ModeTapTarget");
+        assertNotNull(tapTarget);
+        Element launch = firstChild(tapTarget, "Launch");
+        assertNotNull(launch);
+        assertEquals(
+            "com.derfence.astroface.wear/com.derfence.astroface.wear.ModeCycleActivity",
+            launch.getAttribute("target")
+        );
     }
 
     private static Document loadWatchFaceXml() throws Exception {
@@ -100,6 +128,35 @@ public class WatchFaceTimeHandsTest {
             }
         }
         return null;
+    }
+
+    private static Element partDrawNamed(Document document, String name) {
+        NodeList nodes = document.getElementsByTagName("PartDraw");
+        for (int i = 0; i < nodes.getLength(); i += 1) {
+            Element element = (Element) nodes.item(i);
+            if (name.equals(element.getAttribute("name"))) {
+                return element;
+            }
+        }
+        return null;
+    }
+
+    private static void assertPartImageOrder(Document document, String firstName, String secondName) {
+        NodeList nodes = document.getElementsByTagName("PartImage");
+        int firstIndex = -1;
+        int secondIndex = -1;
+        for (int i = 0; i < nodes.getLength(); i += 1) {
+            Element element = (Element) nodes.item(i);
+            if (firstName.equals(element.getAttribute("name"))) {
+                firstIndex = i;
+            }
+            if (secondName.equals(element.getAttribute("name"))) {
+                secondIndex = i;
+            }
+        }
+        assertNotNull(partImageNamed(document, firstName));
+        assertNotNull(partImageNamed(document, secondName));
+        assertTrue(firstIndex < secondIndex);
     }
 
     private static void assertSlotOrder(Document document, String... expectedSlotIds) {

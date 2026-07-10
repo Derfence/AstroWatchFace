@@ -28,6 +28,15 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".ModeCycleActivity"
+            android:autoRemoveFromRecents="true"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:theme="@style/Theme.AstroFaceModeCycle" />
+
         <service
             android:name=".complication.Dial24hDataSourceService"
             android:directBootAware="true"
@@ -98,6 +107,24 @@
             <meta-data
                 android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
                 android:value="60" />
+        </service>
+
+        <service
+            android:name=".complication.ModeOverlayDataSourceService"
+            android:directBootAware="true"
+            android:exported="true"
+            android:icon="@drawable/ic_dial_24"
+            android:label="@string/mode_overlay_service_label"
+            android:permission="com.google.android.wearable.permission.BIND_COMPLICATION_PROVIDER">
+            <intent-filter>
+                <action android:name="android.support.wearable.complications.ACTION_COMPLICATION_UPDATE_REQUEST" />
+            </intent-filter>
+            <meta-data
+                android:name="android.support.wearable.complications.SUPPORTED_TYPES"
+                android:value="LARGE_IMAGE" />
+            <meta-data
+                android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
+                android:value="900" />
         </service>
     </application>
 

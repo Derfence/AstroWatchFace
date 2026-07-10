@@ -22,8 +22,13 @@ import com.derfence.astroface.wear.astro.ConstellationLine
 import com.derfence.astroface.wear.astro.ConstellationSnapshot
 import com.derfence.astroface.wear.astro.ConstellationSource
 import com.derfence.astroface.wear.astro.MoonPhaseSnapshot
+import com.derfence.astroface.wear.astro.SolarSystemBody
+import com.derfence.astroface.wear.astro.SolarSystemPosition
+import com.derfence.astroface.wear.astro.SolarSystemPositionSource
+import com.derfence.astroface.wear.astro.SolarSystemSnapshot
 import com.derfence.astroface.wear.astro.SkyPoint
 import com.derfence.astroface.wear.complication.DialComplicationDataFactory
+import com.derfence.astroface.wear.display.DisplayMode
 import com.derfence.astroface.wear.status.BatteryStatus
 import com.derfence.astroface.wear.status.WatchStatus
 import com.derfence.astroface.wear.status.WatchStatusSource
@@ -236,6 +241,57 @@ class DialRenderInstrumentedTest {
         assertTrue(bitmap.hasFullMoonTextureVariation())
     }
 
+    @Test
+    fun modeOverlayFullDialIsTransparent() {
+        val bitmap = ModeOverlayRenderer(
+            mode = DisplayMode.FULL_DIAL,
+            clock = Clock.fixed(Instant.parse("2026-07-07T10:00:00Z"), ZoneOffset.UTC),
+            constellationSource = FakeConstellationSource(),
+            solarSystemPositionSource = FakeSolarSystemPositionSource()
+        ).render()
+
+        assertTrue(bitmap.isFullyTransparent())
+    }
+
+    @Test
+    fun modeOverlayConstellationsNightDrawsOnlyOpaqueRedConstellationsOnBlack() {
+        val bitmap = ModeOverlayRenderer(
+            mode = DisplayMode.CONSTELLATIONS_NIGHT,
+            clock = Clock.fixed(Instant.parse("2026-07-07T10:00:00Z"), ZoneOffset.UTC),
+            constellationSource = FakeConstellationSource(
+                lines = listOf(
+                    ConstellationLine(
+                        constellationId = "Night",
+                        from = SkyPoint(azimuthDegrees = 180.0, zenithDistanceDegrees = 0.0),
+                        to = SkyPoint(azimuthDegrees = 180.0, zenithDistanceDegrees = 20.0)
+                    )
+                )
+            ),
+            solarSystemPositionSource = FakeSolarSystemPositionSource()
+        ).render()
+
+        assertEquals(Color.BLACK, bitmap.getPixel(0, 0))
+        assertTrue(bitmap.hasOpaqueRedPixelNear(225, 175))
+        assertFalse(bitmap.hasBrightPixelNear(225, 175))
+    }
+
+    @Test
+    fun modeOverlaySolarSystemDrawsSunAtCenterAndEarthOnOrbit() {
+        val bitmap = ModeOverlayRenderer(
+            mode = DisplayMode.SOLAR_SYSTEM,
+            clock = Clock.fixed(Instant.parse("2026-07-07T10:00:00Z"), ZoneOffset.UTC),
+            constellationSource = FakeConstellationSource(),
+            solarSystemPositionSource = FakeSolarSystemPositionSource()
+        ).render()
+
+        assertEquals(Color.BLACK, bitmap.getPixel(0, 0))
+        assertTrue(bitmap.hasWarmPixelNear(225, 225))
+        assertTrue(bitmap.hasEarthPixelNear(313, 225))
+        assertTrue(bitmap.hasStarPixelNear(92, 96))
+        assertTrue(bitmap.hasEarthTailPixelNear(282, 158))
+        assertEquals(Color.BLACK, bitmap.getPixel(137, 225))
+    }
+
     private fun renderStatusOverlay(
         batteryPercent: Int = 83,
         phaseAngleDegrees: Double = 180.0
@@ -261,6 +317,21 @@ class DialRenderInstrumentedTest {
             x += 5
         }
         return false
+    }
+
+    private fun Bitmap.isFullyTransparent(): Boolean {
+        var x = 0
+        while (x < width) {
+            var y = 0
+            while (y < height) {
+                if (Color.alpha(getPixel(x, y)) != 0) {
+                    return false
+                }
+                y += 1
+            }
+            x += 1
+        }
+        return true
     }
 
     private fun Bitmap.hasWarmAstroArcPixel(): Boolean {
@@ -513,6 +584,90 @@ class DialRenderInstrumentedTest {
         return false
     }
 
+    private fun Bitmap.hasOpaqueRedPixelNear(centerX: Int, centerY: Int): Boolean {
+        var x = centerX - 5
+        while (x <= centerX + 5) {
+            var y = centerY - 5
+            while (y <= centerY + 5) {
+                val pixel = getPixel(x, y)
+                if (
+                    Color.alpha(pixel) == 255 &&
+                    Color.red(pixel) == 255 &&
+                    Color.green(pixel) == 0 &&
+                    Color.blue(pixel) == 0
+                ) {
+                    return true
+                }
+                y += 1
+            }
+            x += 1
+        }
+        return false
+    }
+
+    private fun Bitmap.hasEarthPixelNear(centerX: Int, centerY: Int): Boolean {
+        var x = centerX - 8
+        while (x <= centerX + 8) {
+            var y = centerY - 8
+            while (y <= centerY + 8) {
+                val pixel = getPixel(x, y)
+                if (
+                    Color.alpha(pixel) > 0 &&
+                    Color.blue(pixel) > 170 &&
+                    Color.red(pixel) < 120 &&
+                    Color.green(pixel) > 90
+                ) {
+                    return true
+                }
+                y += 1
+            }
+            x += 1
+        }
+        return false
+    }
+
+    private fun Bitmap.hasEarthTailPixelNear(centerX: Int, centerY: Int): Boolean {
+        var x = centerX - 8
+        while (x <= centerX + 8) {
+            var y = centerY - 8
+            while (y <= centerY + 8) {
+                val pixel = getPixel(x, y)
+                if (
+                    Color.alpha(pixel) > 0 &&
+                    Color.blue(pixel) > 45 &&
+                    Color.blue(pixel) > Color.green(pixel) &&
+                    Color.green(pixel) > Color.red(pixel)
+                ) {
+                    return true
+                }
+                y += 1
+            }
+            x += 1
+        }
+        return false
+    }
+
+    private fun Bitmap.hasStarPixelNear(centerX: Int, centerY: Int): Boolean {
+        var x = centerX - 3
+        while (x <= centerX + 3) {
+            var y = centerY - 3
+            while (y <= centerY + 3) {
+                val pixel = getPixel(x, y)
+                if (
+                    Color.alpha(pixel) > 0 &&
+                    Color.red(pixel) > 120 &&
+                    Color.green(pixel) > 120 &&
+                    Color.blue(pixel) > 120
+                ) {
+                    return true
+                }
+                y += 1
+            }
+            x += 1
+        }
+        return false
+    }
+
     private fun Int.isBrightPixel(): Boolean =
         Color.alpha(this) > 0 &&
             Color.red(this) > 190 &&
@@ -637,6 +792,24 @@ class DialRenderInstrumentedTest {
                     phaseAngleDegrees = phaseAngleDegrees,
                     illuminationPercent = 100,
                     validUntil = time.plusSeconds(7200)
+                )
+            )
+    }
+
+    private class FakeSolarSystemPositionSource : SolarSystemPositionSource {
+        override fun positionsAt(time: Instant): SolarSystemSnapshot =
+            SolarSystemSnapshot(
+                calculatedAt = time,
+                positions = listOf(
+                    SolarSystemPosition(SolarSystemBody.SUN, 0.0, 0.0),
+                    SolarSystemPosition(SolarSystemBody.MERCURY, 0.0, 0.4),
+                    SolarSystemPosition(SolarSystemBody.VENUS, 0.0, 0.7),
+                    SolarSystemPosition(SolarSystemBody.EARTH, 90.0, 1.0),
+                    SolarSystemPosition(SolarSystemBody.MARS, 180.0, 1.5),
+                    SolarSystemPosition(SolarSystemBody.JUPITER, 220.0, 5.2),
+                    SolarSystemPosition(SolarSystemBody.SATURN, 260.0, 9.5),
+                    SolarSystemPosition(SolarSystemBody.URANUS, 300.0, 19.2),
+                    SolarSystemPosition(SolarSystemBody.NEPTUNE, 340.0, 30.1)
                 )
             )
     }

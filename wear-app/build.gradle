@@ -9,7 +9,7 @@ android {
         applicationId "com.derfence.astroface.wear"
         minSdk 33
         targetSdk 36
-        versionCode 1
+        versionCode 6
         versionName "0.1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

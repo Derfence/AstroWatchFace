@@ -9,7 +9,9 @@ import com.derfence.astroface.wear.astro.SkyPoint
 
 class ConstellationBackgroundRenderer(
     private val screenRadius: Float = DialGeometry.center,
-    private val skyRadiusDegrees: Double = 100.0
+    private val skyRadiusDegrees: Double = 100.0,
+    private val lineColor: Int = Color.argb(122, 210, 38, 46),
+    private val starColor: Int = Color.argb(88, 245, 226, 226)
 ) {
     fun render(
         canvas: Canvas,
@@ -33,7 +35,7 @@ class ConstellationBackgroundRenderer(
         paint.style = Paint.Style.STROKE
         paint.strokeCap = Paint.Cap.ROUND
         paint.strokeWidth = 1f
-        paint.color = Color.argb(122, 210, 38, 46)
+        paint.color = lineColor
 
         lines.forEach { line ->
             val from = pointForSkyPoint(line.from)
@@ -42,7 +44,7 @@ class ConstellationBackgroundRenderer(
         }
 
         paint.style = Paint.Style.FILL
-        paint.color = Color.argb(88, 245, 226, 226)
+        paint.color = starColor
         lines.forEach { line ->
             drawStar(canvas, paint, line.from)
             drawStar(canvas, paint, line.to)

@@ -12,13 +12,15 @@ object RequestStatusRepository {
     private const val keyCelestialOverlay = "last_celestial_overlay"
     private const val keyStatusOverlay = "last_status_overlay"
     private const val key24hHand = "last_24h_hand"
+    private const val keyModeOverlay = "last_mode_overlay"
     private const val keyManualRefresh = "last_manual_refresh"
 
     enum class DialKey {
         DIAL_24H,
         CELESTIAL_OVERLAY,
         STATUS_OVERLAY,
-        HOUR_24H_HAND
+        HOUR_24H_HAND,
+        MODE_OVERLAY
     }
 
     data class Status(
@@ -26,6 +28,7 @@ object RequestStatusRepository {
         val lastCelestialOverlay: String?,
         val lastStatusOverlay: String?,
         val last24hHand: String?,
+        val lastModeOverlay: String?,
         val lastManualRefresh: String?
     )
 
@@ -50,6 +53,7 @@ object RequestStatusRepository {
             lastCelestialOverlay = prefs.getString(keyCelestialOverlay, null),
             lastStatusOverlay = prefs.getString(keyStatusOverlay, null),
             last24hHand = prefs.getString(key24hHand, null),
+            lastModeOverlay = prefs.getString(keyModeOverlay, null),
             lastManualRefresh = prefs.getString(keyManualRefresh, null)
         )
     }
@@ -60,6 +64,7 @@ object RequestStatusRepository {
             DialKey.CELESTIAL_OVERLAY -> keyCelestialOverlay
             DialKey.STATUS_OVERLAY -> keyStatusOverlay
             DialKey.HOUR_24H_HAND -> key24hHand
+            DialKey.MODE_OVERLAY -> keyModeOverlay
         }
 
     private fun Context.preferences() =

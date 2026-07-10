@@ -4,4 +4,5 @@
     <string name="celestial_overlay_service_label">AstroFace positions célestes</string>
     <string name="status_overlay_service_label">AstroFace statut central</string>
     <string name="hour_24h_hand_service_label">AstroFace aiguille 24 h</string>
+    <string name="mode_overlay_service_label">AstroFace modes astro</string>
 </resources>

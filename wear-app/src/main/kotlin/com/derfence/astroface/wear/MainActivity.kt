@@ -11,6 +11,8 @@ import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import com.derfence.astroface.wear.complication.DialUpdateRequester
+import com.derfence.astroface.wear.display.DisplayMode
+import com.derfence.astroface.wear.display.DisplayModeRepository
 import com.derfence.astroface.wear.store.AndroidInstalledPackageLookup
 import com.derfence.astroface.wear.store.PlayStoreNavigator
 import com.derfence.astroface.wear.store.WatchFaceAvailability
@@ -48,6 +50,20 @@ class MainActivity : Activity() {
             }
         }
 
+        val modeButton = Button(this).apply {
+            text = "Changer de mode"
+            setOnClickListener {
+                val mode = DisplayModeRepository.cycleNext(this@MainActivity)
+                DialUpdateRequester.requestAll(this@MainActivity)
+                refreshStatus()
+                Toast.makeText(
+                    this@MainActivity,
+                    mode.label(),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
         installWatchFaceButton = Button(this).apply {
             text = "Installer la watch face"
             setOnClickListener {
@@ -74,6 +90,7 @@ class MainActivity : Activity() {
             })
             addView(statusView)
             addView(refreshButton)
+            addView(modeButton)
             addView(installWatchFaceButton)
         }
 
@@ -88,6 +105,7 @@ class MainActivity : Activity() {
 
     private fun refreshStatus() {
         val status = RequestStatusRepository.read(this)
+        val mode = DisplayModeRepository.read(this)
         val isWatchFaceInstalled = watchFaceAvailability.isWatchFaceInstalled()
         installWatchFaceButton.visibility = if (isWatchFaceInstalled) View.GONE else View.VISIBLE
         statusView.text = buildString {
@@ -101,6 +119,10 @@ class MainActivity : Activity() {
             appendLine("Service positions célestes : prêt")
             appendLine("Service statut central : prêt")
             appendLine("Service aiguille 24 h : prêt")
+            appendLine("Service modes astro : prêt")
+            appendLine()
+            appendLine("Mode actuel :")
+            appendLine(mode.label())
             appendLine()
             appendLine("Dernière requête 24 h :")
             appendLine(status.last24h ?: "aucune")
@@ -114,8 +136,18 @@ class MainActivity : Activity() {
             appendLine("Dernière requête aiguille 24 h :")
             appendLine(status.last24hHand ?: "aucune")
             appendLine()
+            appendLine("Dernière requête modes astro :")
+            appendLine(status.lastModeOverlay ?: "aucune")
+            appendLine()
             appendLine("Dernier rafraîchissement manuel :")
             appendLine(status.lastManualRefresh ?: "aucun")
         }
     }
+
+    private fun DisplayMode.label(): String =
+        when (this) {
+            DisplayMode.FULL_DIAL -> "Mode complet"
+            DisplayMode.CONSTELLATIONS_NIGHT -> "Mode constellations"
+            DisplayMode.SOLAR_SYSTEM -> "Mode système solaire"
+        }
 }

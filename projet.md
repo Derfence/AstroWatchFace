@@ -11,6 +11,8 @@ AstroFace est une face de montre pour Samsung Galaxy Watch4 Classic affichant l'
 
 La face ne doit pas afficher de météo. Les données astronomiques doivent être calculées localement autant que possible, sans dépendance Internet permanente. L'objectif est de produire une face lisible au poignet, utile pour l'observation du ciel, avec une esthétique astronomique claire plutôt qu'une surcharge d'informations.
 
+La face propose aussi trois modes d'affichage cyclés au clic central : cadran complet, constellations en mode nuit, et système solaire vu de dessus.
+
 La solution cible recommandée est hybride :
 
 - Watch Face Studio / Watch Face Format pour le rendu principal de la face.
@@ -27,6 +29,7 @@ L'utilisateur veut consulter rapidement, depuis sa montre :
 - La position utile de la Polaire sur l'anneau 12h.
 - La position des planètes lorsqu'on regarde vers le Sud.
 - Les constellations autour du zénith à minuit.
+- Un basculement rapide au clic central entre le cadran complet, les constellations seules en mode nuit et le système solaire vu de dessus.
 
 ## Décisions actées
 
@@ -69,6 +72,11 @@ L'utilisateur veut consulter rapidement, depuis sa montre :
 - La publication reste possible plus tard.
 - En Always-On Display, le cadran conserve la parité fonctionnelle avec le mode actif, trotteuse saccadée et overlay astronomique compris.
 - L'architecture cible doit privilégier une face + une app Wear OS associée, sans app téléphone en première version.
+- La face propose trois modes d'affichage : cadran complet, constellations nuit et système solaire vu de dessus.
+- Le clic central cycle les modes dans l'ordre complet, constellations nuit, système solaire, puis retour au mode complet.
+- Les deux modes astro utilisent une couche plein écran opaque pour masquer visuellement les aiguilles natives.
+- Le mode constellations nuit affiche uniquement les constellations, à la même position que le rendu existant, en rouge opaque sur fond noir.
+- Le mode système solaire vu de dessus affiche un fond étoilé, le Soleil au centre et les planètes de Mercure à Neptune, Terre incluse, sans Lune.
 
 ## Périmètre fonctionnel
 
@@ -80,6 +88,9 @@ L'utilisateur veut consulter rapidement, depuis sa montre :
 - Affichage d'icônes astronomiques sur le contour.
 - Affichage interne de la phase de la Lune.
 - Affichage interne des constellations autour du zénith à minuit.
+- Mode constellations nuit, plein écran, avec étoiles et traits rouges opaques sur fond noir.
+- Mode système solaire vu de dessus, plein écran, avec fond étoilé, Soleil centré et planètes héliocentriques.
+- Basculement entre les trois modes par clic central sur la face.
 - Mode Always-On Display à parité fonctionnelle avec le mode actif.
 - Préparation d'une architecture permettant de tester les calculs indépendamment de l'interface.
 
@@ -512,8 +523,10 @@ Responsabilités :
 
 État d'implémentation :
 
-- La Face WFF assemble trois complications plein écran : cadran 24h, positions célestes et aiguille des heures 24h.
+- La Face WFF assemble cinq complications plein écran : cadran 24h, positions célestes, aiguille des heures 24h, données internes et overlay de mode.
 - Les aiguilles minutes et secondes restent des aiguilles WFF natives ; la seconde utilise un mouvement à ticks.
+- Un élément cliquable central lance l'activité Wear OS qui cycle le mode d'affichage.
+- L'overlay de mode est transparent en mode complet et opaque dans les deux modes astro, afin de masquer visuellement les aiguilles natives.
 
 ### mobile-app, optionnelle
 
@@ -562,6 +575,12 @@ Questions à clarifier :
 - Les positions célestes utilisent l'azimut pour placer les icônes.
 - Les constellations sont limitées à 30° autour du zénith à minuit et affichées par tracé uniquement.
 - Toutes les constellations dans le rayon prédéfini de 30° sont affichées.
+- Un clic sur le centre de la face fait passer du mode complet au mode constellations nuit, puis au mode système solaire, puis revient au mode complet.
+- En mode complet, l'overlay de mode est entièrement transparent et le cadran existant reste inchangé.
+- En mode constellations nuit, seuls les tracés et étoiles des constellations sont affichés, en rouge opaque sur fond noir.
+- En mode système solaire, le Soleil est centré et les planètes Mercure, Vénus, Terre, Mars, Jupiter, Saturne, Uranus et Neptune sont visibles sur des queues d'orbite colorées.
+- Le mode système solaire affiche des étoiles en arrière-plan sous forme de points.
+- Les deux modes astro ne montrent ni aiguilles minutes/secondes, ni texte de statut, ni marqueurs d'horizon.
 - Les barres astronomiques représentent des périodes continues.
 - Les heures exactes des événements astronomiques ne sont pas affichées en texte.
 - Le cadran extérieur 24h place minuit à 12h et affiche des repères horaires.
