@@ -7,7 +7,6 @@ import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.SweepGradient
-import android.graphics.Typeface
 import com.derfence.astroface.wear.astro.AstroObserver
 import com.derfence.astroface.wear.astro.AstronomyEngineCelestialHorizonSource
 import com.derfence.astroface.wear.astro.AstronomyEngineCelestialPositionSource
@@ -40,7 +39,6 @@ class CelestialOverlayRenderer(
         val horizonSnapshot = horizonSource.horizonMarkersAt(now, observer)
 
         drawSkyRing(canvas, paint)
-        drawCompassLabels(canvas, paint)
         drawBodies(canvas, paint, snapshot.positions, horizonSnapshot.markers)
 
         return bitmap
@@ -50,20 +48,7 @@ class CelestialOverlayRenderer(
         paint.style = Paint.Style.STROKE
         paint.strokeWidth = 1.0f
         paint.color = Color.argb(115, 255, 255, 255)
-        canvas.drawCircle(DialGeometry.center, DialGeometry.center, COMPASS_LABEL_RADIUS+8, paint)
-    }
-
-    private fun drawCompassLabels(canvas: Canvas, paint: Paint) {
-        paint.style = Paint.Style.FILL
-        paint.color = Color.argb(185, 255, 255, 255)
-        paint.textAlign = Paint.Align.CENTER
-        paint.typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL)
-        paint.textSize = 12f
-
-        COMPASS_LABELS.forEach { label ->
-            val point = DialGeometry.point(COMPASS_LABEL_RADIUS, label.angleDegrees)
-            canvas.drawText(label.text, point.x, point.y + 4f, paint)
-        }
+        canvas.drawCircle(DialGeometry.center, DialGeometry.center, SKY_RING_RADIUS, paint)
     }
 
     private fun drawBodies(
@@ -424,11 +409,6 @@ class CelestialOverlayRenderer(
         val radius: Float
     )
 
-    private data class CompassLabel(
-        val text: String,
-        val angleDegrees: Float
-    )
-
     private fun DialGeometry.pointAround(
         centerX: Float,
         centerY: Float,
@@ -445,7 +425,7 @@ class CelestialOverlayRenderer(
     private companion object {
         private const val FIRST_ORBIT_RADIUS = 150f-8*5f
         private const val ORBIT_SPACING = 5f
-        private const val COMPASS_LABEL_RADIUS = 158f
+        private const val SKY_RING_RADIUS = 166f
         private const val FULL_CIRCLE_DEGREES_FLOAT = 360f
         private const val CANVAS_ARC_OFFSET_DEGREES = 90f
         private const val TAIL_SWEEP_DEGREES = 100f
@@ -455,11 +435,5 @@ class CelestialOverlayRenderer(
         private const val NEGATIVE_ALTITUDE_ARC_SWEEP_DEGREES = 14f
         private const val NEGATIVE_ALTITUDE_ARC_STROKE_WIDTH = 1f
         private const val NEGATIVE_ALTITUDE_GRADIENT_CLOSE_FRACTION = 0.001f
-        private val COMPASS_LABELS = listOf(
-            CompassLabel("S", 0f),
-            CompassLabel("O", 90f),
-            CompassLabel("N", 180f),
-            CompassLabel("E", 270f)
-        )
     }
 }

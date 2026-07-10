@@ -196,7 +196,7 @@ Points d'attention :
 
 - Les positions célestes sont rendues par une complication image plein écran dédiée, fournie par `wear-app`.
 - Le rendu utilise un overlay céleste distinct du cadran temporel 24h.
-- L'anneau céleste affiche un cercle blanc discret pour enfermer les planètes, avec les lettres `S`, `O`, `N` et `E` comme seuls repères cardinaux.
+- L'anneau céleste affiche un cercle blanc discret pour enfermer les planètes, sans lettres cardinales.
 - Chaque corps céleste est placé sur sa propre orbite de montre concentrique, avec un espacement radial fixe : Soleil, Lune, puis Mercure, Vénus, Mars, Jupiter, Saturne, Uranus et Neptune.
 - Chaque corps céleste affiche une petite queue colorée le long de son orbite ; la queue devient linéairement plus transparente à mesure qu'elle s'éloigne du corps.
 - Chaque corps céleste affiche ses traits de lever/coucher sur sa propre orbite ; la taille des traits est calibrée sur l'espacement fixe entre orbites.
@@ -339,7 +339,7 @@ Recommandation :
 - L'icône de batterie remplace le libellé `00` du cadran 24h.
 - La phase de Lune est placée à l'opposé de la date sur l'axe vertical de la montre.
 - La date utilise le format compact français prévu, par exemple `sam. 04 juil.`.
-- La date est placée sous le centre de la montre, avec un décalage vertical initial de `52f`.
+- La date est placée sous le centre de la montre, avec un décalage vertical initial de `70f`.
 - La batterie est affichée sous forme d'icône seule, avec un remplissage continu proportionnel au niveau de charge.
 - La couleur de batterie est verte au-dessus de 80 %, blanche entre 31 % et 80 %, orange entre 21 % et 30 %, et rouge à 20 % ou moins.
 - Aucun fond semi-transparent n'est dessiné derrière ces informations.

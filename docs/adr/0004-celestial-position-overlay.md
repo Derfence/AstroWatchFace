@@ -16,7 +16,7 @@ Ajouter une complication plein écran dédiée dans `watch-face`, fournie par `C
 
 Le service génère un bitmap transparent 450 x 450 contenant uniquement l'overlay céleste et les icônes des objets. Le calcul reste dans le package Kotlin pur `astro`, avec Astronomy Engine déjà présent dans le projet.
 
-L'anneau céleste est rendu comme un cercle blanc discret, placé autour des lettres cardinales avec un rayon `COMPASS_LABEL_RADIUS + 8`. Les repères cardinaux sont les lettres `S`, `O`, `N` et `E`, sans barres ni graduations, pour éviter de confondre la lecture directionnelle avec le cadran temporel 24 h.
+L'anneau céleste est rendu comme un cercle blanc discret, sans lettres cardinales, afin de réduire la densité visuelle de l'overlay.
 
 Les corps célestes sont placés sur des orbites de montre concentriques, séparées par un espacement radial fixe. L'ordre retenu est Soleil, Lune, puis les planètes dans l'ordre de leur distance au Soleil : Mercure, Vénus, Mars, Jupiter, Saturne, Uranus et Neptune.
 
@@ -32,7 +32,7 @@ La fréquence de mise à jour déclarée est de 15 minutes. Le mouvement apparen
 
 - `watch-face` reste une Face Watch Face Format sans code.
 - Le cadran temporel 24 h et les positions célestes peuvent évoluer indépendamment.
-- Les lettres cardinales et le cercle céleste appartiennent à l'overlay des positions, pas au cadran temporel.
+- Le cercle céleste appartient à l'overlay des positions, pas au cadran temporel.
 - L'espacement radial des orbites améliore la séparation visuelle des icônes sans représenter la hauteur des objets.
 - Les positions sont calculées hors ligne, sans météo, réseau ou géolocalisation dynamique.
 - Les icônes des objets sous l'horizon sont affichées comme les autres, mais leurs levers/couchers sont indiqués par des marqueurs d'horizon propres à chaque orbite.

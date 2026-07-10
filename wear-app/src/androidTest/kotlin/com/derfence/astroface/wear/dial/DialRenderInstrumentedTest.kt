@@ -95,6 +95,17 @@ class DialRenderInstrumentedTest {
     }
 
     @Test
+    fun celestialOverlayDoesNotDrawCompassLetters() {
+        val bitmap = CelestialOverlayRenderer(
+            clock = Clock.fixed(Instant.parse("2026-07-07T10:00:00Z"), ZoneOffset.UTC),
+            positionSource = FakeCelestialPositionSource(positions = emptyList()),
+            horizonSource = FakeCelestialHorizonSource()
+        ).render()
+
+        assertFalse(bitmap.hasBrightPixelInCompassLabelAnnulus())
+    }
+
+    @Test
     fun celestialOverlayDrawsHorizonMarkerOnBodyOrbit() {
         val markerTime = Instant.parse("2026-07-07T10:00:00Z")
         val bitmap = CelestialOverlayRenderer(
@@ -174,8 +185,8 @@ class DialRenderInstrumentedTest {
             statusSource = FakeWatchStatusSource()
         ).render()
 
-        assertTrue(bitmap.hasBrightPixelNear(225, 173))
-        assertTrue(bitmap.hasBrightPixelNear(225, 277))
+        assertTrue(bitmap.hasBrightPixelNear(225, 155))
+        assertTrue(bitmap.hasBrightPixelNear(225, 295))
         assertTrue(bitmap.hasGreenPixelNear(225, 47))
     }
 
@@ -210,12 +221,12 @@ class DialRenderInstrumentedTest {
         val fullMoon = renderStatusOverlay(phaseAngleDegrees = 180.0)
         val lastQuarter = renderStatusOverlay(phaseAngleDegrees = 270.0)
 
-        assertTrue(newMoon.hasMoonShadowPixelNear(225, 173))
-        assertTrue(firstQuarter.hasMoonShadowPixelNear(213, 173))
-        assertTrue(firstQuarter.hasMoonLitPixelNear(237, 173))
-        assertTrue(fullMoon.hasMoonLitPixelNear(225, 173))
-        assertTrue(lastQuarter.hasMoonLitPixelNear(213, 173))
-        assertTrue(lastQuarter.hasMoonShadowPixelNear(237, 173))
+        assertTrue(newMoon.hasMoonShadowPixelNear(225, 155))
+        assertTrue(firstQuarter.hasMoonShadowPixelNear(213, 155))
+        assertTrue(firstQuarter.hasMoonLitPixelNear(237, 155))
+        assertTrue(fullMoon.hasMoonLitPixelNear(225, 155))
+        assertTrue(lastQuarter.hasMoonLitPixelNear(213, 155))
+        assertTrue(lastQuarter.hasMoonShadowPixelNear(237, 155))
     }
 
     @Test
@@ -369,6 +380,27 @@ class DialRenderInstrumentedTest {
         return false
     }
 
+    private fun Bitmap.hasBrightPixelInCompassLabelAnnulus(): Boolean {
+        var x = 0
+        while (x < width) {
+            var y = 0
+            while (y < height) {
+                val dx = x - 225
+                val dy = y - 225
+                val radiusSquared = dx * dx + dy * dy
+                if (
+                    radiusSquared in 150 * 150..162 * 162 &&
+                    getPixel(x, y).isBrightPixel()
+                ) {
+                    return true
+                }
+                y += 1
+            }
+            x += 1
+        }
+        return false
+    }
+
     private fun Bitmap.hasMoonLitPixelNear(centerX: Int, centerY: Int): Boolean {
         var x = centerX - 3
         while (x <= centerX + 3) {
@@ -403,8 +435,8 @@ class DialRenderInstrumentedTest {
         val luminanceBuckets = mutableSetOf<Int>()
         var x = 201
         while (x <= 249) {
-            var y = 149
-            while (y <= 197) {
+            var y = 131
+            while (y <= 179) {
                 if (isInsideMoon(x, y)) {
                     val pixel = getPixel(x, y)
                     if (Color.alpha(pixel) > 0) {
@@ -516,7 +548,7 @@ class DialRenderInstrumentedTest {
 
     private fun isInsideMoon(x: Int, y: Int): Boolean {
         val dx = x - 225
-        val dy = y - 173
+        val dy = y - 155
         return dx * dx + dy * dy <= 23 * 23
     }
 
@@ -538,19 +570,21 @@ class DialRenderInstrumentedTest {
         override fun moonAltitudeDegrees(time: Instant, observer: AstroObserver): Double = -2.0
     }
 
-    private class FakeCelestialPositionSource : CelestialPositionSource {
+    private class FakeCelestialPositionSource(
+        private val positions: List<CelestialPosition> = listOf(
+            CelestialPosition(CelestialBody.SUN, 180.0),
+            CelestialPosition(CelestialBody.MOON, 270.0),
+            CelestialPosition(CelestialBody.MARS, 0.0),
+            CelestialPosition(CelestialBody.NEPTUNE, 90.0)
+        )
+    ) : CelestialPositionSource {
         override fun positionsAt(
             time: Instant,
             observer: AstroObserver
         ): CelestialPositionSnapshot =
             CelestialPositionSnapshot(
                 calculatedAt = time,
-                positions = listOf(
-                    CelestialPosition(CelestialBody.SUN, 180.0),
-                    CelestialPosition(CelestialBody.MOON, 270.0),
-                    CelestialPosition(CelestialBody.MARS, 0.0),
-                    CelestialPosition(CelestialBody.NEPTUNE, 90.0)
-                )
+                positions = positions
             )
     }
 

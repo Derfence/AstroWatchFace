@@ -99,7 +99,7 @@ class StatusOverlayRenderer(
     }
 
     private companion object {
-        private const val DATE_VERTICAL_OFFSET = 52f
+        private const val DATE_VERTICAL_OFFSET = 70f
         private const val MOON_CENTER_X = DialGeometry.center
         private const val MOON_CENTER_Y = DialGeometry.center - DATE_VERTICAL_OFFSET
         private const val MOON_RADIUS = 25f

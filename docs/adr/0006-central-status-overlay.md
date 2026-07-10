@@ -22,7 +22,7 @@ Cette couche rend un bitmap transparent 450 x 450 contenant uniquement les infor
 
 La couche est placée dans `watchface.xml` après l'overlay des positions célestes et avant l'aiguille 24 h. Les aiguilles restent donc au-dessus de toutes les informations centrales.
 
-La batterie remplace le libellé `00` du cadran 24 h, tandis que la phase de Lune est placée au-dessus du centre, en miroir vertical de la date. La date est placée sous le centre de la montre, avec un décalage vertical initial de `52f`. Aucun fond semi-transparent n'est dessiné derrière ces informations.
+La batterie remplace le libellé `00` du cadran 24 h, tandis que la phase de Lune est placée au-dessus du centre, en miroir vertical de la date. La date est placée sous le centre de la montre, avec un décalage vertical initial de `70f`. Aucun fond semi-transparent n'est dessiné derrière ces informations.
 
 La phase de Lune utilise Astronomy Engine déjà présent dans le projet. La phase affichée est celle du prochain lever de Lune suivant le dernier coucher de Lune connu. La donnée de complication est déclarée valide jusqu'au prochain coucher de Lune, afin que la cible bascule à ce moment vers le lever suivant. Le niveau de charge est lu localement via Android, sans permission supplémentaire et sans réseau.
 
