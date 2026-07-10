@@ -174,9 +174,9 @@ class DialRenderInstrumentedTest {
             statusSource = FakeWatchStatusSource()
         ).render()
 
-        assertTrue(bitmap.hasBrightPixelNear(183, 52))
-        assertTrue(bitmap.hasBrightPixelNear(225, 285))
-        assertTrue(bitmap.hasGreenPixelNear(267, 52))
+        assertTrue(bitmap.hasBrightPixelNear(225, 173))
+        assertTrue(bitmap.hasBrightPixelNear(225, 277))
+        assertTrue(bitmap.hasGreenPixelNear(225, 47))
     }
 
     @Test
@@ -186,21 +186,21 @@ class DialRenderInstrumentedTest {
         val orange = renderStatusOverlay(batteryPercent = 25)
         val red = renderStatusOverlay(batteryPercent = 20)
 
-        assertTrue(green.hasGreenPixelNear(267, 52))
-        assertTrue(green.hasBrightPixelNear(267, 52))
-        assertTrue(white.hasBrightPixelNear(267, 52))
-        assertTrue(orange.hasOrangePixelNear(267, 52))
-        assertTrue(orange.hasBrightPixelNear(267, 52))
-        assertTrue(red.hasRedPixelNear(267, 52))
-        assertTrue(red.hasBrightPixelNear(267, 52))
+        assertTrue(green.hasGreenPixelNear(225, 47))
+        assertTrue(green.hasBrightPixelNear(225, 47))
+        assertTrue(white.hasBrightPixelNear(225, 47))
+        assertTrue(orange.hasOrangePixelNear(225, 47))
+        assertTrue(orange.hasBrightPixelNear(225, 47))
+        assertTrue(red.hasRedPixelNear(225, 47))
+        assertTrue(red.hasBrightPixelNear(225, 47))
     }
 
     @Test
     fun statusOverlayBatteryFillReflectsExactPercent() {
         val bitmap = renderStatusOverlay(batteryPercent = 50)
 
-        assertTrue(bitmap.getPixel(262, 52).isBrightPixel())
-        assertEquals(0, Color.alpha(bitmap.getPixel(274, 52)))
+        assertTrue(bitmap.getPixel(220, 47).isBrightPixel())
+        assertEquals(0, Color.alpha(bitmap.getPixel(232, 47)))
     }
 
     private fun renderStatusOverlay(batteryPercent: Int): Bitmap =

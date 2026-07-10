@@ -112,7 +112,7 @@ class Dial24hRenderer(
         paint.textSize = 18f
 
         DialGeometry.twentyFourHourTicks()
-            .filter { it.label != null }
+            .filter { it.label != null && it.label != REPLACED_BY_BATTERY_LABEL }
             .forEach { tick ->
                 val point = DialGeometry.point(178f, tick.angleDegrees)
                 canvas.drawText(tick.label.orEmpty(), point.x, point.y + 6f, paint)
@@ -235,6 +235,7 @@ class Dial24hRenderer(
 
     companion object {
         private const val CANVAS_ARC_OFFSET_DEGREES = 90f
+        private const val REPLACED_BY_BATTERY_LABEL = "00"
         private const val SUN_TRACK_RADIUS = 211f
         private const val MOON_TRACK_RADIUS = 200f
     }

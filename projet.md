@@ -336,9 +336,10 @@ Recommandation :
 - La phase de Lune est représentée par un rendu continu de l'ombre.
 - La phase affichée est calculée pour le prochain lever de Lune suivant le dernier coucher de Lune.
 - La donnée de phase est déclarée valide jusqu'au prochain coucher de Lune, moment où la cible bascule vers le lever suivant.
-- La phase de Lune et l'icône de batterie sont placées de part et d'autre de l'indicateur `00` du cadran 24h.
+- L'icône de batterie remplace le libellé `00` du cadran 24h.
+- La phase de Lune est placée à l'opposé de la date sur l'axe vertical de la montre.
 - La date utilise le format compact français prévu, par exemple `sam. 04 juil.`.
-- La date est placée sous le centre de la montre, avec un décalage vertical initial de `60f`.
+- La date est placée sous le centre de la montre, avec un décalage vertical initial de `52f`.
 - La batterie est affichée sous forme d'icône seule, avec un remplissage continu proportionnel au niveau de charge.
 - La couleur de batterie est verte au-dessus de 80 %, blanche entre 31 % et 80 %, orange entre 21 % et 30 %, et rouge à 20 % ou moins.
 - Aucun fond semi-transparent n'est dessiné derrière ces informations.
@@ -349,9 +350,9 @@ Recommandation :
 Proposition :
 
 - Les constellations forment une couche de fond, très fine, peu lumineuse, sans texte.
-- La phase de Lune occupe une petite zone dédiée à gauche de l'indicateur `00` du cadran 24h.
+- La phase de Lune occupe une zone dédiée au-dessus du centre, en miroir vertical de la date, avec une taille augmentée.
 - La date est affichée au format "sam. 04 juil.", en texte blanc compact, sur une ligne isolée sous le centre de la montre.
-- La batterie est affichée à droite de l'indicateur `00`, avec une petite icône seule, remplie en continu et colorée selon son niveau.
+- La batterie est affichée à la place de l'indicateur `00`, avec une petite icône seule, remplie en continu et colorée selon son niveau.
 - Les aiguilles passent au-dessus de tout, mais leur centre et leur largeur doivent éviter de masquer durablement la date, la batterie et la phase de Lune.
 - Le rouge sert d'accent et de langage astronomique, mais le blanc reste réservé aux informations à lire rapidement.
 - Aucun masque noir semi-transparent n'est dessiné derrière ces informations.

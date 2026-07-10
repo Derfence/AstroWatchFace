@@ -157,7 +157,7 @@ class StatusOverlayRenderer(
         paint.style = Paint.Style.FILL
         paint.textAlign = Paint.Align.CENTER
         paint.typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL)
-        paint.textSize = 16f
+        paint.textSize = DATE_TEXT_SIZE
         paint.color = STATUS_TEXT_COLOR
         canvas.drawText(dateLabel, DialGeometry.center, DATE_BASELINE, paint)
     }
@@ -180,24 +180,25 @@ class StatusOverlayRenderer(
         private const val FIRST_QUARTER_PHASE_DEGREES = 90.0
         private const val FULL_MOON_PHASE_DEGREES = 180.0
         private const val LAST_QUARTER_PHASE_DEGREES = 270.0
-        private const val TOP_STATUS_Y = 52f
-        private const val SIDE_STATUS_OFFSET_X = 42f
-        private const val MOON_CENTER_X = DialGeometry.center - SIDE_STATUS_OFFSET_X
-        private const val MOON_CENTER_Y = TOP_STATUS_Y
-        private const val MOON_RADIUS = 10f
+        private const val DATE_VERTICAL_OFFSET = 52f
+        private const val MOON_CENTER_X = DialGeometry.center
+        private const val MOON_CENTER_Y = DialGeometry.center - DATE_VERTICAL_OFFSET
+        private const val MOON_RADIUS = 25f
         private const val MIN_TERMINATOR_WIDTH = 0.05f
-        private const val DATE_BASELINE = DialGeometry.center + 60f
+        private const val DATE_BASELINE = DialGeometry.center + DATE_VERTICAL_OFFSET
+        private const val DATE_TEXT_SIZE = 18f
+        private const val BATTERY_CENTER_Y = DialGeometry.center - 182f
         private val BATTERY_BODY_BOUNDS = RectF(
-            DialGeometry.center + SIDE_STATUS_OFFSET_X - 12f,
-            TOP_STATUS_Y - 6f,
-            DialGeometry.center + SIDE_STATUS_OFFSET_X + 12f,
-            TOP_STATUS_Y + 6f
+            DialGeometry.center - 12f,
+            BATTERY_CENTER_Y - 6f,
+            DialGeometry.center + 12f,
+            BATTERY_CENTER_Y + 6f
         )
         private val BATTERY_TERMINAL_BOUNDS = RectF(
             BATTERY_BODY_BOUNDS.right + 1f,
-            TOP_STATUS_Y - 2f,
+            BATTERY_CENTER_Y - 2f,
             BATTERY_BODY_BOUNDS.right + 4f,
-            TOP_STATUS_Y + 2f
+            BATTERY_CENTER_Y + 2f
         )
         private const val BATTERY_FILL_WIDTH = 20f
         private const val HIGH_BATTERY_THRESHOLD_PERCENT = 80
