@@ -45,9 +45,10 @@ L'utilisateur veut consulter rapidement, depuis sa montre :
 - La Polaire est représentée par un élément graphique simple, cercle ou étoile, placé sur l'anneau 12h.
 - Uranus et Neptune doivent être affichées avec les autres planètes.
 - Toutes les planètes restent visibles sur le cadran, même lorsqu'elles sont sous l'horizon.
-- Les planètes ne changent pas d'apparence lorsqu'elles sont sous l'horizon.
+- Les icônes des corps célestes ne changent pas d'apparence lorsqu'elles sont sous l'horizon.
+- Le lever et le coucher de chaque corps céleste sont indiqués sur son orbite par de petits traits perpendiculaires.
 - Les positions planétaires sont calculées en temps réel pour l'instant d'affichage.
-- Les planètes sont positionnées uniquement par azimut ; leur hauteur n'est pas représentée.
+- Les corps célestes sont positionnés par azimut ; l'altitude n'est pas appliquée aux icônes, mais les portions sous l'horizon sont suggérées par de courts arcs estompés.
 - Le Soleil et la Lune sont ajoutés aux icônes de position avec les planètes.
 - Les constellations affichées sont celles autour du zénith à minuit, avec le zénith placé au centre de la montre.
 - Le rayon angulaire autour du zénith est fixé à 30° pour la première version.
@@ -184,7 +185,9 @@ Objets à afficher :
 
 Points d'attention :
 
-- Les objets sous l'horizon restent affichés exactement comme les autres.
+- Les icônes des objets sous l'horizon restent affichées comme les autres.
+- Le lever et le coucher sont indiqués par des traits perpendiculaires sur l'orbite de chaque corps.
+- Les portions d'orbite correspondant à l'altitude négative sont suggérées par de courts arcs opaques dans la couleur du corps, qui s'estompent rapidement.
 - Les icônes utilisent la couleur principale de l'objet représenté.
 - Les positions doivent être mises à jour pour l'instant courant.
 - Une optimisation pourra être étudiée : calcul complet quotidien à heure fixe, puis calcul rapide au moment de l'affichage si cette approximation est pertinente et réellement différente en coût d'un calcul complet.
@@ -196,6 +199,8 @@ Points d'attention :
 - L'anneau céleste affiche un cercle blanc discret pour enfermer les planètes, avec les lettres `S`, `O`, `N` et `E` comme seuls repères cardinaux.
 - Chaque corps céleste est placé sur sa propre orbite de montre concentrique, avec un espacement radial fixe : Soleil, Lune, puis Mercure, Vénus, Mars, Jupiter, Saturne, Uranus et Neptune.
 - Chaque corps céleste affiche une petite queue colorée le long de son orbite ; la queue devient linéairement plus transparente à mesure qu'elle s'éloigne du corps.
+- Chaque corps céleste affiche ses traits de lever/coucher sur sa propre orbite ; la taille des traits est calibrée sur l'espacement fixe entre orbites.
+- De courts arcs opaques dans la couleur du corps partent de ces traits vers la portion d'altitude négative et s'estompent rapidement ; ils sont dessinés sous les queues.
 - Les icônes sont graphiques et colorées : Vénus est affichée en croissant ambré, Mars avec une petite calotte, Mercure en brun-gris minéral et Neptune en disque bleu simple.
 - La fréquence de mise à jour déclarée est de 15 minutes.
 
@@ -550,8 +555,10 @@ Questions à clarifier :
 - Les cas sans lever/coucher de Lune dans la journée sont gérés sans erreur visuelle.
 - Toutes les planètes, y compris Uranus et Neptune, sont présentes sur le cadran.
 - Le Soleil et la Lune sont présents avec les icônes de position céleste.
-- Les objets sous l'horizon n'ont pas de différence d'affichage.
-- Les positions célestes utilisent l'azimut uniquement.
+- Les icônes des objets sous l'horizon n'ont pas de différence d'affichage.
+- Les levers/couchers des objets célestes sont signalés par des traits d'horizon propres à chaque orbite.
+- Les portions sous l'horizon sont suggérées par des arcs courts, opaques, dans la couleur du corps, rapidement estompés et placés sous les queues.
+- Les positions célestes utilisent l'azimut pour placer les icônes.
 - Les constellations sont limitées à 30° autour du zénith à minuit et affichées par tracé uniquement.
 - Toutes les constellations dans le rayon prédéfini de 30° sont affichées.
 - Les barres astronomiques représentent des périodes continues.

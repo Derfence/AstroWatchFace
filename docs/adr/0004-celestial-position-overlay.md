@@ -22,6 +22,8 @@ Les corps célestes sont placés sur des orbites de montre concentriques, sépar
 
 Chaque corps affiche une petite queue colorée le long de son orbite. La queue utilise un dégradé angulaire linéaire : transparente à son extrémité éloignée, puis progressivement plus opaque jusqu'au corps céleste.
 
+Chaque orbite affiche aussi les marqueurs de lever/coucher du corps correspondant. Ces marqueurs sont de petits traits radiaux opaques, dans la couleur du corps, perpendiculaires à l'orbite, dont la longueur est calibrée sur l'espacement inter-orbites. De courts arcs opaques dans la couleur du corps partent de ces traits vers la portion d'altitude négative, avant le lever et après le coucher ; ils s'estompent rapidement et sont dessinés sous les queues.
+
 Les icônes restent de petites formes graphiques colorées plutôt que des symboles astronomiques textuels. Vénus est représentée par un croissant ambré, Mars par un disque rouge avec une petite calotte, Mercure par un disque brun-gris minéral, Neptune par un disque bleu simple, tandis que Soleil, Lune, Jupiter, Saturne et Uranus conservent leur rendu dédié.
 
 La fréquence de mise à jour déclarée est de 15 minutes. Le mouvement apparent des planètes ne justifie pas un rafraîchissement plus fréquent pour cette première version, et le Soleil/la Lune restent suffisamment proches visuellement entre deux mises à jour.
@@ -33,4 +35,4 @@ La fréquence de mise à jour déclarée est de 15 minutes. Le mouvement apparen
 - Les lettres cardinales et le cercle céleste appartiennent à l'overlay des positions, pas au cadran temporel.
 - L'espacement radial des orbites améliore la séparation visuelle des icônes sans représenter la hauteur des objets.
 - Les positions sont calculées hors ligne, sans météo, réseau ou géolocalisation dynamique.
-- Les objets sous l'horizon sont affichés comme les autres, conformément au contrat produit.
+- Les icônes des objets sous l'horizon sont affichées comme les autres, mais leurs levers/couchers sont indiqués par des marqueurs d'horizon propres à chaque orbite.

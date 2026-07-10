@@ -9,8 +9,12 @@ import android.graphics.RectF
 import android.graphics.SweepGradient
 import android.graphics.Typeface
 import com.derfence.astroface.wear.astro.AstroObserver
+import com.derfence.astroface.wear.astro.AstronomyEngineCelestialHorizonSource
 import com.derfence.astroface.wear.astro.AstronomyEngineCelestialPositionSource
 import com.derfence.astroface.wear.astro.CelestialBody
+import com.derfence.astroface.wear.astro.CelestialHorizonEventType
+import com.derfence.astroface.wear.astro.CelestialHorizonMarker
+import com.derfence.astroface.wear.astro.CelestialHorizonSource
 import com.derfence.astroface.wear.astro.CelestialPosition
 import com.derfence.astroface.wear.astro.CelestialPositionSource
 import java.time.Clock
@@ -18,7 +22,8 @@ import java.time.Clock
 class CelestialOverlayRenderer(
     private val clock: Clock = Clock.system(AstroObserver.DEFAULT.zoneId),
     private val observer: AstroObserver = AstroObserver.DEFAULT,
-    private val positionSource: CelestialPositionSource = AstronomyEngineCelestialPositionSource()
+    private val positionSource: CelestialPositionSource = AstronomyEngineCelestialPositionSource(),
+    private val horizonSource: CelestialHorizonSource = AstronomyEngineCelestialHorizonSource()
 ) : DialRenderer {
     override val contentDescription = "Positions célestes AstroFace"
 
@@ -32,10 +37,11 @@ class CelestialOverlayRenderer(
         val paint = Paint(Paint.ANTI_ALIAS_FLAG)
         val now = clock.instant()
         val snapshot = positionSource.positionsAt(now, observer)
+        val horizonSnapshot = horizonSource.horizonMarkersAt(now, observer)
 
         drawSkyRing(canvas, paint)
         drawCompassLabels(canvas, paint)
-        drawBodies(canvas, paint, snapshot.positions)
+        drawBodies(canvas, paint, snapshot.positions, horizonSnapshot.markers)
 
         return bitmap
     }
@@ -63,7 +69,8 @@ class CelestialOverlayRenderer(
     private fun drawBodies(
         canvas: Canvas,
         paint: Paint,
-        positions: List<CelestialPosition>
+        positions: List<CelestialPosition>,
+        horizonMarkers: List<CelestialHorizonMarker>
     ) {
         val placements = positions.map { position ->
             val body = position.body
@@ -73,13 +80,85 @@ class CelestialOverlayRenderer(
                 radius = orbitRadiusFor(body)
             )
         }
+        val markersByBody = horizonMarkers.groupBy { it.body }
 
+        placements.forEach { placement ->
+            drawNegativeAltitudeArcs(canvas, paint, placement, markersByBody[placement.body].orEmpty())
+        }
+        placements.forEach { placement ->
+            drawHorizonMarkerTicks(canvas, paint, placement, markersByBody[placement.body].orEmpty())
+        }
         placements.forEach { placement ->
             drawOrbitTail(canvas, paint, placement)
         }
         placements.forEach { placement ->
             val point = DialGeometry.point(placement.radius, placement.angleDegrees)
             drawBodyIcon(canvas, paint, placement.body, point.x, point.y)
+        }
+    }
+
+    private fun drawNegativeAltitudeArcs(
+        canvas: Canvas,
+        paint: Paint,
+        placement: OrbitPlacement,
+        markers: List<CelestialHorizonMarker>
+    ) {
+        if (markers.isEmpty()) {
+            return
+        }
+
+        val bounds = RectF(
+            DialGeometry.center - placement.radius,
+            DialGeometry.center - placement.radius,
+            DialGeometry.center + placement.radius,
+            DialGeometry.center + placement.radius
+        )
+        paint.style = Paint.Style.STROKE
+        paint.strokeCap = Paint.Cap.ROUND
+        paint.strokeWidth = NEGATIVE_ALTITUDE_ARC_STROKE_WIDTH
+        val baseColor = tailColor(placement.body).withAlpha(255)
+
+        markers.forEach { marker ->
+            val markerAngle = DialGeometry.angleForAzimuth(marker.azimuthDegrees)
+            val arcStart = when (marker.type) {
+                CelestialHorizonEventType.RISE ->
+                    markerAngle - CANVAS_ARC_OFFSET_DEGREES - NEGATIVE_ALTITUDE_ARC_SWEEP_DEGREES
+                CelestialHorizonEventType.SET ->
+                    markerAngle - CANVAS_ARC_OFFSET_DEGREES
+            }
+            paint.shader = negativeAltitudeArcGradient(baseColor, arcStart, marker.type)
+            canvas.drawArc(
+                bounds,
+                arcStart,
+                NEGATIVE_ALTITUDE_ARC_SWEEP_DEGREES,
+                false,
+                paint
+            )
+        }
+        paint.shader = null
+    }
+
+    private fun drawHorizonMarkerTicks(
+        canvas: Canvas,
+        paint: Paint,
+        placement: OrbitPlacement,
+        markers: List<CelestialHorizonMarker>
+    ) {
+        if (markers.isEmpty()) {
+            return
+        }
+
+        paint.shader = null
+        paint.style = Paint.Style.STROKE
+        paint.strokeCap = Paint.Cap.ROUND
+        paint.strokeWidth = HORIZON_TICK_STROKE_WIDTH
+        paint.color = tailColor(placement.body).withAlpha(255)
+
+        markers.forEach { marker ->
+            val markerAngle = DialGeometry.angleForAzimuth(marker.azimuthDegrees)
+            val inner = DialGeometry.point(placement.radius - HORIZON_TICK_LENGTH / 2f, markerAngle)
+            val outer = DialGeometry.point(placement.radius + HORIZON_TICK_LENGTH / 2f, markerAngle)
+            canvas.drawLine(inner.x, inner.y, outer.x, outer.y, paint)
         }
     }
 
@@ -287,6 +366,53 @@ class CelestialOverlayRenderer(
         return gradient
     }
 
+    private fun negativeAltitudeArcGradient(
+        baseColor: Int,
+        arcStartDegrees: Float,
+        type: CelestialHorizonEventType
+    ): SweepGradient {
+        val transparent = baseColor.withAlpha(0)
+        val arcFraction = NEGATIVE_ALTITUDE_ARC_SWEEP_DEGREES / FULL_CIRCLE_DEGREES_FLOAT
+        val gradient = when (type) {
+            CelestialHorizonEventType.RISE -> SweepGradient(
+                DialGeometry.center,
+                DialGeometry.center,
+                intArrayOf(
+                    transparent,
+                    baseColor,
+                    transparent,
+                    transparent
+                ),
+                floatArrayOf(
+                    0f,
+                    arcFraction,
+                    arcFraction + NEGATIVE_ALTITUDE_GRADIENT_CLOSE_FRACTION,
+                    1f
+                )
+            )
+            CelestialHorizonEventType.SET -> SweepGradient(
+                DialGeometry.center,
+                DialGeometry.center,
+                intArrayOf(
+                    baseColor,
+                    transparent,
+                    transparent,
+                    transparent
+                ),
+                floatArrayOf(
+                    0f,
+                    arcFraction,
+                    arcFraction + NEGATIVE_ALTITUDE_GRADIENT_CLOSE_FRACTION,
+                    1f
+                )
+            )
+        }
+        gradient.setLocalMatrix(Matrix().apply {
+            setRotate(arcStartDegrees, DialGeometry.center, DialGeometry.center)
+        })
+        return gradient
+    }
+
     private fun Int.withAlpha(alpha: Int): Int =
         Color.argb(alpha, Color.red(this), Color.green(this), Color.blue(this))
 
@@ -320,9 +446,15 @@ class CelestialOverlayRenderer(
         private const val FIRST_ORBIT_RADIUS = 150f-8*5f
         private const val ORBIT_SPACING = 5f
         private const val COMPASS_LABEL_RADIUS = 158f
+        private const val FULL_CIRCLE_DEGREES_FLOAT = 360f
         private const val CANVAS_ARC_OFFSET_DEGREES = 90f
         private const val TAIL_SWEEP_DEGREES = 100f
         private const val TAIL_GRADIENT_CLOSE_FRACTION = 0.001f
+        private const val HORIZON_TICK_LENGTH = ORBIT_SPACING * 0.8f
+        private const val HORIZON_TICK_STROKE_WIDTH = 2f
+        private const val NEGATIVE_ALTITUDE_ARC_SWEEP_DEGREES = 14f
+        private const val NEGATIVE_ALTITUDE_ARC_STROKE_WIDTH = 1f
+        private const val NEGATIVE_ALTITUDE_GRADIENT_CLOSE_FRACTION = 0.001f
         private val COMPASS_LABELS = listOf(
             CompassLabel("S", 0f),
             CompassLabel("O", 90f),

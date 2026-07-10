@@ -11,6 +11,10 @@ import com.derfence.astroface.wear.astro.AstroEventSource
 import com.derfence.astroface.wear.astro.AstroObserver
 import com.derfence.astroface.wear.astro.AstroWindowCalculator
 import com.derfence.astroface.wear.astro.CelestialBody
+import com.derfence.astroface.wear.astro.CelestialHorizonEventType
+import com.derfence.astroface.wear.astro.CelestialHorizonMarker
+import com.derfence.astroface.wear.astro.CelestialHorizonSnapshot
+import com.derfence.astroface.wear.astro.CelestialHorizonSource
 import com.derfence.astroface.wear.astro.CelestialPosition
 import com.derfence.astroface.wear.astro.CelestialPositionSnapshot
 import com.derfence.astroface.wear.astro.CelestialPositionSource
@@ -45,7 +49,8 @@ class DialRenderInstrumentedTest {
         assertTrue(
             CelestialOverlayRenderer(
                 clock = Clock.fixed(Instant.parse("2026-07-07T10:00:00Z"), ZoneOffset.UTC),
-                positionSource = FakeCelestialPositionSource()
+                positionSource = FakeCelestialPositionSource(),
+                horizonSource = FakeCelestialHorizonSource()
             ).render().hasVisiblePixel()
         )
         assertTrue(
@@ -82,10 +87,32 @@ class DialRenderInstrumentedTest {
     fun celestialOverlayPlacesSouthAzimuthAtTop() {
         val bitmap = CelestialOverlayRenderer(
             clock = Clock.fixed(Instant.parse("2026-07-07T10:00:00Z"), ZoneOffset.UTC),
-            positionSource = FakeCelestialPositionSource()
+            positionSource = FakeCelestialPositionSource(),
+            horizonSource = FakeCelestialHorizonSource()
         ).render()
 
         assertTrue(bitmap.hasWarmPixelNear(225, 65))
+    }
+
+    @Test
+    fun celestialOverlayDrawsHorizonMarkerOnBodyOrbit() {
+        val markerTime = Instant.parse("2026-07-07T10:00:00Z")
+        val bitmap = CelestialOverlayRenderer(
+            clock = Clock.fixed(markerTime, ZoneOffset.UTC),
+            positionSource = FakeCelestialPositionSource(),
+            horizonSource = FakeCelestialHorizonSource(
+                markers = listOf(
+                    CelestialHorizonMarker(
+                        body = CelestialBody.MARS,
+                        type = CelestialHorizonEventType.RISE,
+                        time = markerTime,
+                        azimuthDegrees = 180.0
+                    )
+                )
+            )
+        ).render()
+
+        assertTrue(bitmap.hasRedPixelNear(225, 95))
     }
 
     @Test
@@ -426,6 +453,20 @@ class DialRenderInstrumentedTest {
                     CelestialPosition(CelestialBody.MARS, 0.0),
                     CelestialPosition(CelestialBody.NEPTUNE, 90.0)
                 )
+            )
+    }
+
+    private class FakeCelestialHorizonSource(
+        private val markers: List<CelestialHorizonMarker> = emptyList()
+    ) : CelestialHorizonSource {
+        override fun horizonMarkersAt(
+            time: Instant,
+            observer: AstroObserver
+        ): CelestialHorizonSnapshot =
+            CelestialHorizonSnapshot(
+                calculatedAt = time,
+                localDate = time.atZone(observer.zoneId).toLocalDate(),
+                markers = markers
             )
     }
 
