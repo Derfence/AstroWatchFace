@@ -17,6 +17,7 @@ import com.derfence.astroface.wear.astro.CelestialHorizonSource
 import com.derfence.astroface.wear.astro.CelestialPosition
 import com.derfence.astroface.wear.astro.CelestialPositionSource
 import java.time.Clock
+import java.time.Instant
 
 class CelestialOverlayRenderer(
     private val clock: Clock = Clock.system(AstroObserver.DEFAULT.zoneId),
@@ -26,7 +27,9 @@ class CelestialOverlayRenderer(
 ) : DialRenderer {
     override val contentDescription = "Positions célestes AstroFace"
 
-    override fun render(): Bitmap {
+    override fun render(): Bitmap = renderAt(clock.instant())
+
+    override fun renderAt(instant: Instant): Bitmap {
         val bitmap = Bitmap.createBitmap(
             DialGeometry.canvasSize,
             DialGeometry.canvasSize,
@@ -34,9 +37,8 @@ class CelestialOverlayRenderer(
         )
         val canvas = Canvas(bitmap)
         val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-        val now = clock.instant()
-        val snapshot = positionSource.positionsAt(now, observer)
-        val horizonSnapshot = horizonSource.horizonMarkersAt(now, observer)
+        val snapshot = positionSource.positionsAt(instant, observer)
+        val horizonSnapshot = horizonSource.horizonMarkersAt(instant, observer)
 
         drawSkyRing(canvas, paint)
         drawBodies(canvas, paint, snapshot.positions, horizonSnapshot.markers)

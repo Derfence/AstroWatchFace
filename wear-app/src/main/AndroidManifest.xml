@@ -52,7 +52,7 @@
                 android:value="LARGE_IMAGE" />
             <meta-data
                 android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
-                android:value="900" />
+                android:value="1800" />
         </service>
 
         <service
@@ -70,7 +70,7 @@
                 android:value="LARGE_IMAGE" />
             <meta-data
                 android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
-                android:value="900" />
+                android:value="1800" />
         </service>
 
         <service
@@ -88,25 +88,7 @@
                 android:value="LARGE_IMAGE" />
             <meta-data
                 android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
-                android:value="900" />
-        </service>
-
-        <service
-            android:name=".complication.Hour24hHandDataSourceService"
-            android:directBootAware="true"
-            android:exported="true"
-            android:icon="@drawable/ic_dial_24"
-            android:label="@string/hour_24h_hand_service_label"
-            android:permission="com.google.android.wearable.permission.BIND_COMPLICATION_PROVIDER">
-            <intent-filter>
-                <action android:name="android.support.wearable.complications.ACTION_COMPLICATION_UPDATE_REQUEST" />
-            </intent-filter>
-            <meta-data
-                android:name="android.support.wearable.complications.SUPPORTED_TYPES"
-                android:value="LARGE_IMAGE" />
-            <meta-data
-                android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
-                android:value="60" />
+                android:value="1800" />
         </service>
 
         <service
@@ -124,7 +106,7 @@
                 android:value="LARGE_IMAGE" />
             <meta-data
                 android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
-                android:value="900" />
+                android:value="86400" />
         </service>
     </application>
 

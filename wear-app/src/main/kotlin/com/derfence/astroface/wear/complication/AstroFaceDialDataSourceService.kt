@@ -7,10 +7,12 @@ import androidx.wear.watchface.complications.datasource.ComplicationDataSourceSe
 import androidx.wear.watchface.complications.datasource.ComplicationRequest
 import com.derfence.astroface.wear.dial.DialRenderer
 import com.derfence.astroface.wear.status.RequestStatusRepository
+import java.time.Instant
 
 abstract class AstroFaceDialDataSourceService : ComplicationDataSourceService() {
     protected abstract val renderer: DialRenderer
     protected abstract val statusKey: RequestStatusRepository.DialKey
+    protected open val timelineSchedule: DialTimelineSchedule? = DialTimelineSchedule.WatchMode
 
     override fun onComplicationRequest(
         request: ComplicationRequest,
@@ -18,17 +20,25 @@ abstract class AstroFaceDialDataSourceService : ComplicationDataSourceService() 
     ) {
         RequestStatusRepository.markRequest(applicationContext, statusKey, request)
 
-        val data = if (request.complicationType == ComplicationType.PHOTO_IMAGE) {
-            DialComplicationDataFactory.create(renderer)
-        } else {
-            NoDataComplicationData()
+        if (request.complicationType != ComplicationType.PHOTO_IMAGE) {
+            listener.onComplicationData(NoDataComplicationData())
+            return
         }
-        listener.onComplicationData(data)
+
+        val start = Instant.now()
+        val schedule = timelineSchedule
+        if (schedule != null) {
+            listener.onComplicationDataTimeline(
+                DialComplicationDataFactory.createTimeline(renderer, start, schedule)
+            )
+        } else {
+            listener.onComplicationData(DialComplicationDataFactory.create(renderer, start))
+        }
     }
 
     override fun getPreviewData(type: ComplicationType): ComplicationData? =
         if (type == ComplicationType.PHOTO_IMAGE) {
-            DialComplicationDataFactory.create(renderer)
+            DialComplicationDataFactory.create(renderer, Instant.now())
         } else {
             NoDataComplicationData()
         }

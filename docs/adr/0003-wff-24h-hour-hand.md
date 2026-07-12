@@ -2,7 +2,7 @@
 
 ## Statut
 
-Accepté
+Remplacé par l'ADR 0008
 
 ## Contexte
 

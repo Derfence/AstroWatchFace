@@ -10,34 +10,36 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class WatchFaceTimeHandsTest {
     @Test
-    public void watchFaceUses24HourImageHandAndTickingSecondHand() throws Exception {
+    public void watchFaceUsesRotating24HourWffBitmapHandAndTickingSecondHand() throws Exception {
         Document document = loadWatchFaceXml();
 
         assertEquals(0, document.getElementsByTagName("HourHand").getLength());
-        assertEquals(0, document.getElementsByTagName("Transform").getLength());
-        assertEquals(5, document.getElementsByTagName("ComplicationSlot").getLength());
-        assertSlotOrder(document, "1", "2", "4", "3", "5");
-        assertNull(partImageNamed(document, "TwentyFourHourHand"));
+        assertTrue(document.getElementsByTagName("Transform").getLength() > 0);
+        assertEquals(4, document.getElementsByTagName("ComplicationSlot").getLength());
+        assertSlotOrder(document, "1", "2", "4", "5");
+        assertSlotsAreNotCustomizable(document);
+        assertNull(complicationSlotWithId(document, "3"));
 
-        Element hourHandSlot = complicationSlotWithId(document, "3");
-        assertNotNull(hourHandSlot);
-        assertEquals("@string/slot_24h_hand_name", hourHandSlot.getAttribute("displayName"));
-        assertEquals("PHOTO_IMAGE EMPTY", hourHandSlot.getAttribute("supportedTypes"));
+        Element hourHandImage = partImageNamed(document, "Hour24hHand");
+        assertNotNull(hourHandImage);
+        assertEquals("216", hourHandImage.getAttribute("x"));
+        assertEquals("89", hourHandImage.getAttribute("y"));
+        assertEquals("18", hourHandImage.getAttribute("width"));
+        assertEquals("140", hourHandImage.getAttribute("height"));
+        assertEquals("0.5", hourHandImage.getAttribute("pivotX"));
+        assertEquals("0.97", hourHandImage.getAttribute("pivotY"));
+        assertEquals("hour_hand_bitmap", firstChild(hourHandImage, "Image").getAttribute("resource"));
 
-        Element policy = firstChild(hourHandSlot, "DefaultProviderPolicy");
-        assertEquals(
-            "com.derfence.astroface.wear/com.derfence.astroface.wear.complication.Hour24hHandDataSourceService",
-            policy.getAttribute("primaryProvider")
-        );
-        assertEquals("PHOTO_IMAGE", policy.getAttribute("primaryProviderType"));
-
-        Element hourHandImage = firstChild(hourHandSlot, "PartImage");
-        assertEquals("Hour24hHandImage", hourHandImage.getAttribute("name"));
-        assertEquals("[COMPLICATION.PHOTO_IMAGE]", firstChild(hourHandImage, "Image").getAttribute("resource"));
+        Element hourHandTransform = firstChild(hourHandImage, "Transform");
+        assertNotNull(hourHandTransform);
+        assertEquals("angle", hourHandTransform.getAttribute("target"));
+        assertEquals("[HOUR_0_23_MINUTE] * 15", hourHandTransform.getAttribute("value"));
+        PngAssetAssertions.assertPng(mainResourceFile("drawable-nodpi/hour_hand_bitmap.png"), 18, 140);
 
         Element celestialOverlaySlot = complicationSlotWithId(document, "2");
         assertNotNull(celestialOverlaySlot);
@@ -97,6 +99,13 @@ public class WatchFaceTimeHandsTest {
         assertEquals("0.05", tick.getAttribute("duration"));
         assertEquals("1.0", tick.getAttribute("strength"));
 
+        Element batteryOutline = partDrawNamed(document, "BatteryOutline");
+        assertNotNull(batteryOutline);
+        assertTrue(document.getElementsByTagName("Condition").getLength() > 0);
+        assertTrue(document.getDocumentElement().getTextContent().contains("[BATTERY_PERCENT]"));
+        assertElementOrder(batteryOutline, modeOverlaySlot);
+        assertElementOrder(partDrawNamed(document, "BatteryFillDefault"), modeOverlaySlot);
+
         assertPartImageOrder(document, "CenterCap", "ModeOverlayImage");
 
         Element tapTarget = partDrawNamed(document, "ModeTapTarget");
@@ -110,13 +119,18 @@ public class WatchFaceTimeHandsTest {
     }
 
     private static Document loadWatchFaceXml() throws Exception {
-        File file = new File("src/main/res/raw/watchface.xml");
-        if (!file.exists()) {
-            file = new File("watch-face/src/main/res/raw/watchface.xml");
-        }
+        File file = mainResourceFile("raw/watchface.xml");
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(false);
         return factory.newDocumentBuilder().parse(file);
+    }
+
+    private static File mainResourceFile(String relativePath) {
+        File file = new File("src/main/res/" + relativePath);
+        if (!file.exists()) {
+            file = new File("watch-face/src/main/res/" + relativePath);
+        }
+        return file;
     }
 
     private static Element partImageNamed(Document document, String name) {
@@ -159,12 +173,27 @@ public class WatchFaceTimeHandsTest {
         assertTrue(firstIndex < secondIndex);
     }
 
+    private static void assertElementOrder(Node first, Node second) {
+        assertNotNull(first);
+        assertNotNull(second);
+        short position = first.compareDocumentPosition(second);
+        assertTrue((position & Node.DOCUMENT_POSITION_FOLLOWING) != 0);
+    }
+
     private static void assertSlotOrder(Document document, String... expectedSlotIds) {
         NodeList nodes = document.getElementsByTagName("ComplicationSlot");
         assertEquals(expectedSlotIds.length, nodes.getLength());
         for (int i = 0; i < expectedSlotIds.length; i += 1) {
             Element element = (Element) nodes.item(i);
             assertEquals(expectedSlotIds[i], element.getAttribute("slotId"));
+        }
+    }
+
+    private static void assertSlotsAreNotCustomizable(Document document) {
+        NodeList nodes = document.getElementsByTagName("ComplicationSlot");
+        for (int i = 0; i < nodes.getLength(); i += 1) {
+            Element element = (Element) nodes.item(i);
+            assertEquals("FALSE", element.getAttribute("isCustomizable"));
         }
     }
 

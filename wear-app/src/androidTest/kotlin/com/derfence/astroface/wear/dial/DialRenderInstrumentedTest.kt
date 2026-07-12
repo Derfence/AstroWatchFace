@@ -28,8 +28,8 @@ import com.derfence.astroface.wear.astro.SolarSystemPositionSource
 import com.derfence.astroface.wear.astro.SolarSystemSnapshot
 import com.derfence.astroface.wear.astro.SkyPoint
 import com.derfence.astroface.wear.complication.DialComplicationDataFactory
+import com.derfence.astroface.wear.complication.DialTimelineSchedule
 import com.derfence.astroface.wear.display.DisplayMode
-import com.derfence.astroface.wear.status.BatteryStatus
 import com.derfence.astroface.wear.status.WatchStatus
 import com.derfence.astroface.wear.status.WatchStatusSource
 import java.time.Clock
@@ -47,11 +47,6 @@ class DialRenderInstrumentedTest {
     fun renderersProduceVisiblePixels() {
         assertTrue(Dial24hRenderer(constellationSource = FakeConstellationSource()).render().hasVisiblePixel())
         assertTrue(
-            Hour24hHandRenderer(
-                clock = Clock.fixed(Instant.parse("2026-07-07T10:00:00Z"), ZoneOffset.UTC)
-            ).render().hasVisiblePixel()
-        )
-        assertTrue(
             CelestialOverlayRenderer(
                 clock = Clock.fixed(Instant.parse("2026-07-07T10:00:00Z"), ZoneOffset.UTC),
                 positionSource = FakeCelestialPositionSource(),
@@ -68,11 +63,26 @@ class DialRenderInstrumentedTest {
 
     @Test
     fun complicationFactoryReturnsPhotoImageData() {
+        val time = Instant.parse("2026-07-07T10:00:00Z")
         val data = DialComplicationDataFactory.create(
-            Dial24hRenderer(constellationSource = FakeConstellationSource())
+            Dial24hRenderer(constellationSource = FakeConstellationSource()),
+            time
         )
 
         assertEquals(ComplicationType.PHOTO_IMAGE, data.type)
+    }
+
+    @Test
+    fun complicationFactoryReturnsTimelineEntries() {
+        val time = Instant.parse("2026-07-07T10:00:00Z")
+        val timeline = DialComplicationDataFactory.createTimeline(
+            renderer = Dial24hRenderer(constellationSource = FakeConstellationSource()),
+            start = time,
+            schedule = DialTimelineSchedule.WatchMode
+        )
+
+        assertEquals(12, timeline.timelineEntries.size)
+        assertEquals(time, timeline.timelineEntries.first().validity.start)
     }
 
     @Test
@@ -192,31 +202,6 @@ class DialRenderInstrumentedTest {
 
         assertTrue(bitmap.hasBrightPixelNear(225, 155))
         assertTrue(bitmap.hasBrightPixelNear(225, 295))
-        assertTrue(bitmap.hasGreenPixelNear(225, 47))
-    }
-
-    @Test
-    fun statusOverlayUsesBatteryColorThresholds() {
-        val green = renderStatusOverlay(batteryPercent = 81)
-        val white = renderStatusOverlay(batteryPercent = 80)
-        val orange = renderStatusOverlay(batteryPercent = 25)
-        val red = renderStatusOverlay(batteryPercent = 20)
-
-        assertTrue(green.hasGreenPixelNear(225, 47))
-        assertTrue(green.hasBrightPixelNear(225, 47))
-        assertTrue(white.hasBrightPixelNear(225, 47))
-        assertTrue(orange.hasOrangePixelNear(225, 47))
-        assertTrue(orange.hasBrightPixelNear(225, 47))
-        assertTrue(red.hasRedPixelNear(225, 47))
-        assertTrue(red.hasBrightPixelNear(225, 47))
-    }
-
-    @Test
-    fun statusOverlayBatteryFillReflectsExactPercent() {
-        val bitmap = renderStatusOverlay(batteryPercent = 50)
-
-        assertTrue(bitmap.getPixel(220, 47).isBrightPixel())
-        assertEquals(0, Color.alpha(bitmap.getPixel(232, 47)))
     }
 
     @Test
@@ -293,13 +278,11 @@ class DialRenderInstrumentedTest {
     }
 
     private fun renderStatusOverlay(
-        batteryPercent: Int = 83,
         phaseAngleDegrees: Double = 180.0
     ): Bitmap =
         StatusOverlayRenderer(
             clock = Clock.fixed(Instant.parse("2026-07-07T10:00:00Z"), ZoneOffset.UTC),
             statusSource = FakeWatchStatusSource(
-                batteryPercent = batteryPercent,
                 phaseAngleDegrees = phaseAngleDegrees
             )
         ).render()
@@ -779,13 +762,11 @@ class DialRenderInstrumentedTest {
     }
 
     private class FakeWatchStatusSource(
-        private val batteryPercent: Int = 83,
         private val phaseAngleDegrees: Double = 180.0
     ) : WatchStatusSource {
         override fun statusAt(time: Instant): WatchStatus =
             WatchStatus(
                 dateLabel = "sam. 04 juil.",
-                battery = BatteryStatus.fromPercent(batteryPercent),
                 moonPhase = MoonPhaseSnapshot(
                     calculatedAt = time,
                     targetTime = time.plusSeconds(3600),

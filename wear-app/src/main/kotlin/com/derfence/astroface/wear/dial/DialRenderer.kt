@@ -5,8 +5,7 @@ import java.time.Instant
 
 interface DialRenderer {
     val contentDescription: String
-    val validUntil: Instant?
-        get() = null
 
+    fun renderAt(instant: Instant): Bitmap
     fun render(): Bitmap
 }

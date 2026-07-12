@@ -8,19 +8,13 @@ interface WatchStatusSource {
     fun statusAt(time: Instant): WatchStatus
 }
 
-interface BatteryStatusSource {
-    fun currentBatteryStatus(): BatteryStatus
-}
-
 class DefaultWatchStatusSource(
-    private val batteryStatusSource: BatteryStatusSource,
     private val moonPhaseSource: MoonPhaseSource = AstronomyEngineMoonPhaseSource(),
     private val dateStatusFormatter: DateStatusFormatter = DateStatusFormatter()
 ) : WatchStatusSource {
     override fun statusAt(time: Instant): WatchStatus =
         WatchStatus(
             dateLabel = dateStatusFormatter.labelFor(time),
-            battery = batteryStatusSource.currentBatteryStatus(),
             moonPhase = moonPhaseSource.phaseAt(time)
         )
 }

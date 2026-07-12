@@ -509,13 +509,13 @@ Responsabilités :
 - Exposer les données à la watch face.
 - Gérer éventuellement les préférences simples.
 - En première implémentation, calculer à chaque rendu du cadran 24h une fenêtre glissante de 24h pour lever/coucher du Soleil, passages à -18° et visibilité lunaire.
-- Fournir aussi l'aiguille des heures 24h sous forme d'image transparente plein écran, afin de conserver une rotation 24h fiable sans code dans la Face.
+- Fournir les images de cadran et overlays ; l'aiguille des heures 24h est rendue directement par la Face WFF.
 
 ### watch-face
 
 Responsabilités :
 
-- Assemblage des éléments analogiques : aiguille des heures 24h fournie par complication, aiguille des minutes 60 minutes et secondes à ticks en WFF.
+- Assemblage des éléments analogiques en WFF : aiguille des heures 24h par `PartImage` et `Transform`, aiguille des minutes 60 minutes et secondes à ticks.
 - Rendu des anneaux temporels.
 - Rendu des icônes astronomiques.
 - Rendu AOD.
@@ -523,10 +523,10 @@ Responsabilités :
 
 État d'implémentation :
 
-- La Face WFF assemble cinq complications plein écran : cadran 24h, positions célestes, aiguille des heures 24h, données internes et overlay de mode.
+- La Face WFF assemble quatre complications plein écran : cadran 24h, positions célestes, données internes et overlay de mode.
 - Les aiguilles minutes et secondes restent des aiguilles WFF natives ; la seconde utilise un mouvement à ticks.
 - Un élément cliquable central lance l'activité Wear OS qui cycle le mode d'affichage.
-- L'overlay de mode est transparent en mode complet et opaque dans les deux modes astro, afin de masquer visuellement les aiguilles natives.
+- L'overlay de mode est transparent en mode complet et opaque dans les deux modes astro, afin de masquer visuellement les aiguilles.
 
 ### mobile-app, optionnelle
 

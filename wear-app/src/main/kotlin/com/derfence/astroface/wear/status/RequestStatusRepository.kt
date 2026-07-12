@@ -11,7 +11,6 @@ object RequestStatusRepository {
     private const val key24h = "last_24h"
     private const val keyCelestialOverlay = "last_celestial_overlay"
     private const val keyStatusOverlay = "last_status_overlay"
-    private const val key24hHand = "last_24h_hand"
     private const val keyModeOverlay = "last_mode_overlay"
     private const val keyManualRefresh = "last_manual_refresh"
 
@@ -19,7 +18,6 @@ object RequestStatusRepository {
         DIAL_24H,
         CELESTIAL_OVERLAY,
         STATUS_OVERLAY,
-        HOUR_24H_HAND,
         MODE_OVERLAY
     }
 
@@ -27,7 +25,6 @@ object RequestStatusRepository {
         val last24h: String?,
         val lastCelestialOverlay: String?,
         val lastStatusOverlay: String?,
-        val last24hHand: String?,
         val lastModeOverlay: String?,
         val lastManualRefresh: String?
     )
@@ -52,7 +49,6 @@ object RequestStatusRepository {
             last24h = prefs.getString(key24h, null),
             lastCelestialOverlay = prefs.getString(keyCelestialOverlay, null),
             lastStatusOverlay = prefs.getString(keyStatusOverlay, null),
-            last24hHand = prefs.getString(key24hHand, null),
             lastModeOverlay = prefs.getString(keyModeOverlay, null),
             lastManualRefresh = prefs.getString(keyManualRefresh, null)
         )
@@ -63,7 +59,6 @@ object RequestStatusRepository {
             DialKey.DIAL_24H -> key24h
             DialKey.CELESTIAL_OVERLAY -> keyCelestialOverlay
             DialKey.STATUS_OVERLAY -> keyStatusOverlay
-            DialKey.HOUR_24H_HAND -> key24hHand
             DialKey.MODE_OVERLAY -> keyModeOverlay
         }
 

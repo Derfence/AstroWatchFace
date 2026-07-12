@@ -16,6 +16,7 @@ import com.derfence.astroface.wear.astro.AstronomyEngineConstellationSource
 import com.derfence.astroface.wear.astro.ConstellationSource
 import com.derfence.astroface.wear.astro.RollingAstroWindow
 import java.time.Clock
+import java.time.Instant
 
 class Dial24hRenderer(
     private val clock: Clock = Clock.system(AstroObserver.DEFAULT.zoneId),
@@ -27,7 +28,9 @@ class Dial24hRenderer(
 ) : DialRenderer {
     override val contentDescription = "Cadran AstroFace 24 heures et constellations"
 
-    override fun render(): Bitmap {
+    override fun render(): Bitmap = renderAt(clock.instant())
+
+    override fun renderAt(instant: Instant): Bitmap {
         val bitmap = Bitmap.createBitmap(
             DialGeometry.canvasSize,
             DialGeometry.canvasSize,
@@ -35,9 +38,8 @@ class Dial24hRenderer(
         )
         val canvas = Canvas(bitmap)
         val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-        val now = clock.instant()
-        val constellations = constellationSource.constellationsAt(now, observer)
-        val window = astroWindowCalculator.calculate(now, observer)
+        val constellations = constellationSource.constellationsAt(instant, observer)
+        val window = astroWindowCalculator.calculate(instant, observer)
 
         constellationBackgroundRenderer.render(canvas, paint, constellations.lines)
         drawAstroIntervals(canvas, paint, window)

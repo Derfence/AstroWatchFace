@@ -15,10 +15,10 @@ Use two Android application modules:
 - `watch-face`: a Watch Face Format APK with `android:hasCode="false"`. It renders the black background, full-screen `PHOTO_IMAGE` complication slots, and the WFF-native analog hands.
 - `wear-app`: a Wear OS app with `ComplicationDataSourceService` implementations. Each service renders one transparent 450 x 450 bitmap and returns it as `PhotoImageComplicationData`.
 
-The watch face has no dial calculation logic. ADR 0003 refines the original skeleton by moving the 24 h hour hand into a generated complication image while keeping minute and second hands in WFF.
+The watch face has no dial calculation logic. ADR 0008 supersedes the earlier hour-hand design: the 24 h hour hand, minute hand, and second hand are rendered directly by WFF, while generated dial content remains in complications.
 
 ## Consequences
 
-- The generated 24 h dial and 24 h hour hand can evolve independently from the Face.
+- The generated 24 h dial can evolve independently from the WFF-rendered hands.
 - The Face remains compatible with the WFF resource-only model.
 - Future astronomical calculations belong in `wear-app` or a shared calculation module, not in `watch-face`.

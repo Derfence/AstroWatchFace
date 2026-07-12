@@ -12,6 +12,7 @@ import com.derfence.astroface.wear.astro.SolarSystemBody
 import com.derfence.astroface.wear.astro.SolarSystemPositionSource
 import com.derfence.astroface.wear.display.DisplayMode
 import java.time.Clock
+import java.time.Instant
 
 class ModeOverlayRenderer(
     private val mode: DisplayMode,
@@ -33,7 +34,9 @@ class ModeOverlayRenderer(
             DisplayMode.SOLAR_SYSTEM -> "Mode système solaire AstroFace"
         }
 
-    override fun render(): Bitmap {
+    override fun render(): Bitmap = renderAt(clock.instant())
+
+    override fun renderAt(instant: Instant): Bitmap {
         val bitmap = Bitmap.createBitmap(
             DialGeometry.canvasSize,
             DialGeometry.canvasSize,
@@ -50,22 +53,20 @@ class ModeOverlayRenderer(
 
         when (mode) {
             DisplayMode.FULL_DIAL -> Unit
-            DisplayMode.CONSTELLATIONS_NIGHT -> drawNightConstellations(canvas, paint)
-            DisplayMode.SOLAR_SYSTEM -> drawSolarSystem(canvas, paint)
+            DisplayMode.CONSTELLATIONS_NIGHT -> drawNightConstellations(canvas, paint, instant)
+            DisplayMode.SOLAR_SYSTEM -> drawSolarSystem(canvas, paint, instant)
         }
 
         return bitmap
     }
 
-    private fun drawNightConstellations(canvas: Canvas, paint: Paint) {
-        val now = clock.instant()
-        val constellations = constellationSource.constellationsAt(now, observer)
+    private fun drawNightConstellations(canvas: Canvas, paint: Paint, instant: Instant) {
+        val constellations = constellationSource.constellationsAt(instant, observer)
         nightConstellationBackgroundRenderer.render(canvas, paint, constellations.lines)
     }
 
-    private fun drawSolarSystem(canvas: Canvas, paint: Paint) {
-        val now = clock.instant()
-        val placements = solarSystemPositionSource.positionsAt(now).positions.map { position ->
+    private fun drawSolarSystem(canvas: Canvas, paint: Paint, instant: Instant) {
+        val placements = solarSystemPositionSource.positionsAt(instant).positions.map { position ->
             SolarSystemPlacement(
                 body = position.body,
                 angleDegrees = position.heliocentricLongitudeDegrees.toFloat(),
