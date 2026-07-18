@@ -25,9 +25,26 @@ android {
 }
 
 dependencies {
-    implementation "androidx.wear.watchface:watchface-complications-data:1.2.1"
-    implementation "androidx.wear.watchface:watchface-complications-data-source:1.2.1"
+    def watchFaceVersion = "1.3.0"
+    def protoLayoutVersion = "1.2.1"
+    implementation "androidx.wear.watchface:watchface-complications-data:$watchFaceVersion"
+    implementation "androidx.wear.watchface:watchface-complications-data-source:$watchFaceVersion"
     implementation "io.github.cosinekitty:astronomy:2.1.19"
+
+    constraints {
+        implementation("androidx.activity:activity:1.13.0") {
+            because "replace the obsolete transitive version pulled by Wear Watch Face"
+        }
+        implementation("androidx.fragment:fragment:1.8.9") {
+            because "replace the obsolete transitive version pulled by Wear Watch Face"
+        }
+        implementation("androidx.wear.protolayout:protolayout-proto:$protoLayoutVersion") {
+            because "use the protobuf version containing the CVE-2024-7254 fix"
+        }
+        implementation("androidx.wear.protolayout:protolayout-external-protobuf:$protoLayoutVersion") {
+            because "keep the ProtoLayout protobuf artifacts on the security-fixed version"
+        }
+    }
 
     testImplementation "junit:junit:4.13.2"
 
