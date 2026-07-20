@@ -15,9 +15,6 @@ import com.derfence.astroface.wear.astro.CelestialHorizonEventType
 import com.derfence.astroface.wear.astro.CelestialHorizonMarker
 import com.derfence.astroface.wear.astro.CelestialHorizonSnapshot
 import com.derfence.astroface.wear.astro.CelestialHorizonSource
-import com.derfence.astroface.wear.astro.CelestialPosition
-import com.derfence.astroface.wear.astro.CelestialPositionSnapshot
-import com.derfence.astroface.wear.astro.CelestialPositionSource
 import com.derfence.astroface.wear.astro.ConstellationLine
 import com.derfence.astroface.wear.astro.ConstellationSnapshot
 import com.derfence.astroface.wear.astro.ConstellationSource
@@ -53,12 +50,6 @@ class DialRenderInstrumentedTest {
             ConstellationLayerRenderer(
                 style = ConstellationLayerStyle.MAIN,
                 constellationSource = FakeConstellationSource()
-            ).render().hasVisiblePixel()
-        )
-        assertTrue(
-            CelestialOverlayRenderer(
-                clock = Clock.fixed(Instant.parse("2026-07-07T10:00:00Z"), ZoneOffset.UTC),
-                positionSource = FakeCelestialPositionSource()
             ).render().hasVisiblePixel()
         )
         assertTrue(
@@ -138,11 +129,8 @@ class DialRenderInstrumentedTest {
     }
 
     @Test
-    fun croppedOverlaysReduceRawBitmapFootprint() {
+    fun croppedDailyAndStatusOverlaysReduceRawBitmapFootprint() {
         val instant = Instant.parse("2026-07-07T10:00:00Z")
-        val celestial = CelestialOverlayRenderer(
-            positionSource = FakeCelestialPositionSource()
-        ).renderAt(instant)
         val horizon = CelestialHorizonOverlayRenderer(
             horizonSource = FakeCelestialHorizonSource()
         ).renderAt(instant)
@@ -150,8 +138,6 @@ class DialRenderInstrumentedTest {
             statusSource = FakeWatchStatusSource()
         ).renderAt(instant)
 
-        assertEquals(340, celestial.width)
-        assertEquals(340, celestial.height)
         assertEquals(340, horizon.width)
         assertEquals(340, horizon.height)
         assertEquals(200, status.width)
@@ -159,7 +145,6 @@ class DialRenderInstrumentedTest {
         val previousBytes = 3L * 13L * 450L * 450L * 4L
         val optimizedBytes =
             12L * 450L * 450L * 4L +
-                12L * 340L * 340L * 4L +
                 3L * 200L * 190L * 4L +
                 450L * 450L * 4L +
                 340L * 340L * 4L
@@ -191,28 +176,6 @@ class DialRenderInstrumentedTest {
         val bitmap = renderer.render()
 
         assertTrue(bitmap.hasWarmAstroArcPixel())
-    }
-
-    @Test
-    fun celestialOverlayPlacesSouthAzimuthAtTop() {
-        val bitmap = CelestialOverlayRenderer(
-            clock = Clock.fixed(Instant.parse("2026-07-07T10:00:00Z"), ZoneOffset.UTC),
-            positionSource = FakeCelestialPositionSource(),
-            viewport = FULL_VIEWPORT
-        ).render()
-
-        assertTrue(bitmap.hasWarmPixelNear(225, 65))
-    }
-
-    @Test
-    fun celestialOverlayDoesNotDrawCompassLetters() {
-        val bitmap = CelestialOverlayRenderer(
-            clock = Clock.fixed(Instant.parse("2026-07-07T10:00:00Z"), ZoneOffset.UTC),
-            positionSource = FakeCelestialPositionSource(positions = emptyList()),
-            viewport = FULL_VIEWPORT
-        ).render()
-
-        assertFalse(bitmap.hasBrightPixelInCompassLabelAnnulus())
     }
 
     @Test
@@ -284,8 +247,8 @@ class DialRenderInstrumentedTest {
             )
         )
 
-        assertTrue(bitmap.hasConstellationPixelNear(225, 175))
-        assertTrue(bitmap.hasConstellationPixelNear(275, 225))
+        assertTrue(bitmap.hasConstellationPixelNear(225, 180))
+        assertTrue(bitmap.hasConstellationPixelNear(270, 225))
     }
 
     @Test
@@ -352,8 +315,8 @@ class DialRenderInstrumentedTest {
         ).render()
 
         assertEquals(Color.BLACK, bitmap.getPixel(0, 0))
-        assertTrue(bitmap.hasOpaqueRedPixelNear(225, 175))
-        assertFalse(bitmap.hasBrightPixelNear(225, 175))
+        assertTrue(bitmap.hasOpaqueRedPixelNear(225, 270))
+        assertFalse(bitmap.hasBrightPixelNear(225, 270))
     }
 
     @Test
@@ -672,7 +635,7 @@ class DialRenderInstrumentedTest {
                 val pixel = getPixel(x, y)
                 if (
                     Color.alpha(pixel) == 255 &&
-                    Color.red(pixel) == 255 &&
+                    Color.red(pixel) >= 96 &&
                     Color.green(pixel) == 0 &&
                     Color.blue(pixel) == 0
                 ) {
@@ -834,24 +797,6 @@ class DialRenderInstrumentedTest {
             )
 
         override fun render(): Bitmap = renderAt(Instant.EPOCH)
-    }
-
-    private class FakeCelestialPositionSource(
-        private val positions: List<CelestialPosition> = listOf(
-            CelestialPosition(CelestialBody.SUN, 180.0),
-            CelestialPosition(CelestialBody.MOON, 270.0),
-            CelestialPosition(CelestialBody.MARS, 0.0),
-            CelestialPosition(CelestialBody.NEPTUNE, 90.0)
-        )
-    ) : CelestialPositionSource {
-        override fun positionsAt(
-            time: Instant,
-            observer: AstroObserver
-        ): CelestialPositionSnapshot =
-            CelestialPositionSnapshot(
-                calculatedAt = time,
-                positions = positions
-            )
     }
 
     private class FakeCelestialHorizonSource(

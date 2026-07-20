@@ -93,19 +93,146 @@
             width="340"
             height="340"
             slotId="2"
-            displayName="@string/slot_celestial_overlay_name"
-            supportedTypes="PHOTO_IMAGE EMPTY"
+            displayName="@string/slot_celestial_inner_name"
+            supportedTypes="RANGED_VALUE EMPTY"
             isCustomizable="FALSE">
             <BoundingOval x="0" y="0" width="340" height="340" />
             <DefaultProviderPolicy
-                primaryProvider="com.derfence.astroface.wear/com.derfence.astroface.wear.complication.CelestialOverlayDataSourceService"
-                primaryProviderType="PHOTO_IMAGE"
+                primaryProvider="com.derfence.astroface.wear/com.derfence.astroface.wear.complication.CelestialInnerMotionDataSourceService"
+                primaryProviderType="RANGED_VALUE"
                 defaultSystemProvider="EMPTY"
                 defaultSystemProviderType="EMPTY" />
-            <Complication type="PHOTO_IMAGE">
-                <PartImage x="0" y="0" width="340" height="340" name="CelestialOverlayImage">
-                    <Image resource="[COMPLICATION.PHOTO_IMAGE]" />
-                </PartImage>
+            <Complication type="RANGED_VALUE">
+                <Group x="0" y="0" width="340" height="340" pivotX="0.5" pivotY="0.5" name="SunMotion">
+                    <Transform target="angle" value="0.2 * (floor([COMPLICATION.RANGED_VALUE_MIN] / 2048) + (([COMPLICATION.RANGED_VALUE_MIN] % 2048) - 900) * (([MINUTE] % 10) / 10.0))" />
+                    <PartImage x="57" y="56" width="117" height="133" name="SunTail">
+                        <Image resource="celestial_sun_tail" />
+                    </PartImage>
+                    <PartImage x="159" y="49" width="22" height="22" pivotX="0.5" pivotY="0.5" name="SunIcon">
+                        <Image resource="celestial_sun_icon" />
+                        <Transform target="angle" value="-0.2 * (floor([COMPLICATION.RANGED_VALUE_MIN] / 2048) + (([COMPLICATION.RANGED_VALUE_MIN] % 2048) - 900) * (([MINUTE] % 10) / 10.0))" />
+                    </PartImage>
+                </Group>
+                <Group x="0" y="0" width="340" height="340" pivotX="0.5" pivotY="0.5" name="MoonMotion">
+                    <Transform target="angle" value="0.2 * (floor(([COMPLICATION.RANGED_VALUE_VALUE] - 4194304) / 2048) + ((([COMPLICATION.RANGED_VALUE_VALUE] - 4194304) % 2048) - 900) * (([MINUTE] % 10) / 10.0))" />
+                    <PartImage x="52" y="51" width="122" height="138" name="MoonTail">
+                        <Image resource="celestial_moon_tail" />
+                    </PartImage>
+                    <PartImage x="159" y="44" width="22" height="22" pivotX="0.5" pivotY="0.5" name="MoonIcon">
+                        <Image resource="celestial_moon_icon" />
+                        <Transform target="angle" value="-0.2 * (floor(([COMPLICATION.RANGED_VALUE_VALUE] - 4194304) / 2048) + ((([COMPLICATION.RANGED_VALUE_VALUE] - 4194304) % 2048) - 900) * (([MINUTE] % 10) / 10.0))" />
+                    </PartImage>
+                </Group>
+                <Group x="0" y="0" width="340" height="340" pivotX="0.5" pivotY="0.5" name="MercuryMotion">
+                    <Transform target="angle" value="0.2 * (floor(([COMPLICATION.RANGED_VALUE_MAX] - 8388608) / 2048) + ((([COMPLICATION.RANGED_VALUE_MAX] - 8388608) % 2048) - 900) * (([MINUTE] % 10) / 10.0))" />
+                    <PartImage x="47" y="46" width="127" height="144" name="MercuryTail">
+                        <Image resource="celestial_mercury_tail" />
+                    </PartImage>
+                    <PartImage x="159" y="39" width="22" height="22" pivotX="0.5" pivotY="0.5" name="MercuryIcon">
+                        <Image resource="celestial_mercury_icon" />
+                        <Transform target="angle" value="-0.2 * (floor(([COMPLICATION.RANGED_VALUE_MAX] - 8388608) / 2048) + ((([COMPLICATION.RANGED_VALUE_MAX] - 8388608) % 2048) - 900) * (([MINUTE] % 10) / 10.0))" />
+                    </PartImage>
+                </Group>
+            </Complication>
+            <Complication type="EMPTY" />
+        </ComplicationSlot>
+
+        <ComplicationSlot
+            x="55"
+            y="55"
+            width="340"
+            height="340"
+            slotId="3"
+            displayName="@string/slot_celestial_middle_name"
+            supportedTypes="RANGED_VALUE EMPTY"
+            isCustomizable="FALSE">
+            <BoundingOval x="0" y="0" width="340" height="340" />
+            <DefaultProviderPolicy
+                primaryProvider="com.derfence.astroface.wear/com.derfence.astroface.wear.complication.CelestialMiddleMotionDataSourceService"
+                primaryProviderType="RANGED_VALUE"
+                defaultSystemProvider="EMPTY"
+                defaultSystemProviderType="EMPTY" />
+            <Complication type="RANGED_VALUE">
+                <Group x="0" y="0" width="340" height="340" pivotX="0.5" pivotY="0.5" name="VenusMotion">
+                    <Transform target="angle" value="0.2 * (floor([COMPLICATION.RANGED_VALUE_MIN] / 2048) + (([COMPLICATION.RANGED_VALUE_MIN] % 2048) - 900) * (([MINUTE] % 10) / 10.0))" />
+                    <PartImage x="42" y="41" width="132" height="150" name="VenusTail">
+                        <Image resource="celestial_venus_tail" />
+                    </PartImage>
+                    <PartImage x="159" y="34" width="22" height="22" pivotX="0.5" pivotY="0.5" name="VenusIcon">
+                        <Image resource="celestial_venus_icon" />
+                        <Transform target="angle" value="-0.2 * (floor([COMPLICATION.RANGED_VALUE_MIN] / 2048) + (([COMPLICATION.RANGED_VALUE_MIN] % 2048) - 900) * (([MINUTE] % 10) / 10.0))" />
+                    </PartImage>
+                </Group>
+                <Group x="0" y="0" width="340" height="340" pivotX="0.5" pivotY="0.5" name="MarsMotion">
+                    <Transform target="angle" value="0.2 * (floor(([COMPLICATION.RANGED_VALUE_VALUE] - 4194304) / 2048) + ((([COMPLICATION.RANGED_VALUE_VALUE] - 4194304) % 2048) - 900) * (([MINUTE] % 10) / 10.0))" />
+                    <PartImage x="37" y="36" width="137" height="156" name="MarsTail">
+                        <Image resource="celestial_mars_tail" />
+                    </PartImage>
+                    <PartImage x="159" y="29" width="22" height="22" pivotX="0.5" pivotY="0.5" name="MarsIcon">
+                        <Image resource="celestial_mars_icon" />
+                        <Transform target="angle" value="-0.2 * (floor(([COMPLICATION.RANGED_VALUE_VALUE] - 4194304) / 2048) + ((([COMPLICATION.RANGED_VALUE_VALUE] - 4194304) % 2048) - 900) * (([MINUTE] % 10) / 10.0))" />
+                    </PartImage>
+                </Group>
+                <Group x="0" y="0" width="340" height="340" pivotX="0.5" pivotY="0.5" name="JupiterMotion">
+                    <Transform target="angle" value="0.2 * (floor(([COMPLICATION.RANGED_VALUE_MAX] - 8388608) / 2048) + ((([COMPLICATION.RANGED_VALUE_MAX] - 8388608) % 2048) - 900) * (([MINUTE] % 10) / 10.0))" />
+                    <PartImage x="32" y="31" width="142" height="162" name="JupiterTail">
+                        <Image resource="celestial_jupiter_tail" />
+                    </PartImage>
+                    <PartImage x="159" y="24" width="22" height="22" pivotX="0.5" pivotY="0.5" name="JupiterIcon">
+                        <Image resource="celestial_jupiter_icon" />
+                        <Transform target="angle" value="-0.2 * (floor(([COMPLICATION.RANGED_VALUE_MAX] - 8388608) / 2048) + ((([COMPLICATION.RANGED_VALUE_MAX] - 8388608) % 2048) - 900) * (([MINUTE] % 10) / 10.0))" />
+                    </PartImage>
+                </Group>
+            </Complication>
+            <Complication type="EMPTY" />
+        </ComplicationSlot>
+
+        <ComplicationSlot
+            x="55"
+            y="55"
+            width="340"
+            height="340"
+            slotId="8"
+            displayName="@string/slot_celestial_outer_name"
+            supportedTypes="RANGED_VALUE EMPTY"
+            isCustomizable="FALSE">
+            <BoundingOval x="0" y="0" width="340" height="340" />
+            <DefaultProviderPolicy
+                primaryProvider="com.derfence.astroface.wear/com.derfence.astroface.wear.complication.CelestialOuterMotionDataSourceService"
+                primaryProviderType="RANGED_VALUE"
+                defaultSystemProvider="EMPTY"
+                defaultSystemProviderType="EMPTY" />
+            <Complication type="RANGED_VALUE">
+                <Group x="0" y="0" width="340" height="340" pivotX="0.5" pivotY="0.5" name="SaturnMotion">
+                    <Transform target="angle" value="0.2 * (floor([COMPLICATION.RANGED_VALUE_MIN] / 2048) + (([COMPLICATION.RANGED_VALUE_MIN] % 2048) - 900) * (([MINUTE] % 10) / 10.0))" />
+                    <PartImage x="27" y="26" width="147" height="168" name="SaturnTail">
+                        <Image resource="celestial_saturn_tail" />
+                    </PartImage>
+                    <PartImage x="159" y="19" width="22" height="22" pivotX="0.5" pivotY="0.5" name="SaturnIcon">
+                        <Image resource="celestial_saturn_icon" />
+                        <Transform target="angle" value="-0.2 * (floor([COMPLICATION.RANGED_VALUE_MIN] / 2048) + (([COMPLICATION.RANGED_VALUE_MIN] % 2048) - 900) * (([MINUTE] % 10) / 10.0))" />
+                    </PartImage>
+                </Group>
+                <Group x="0" y="0" width="340" height="340" pivotX="0.5" pivotY="0.5" name="UranusMotion">
+                    <Transform target="angle" value="0.2 * (floor(([COMPLICATION.RANGED_VALUE_VALUE] - 4194304) / 2048) + ((([COMPLICATION.RANGED_VALUE_VALUE] - 4194304) % 2048) - 900) * (([MINUTE] % 10) / 10.0))" />
+                    <PartImage x="22" y="21" width="152" height="174" name="UranusTail">
+                        <Image resource="celestial_uranus_tail" />
+                    </PartImage>
+                    <PartImage x="159" y="14" width="22" height="22" pivotX="0.5" pivotY="0.5" name="UranusIcon">
+                        <Image resource="celestial_uranus_icon" />
+                        <Transform target="angle" value="-0.2 * (floor(([COMPLICATION.RANGED_VALUE_VALUE] - 4194304) / 2048) + ((([COMPLICATION.RANGED_VALUE_VALUE] - 4194304) % 2048) - 900) * (([MINUTE] % 10) / 10.0))" />
+                    </PartImage>
+                </Group>
+                <Group x="0" y="0" width="340" height="340" pivotX="0.5" pivotY="0.5" name="NeptuneMotion">
+                    <Transform target="angle" value="0.2 * (floor(([COMPLICATION.RANGED_VALUE_MAX] - 8388608) / 2048) + ((([COMPLICATION.RANGED_VALUE_MAX] - 8388608) % 2048) - 900) * (([MINUTE] % 10) / 10.0))" />
+                    <PartImage x="17" y="16" width="157" height="179" name="NeptuneTail">
+                        <Image resource="celestial_neptune_tail" />
+                    </PartImage>
+                    <PartImage x="159" y="9" width="22" height="22" pivotX="0.5" pivotY="0.5" name="NeptuneIcon">
+                        <Image resource="celestial_neptune_icon" />
+                        <Transform target="angle" value="-0.2 * (floor(([COMPLICATION.RANGED_VALUE_MAX] - 8388608) / 2048) + ((([COMPLICATION.RANGED_VALUE_MAX] - 8388608) % 2048) - 900) * (([MINUTE] % 10) / 10.0))" />
+                    </PartImage>
+                </Group>
             </Complication>
             <Complication type="EMPTY" />
         </ComplicationSlot>

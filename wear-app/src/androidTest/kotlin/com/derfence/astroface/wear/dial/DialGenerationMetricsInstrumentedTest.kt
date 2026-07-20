@@ -4,6 +4,8 @@ import android.graphics.Bitmap
 import android.os.SystemClock
 import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.derfence.astroface.wear.complication.CelestialMotionComplicationDataFactory
+import com.derfence.astroface.wear.complication.CelestialMotionGroup
 import java.time.Instant
 import org.json.JSONObject
 import org.junit.Assert.assertTrue
@@ -21,7 +23,10 @@ class DialGenerationMetricsInstrumentedTest {
 
         instants.forEach { instant ->
             bitmaps += Dial24hRenderer().renderAt(instant)
-            bitmaps += CelestialOverlayRenderer().renderAt(instant)
+        }
+        val motionEntries = CelestialMotionGroup.entries.sumOf { group ->
+            CelestialMotionComplicationDataFactory.createTimeline(group, start)
+                .timelineEntries.size
         }
         val elapsedNanos = SystemClock.elapsedRealtimeNanos() - startedAt
         val rawBytes = bitmaps.sumOf { it.allocationByteCount.toLong() }
@@ -31,6 +36,8 @@ class DialGenerationMetricsInstrumentedTest {
             JSONObject()
                 .put("name", "optimized_full_mode_2h")
                 .put("frames", bitmaps.size)
+                .put("celestialTimelineEntries", motionEntries)
+                .put("celestialBitmapBytes", 0)
                 .put("elapsedNanos", elapsedNanos)
                 .put("rawBitmapBytes", rawBytes)
                 .toString()
@@ -38,6 +45,7 @@ class DialGenerationMetricsInstrumentedTest {
 
         assertTrue(elapsedNanos > 0L)
         assertTrue(rawBytes > 0L)
+        assertTrue(motionEntries > 0)
         bitmaps.forEach(Bitmap::recycle)
     }
 

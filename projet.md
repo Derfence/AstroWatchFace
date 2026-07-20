@@ -50,7 +50,7 @@ L'utilisateur veut consulter rapidement, depuis sa montre :
 - Toutes les planètes restent visibles sur le cadran, même lorsqu'elles sont sous l'horizon.
 - Les icônes des corps célestes ne changent pas d'apparence lorsqu'elles sont sous l'horizon.
 - Le lever et le coucher de chaque corps céleste sont indiqués sur son orbite par de petits traits perpendiculaires.
-- Les positions planétaires sont calculées en temps réel pour l'instant d'affichage.
+- Les positions planétaires sont calculées aux bornes de dix minutes puis interpolées à la minute dans WFF.
 - Les corps célestes sont positionnés par azimut ; l'altitude n'est pas appliquée aux icônes, mais les portions sous l'horizon sont suggérées par de courts arcs estompés.
 - Le Soleil et la Lune sont ajoutés aux icônes de position avec les planètes.
 - Les constellations affichées sont celles autour du zénith à minuit, avec le zénith placé au centre de la montre.
@@ -110,7 +110,7 @@ L'utilisateur veut consulter rapidement, depuis sa montre :
 - Ajout éventuel d'une app Android téléphone dans une version ultérieure.
 - Modalités exactes d'une publication future.
 - Niveau de précision astronomique attendu.
-- Stratégie exacte de calcul rapide des positions planétaires entre deux recalculs complets.
+- Une éventuelle interpolation à la seconde, si son coût énergétique devient acceptable.
 
 ## Données astronomiques à calculer
 
@@ -205,15 +205,17 @@ Points d'attention :
 
 État d'implémentation :
 
-- Les positions célestes sont rendues par une complication image plein écran dédiée, fournie par `wear-app`.
-- Le rendu utilise un overlay céleste distinct du cadran temporel 24h.
+- Les positions célestes sont transportées par trois complications numériques `RANGED_VALUE`, regroupant trois astres chacune.
+- `wear-app` calcule les azimuts au début et à la fin de chaque intervalle de dix minutes ; WFF décode ces valeurs et interpole le mouvement à la minute.
+- Les corps et leurs queues sont des PNG statiques rendus directement par WFF. Les icônes restent droites pendant que leur groupe orbital et leur queue tournent.
 - L'anneau céleste affiche un cercle blanc discret pour enfermer les planètes, sans lettres cardinales.
 - Chaque corps céleste est placé sur sa propre orbite de montre concentrique, avec un espacement radial fixe : Soleil, Lune, puis Mercure, Vénus, Mars, Jupiter, Saturne, Uranus et Neptune.
 - Chaque corps céleste affiche une petite queue colorée le long de son orbite ; la queue devient linéairement plus transparente à mesure qu'elle s'éloigne du corps.
 - Chaque corps céleste affiche ses traits de lever/coucher sur sa propre orbite ; la taille des traits est calibrée sur l'espacement fixe entre orbites.
 - De courts arcs opaques dans la couleur du corps partent de ces traits vers la portion d'altitude négative et s'estompent rapidement ; ils sont dessinés sous les queues.
 - Les icônes sont graphiques et colorées : Vénus est affichée en croissant ambré, Mars avec une petite calotte, Mercure en brun-gris minéral et Neptune en disque bleu simple.
-- La fréquence de mise à jour déclarée est de 15 minutes.
+- Les providers fournissent un horizon d'au moins deux heures et demandent un rafraîchissement toutes les deux heures.
+- Le cache partagé garantit qu'une même borne astronomique n'est calculée qu'une fois pour les trois providers.
 
 ### Constellations
 
@@ -523,7 +525,7 @@ Responsabilités :
 
 État d'implémentation :
 
-- La Face WFF assemble six complications : constellations, cadran 24h, horizon céleste, positions célestes, données internes et overlay de mode. Les overlays célestes et de statut sont recadrés pour limiter la mémoire.
+- La Face WFF assemble huit complications : constellations, cadran 24h, horizon céleste, trois groupes de positions célestes, données internes et overlay de mode. Les positions n'utilisent plus de bitmap dynamique ; le statut reste recadré pour limiter la mémoire.
 - Les aiguilles minutes et secondes restent des aiguilles WFF natives ; la seconde utilise un mouvement à ticks.
 - Un élément cliquable central lance l'activité Wear OS qui cycle le mode d'affichage.
 - L'overlay de mode est transparent en mode complet et opaque dans les deux modes astro, afin de masquer visuellement les aiguilles.

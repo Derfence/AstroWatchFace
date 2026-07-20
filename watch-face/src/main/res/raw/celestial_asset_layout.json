@@ -1,0 +1,205 @@
+{
+  "bodies": {
+    "jupiter": {
+      "icon": {
+        "height": 22,
+        "pivotX": 0.5,
+        "pivotY": 0.5,
+        "resource": "celestial_jupiter_icon",
+        "width": 22,
+        "x": 159.0,
+        "y": 24.0
+      },
+      "orbitRadius": 135.0,
+      "tail": {
+        "height": 162,
+        "pivotX": 0.97183099,
+        "pivotY": 0.85802469,
+        "resource": "celestial_jupiter_tail",
+        "width": 142,
+        "x": 32,
+        "y": 31
+      }
+    },
+    "mars": {
+      "icon": {
+        "height": 22,
+        "pivotX": 0.5,
+        "pivotY": 0.5,
+        "resource": "celestial_mars_icon",
+        "width": 22,
+        "x": 159.0,
+        "y": 29.0
+      },
+      "orbitRadius": 130.0,
+      "tail": {
+        "height": 156,
+        "pivotX": 0.97080292,
+        "pivotY": 0.85897436,
+        "resource": "celestial_mars_tail",
+        "width": 137,
+        "x": 37,
+        "y": 36
+      }
+    },
+    "mercury": {
+      "icon": {
+        "height": 22,
+        "pivotX": 0.5,
+        "pivotY": 0.5,
+        "resource": "celestial_mercury_icon",
+        "width": 22,
+        "x": 159.0,
+        "y": 39.0
+      },
+      "orbitRadius": 120.0,
+      "tail": {
+        "height": 144,
+        "pivotX": 0.96850394,
+        "pivotY": 0.86111111,
+        "resource": "celestial_mercury_tail",
+        "width": 127,
+        "x": 47,
+        "y": 46
+      }
+    },
+    "moon": {
+      "icon": {
+        "height": 22,
+        "pivotX": 0.5,
+        "pivotY": 0.5,
+        "resource": "celestial_moon_icon",
+        "width": 22,
+        "x": 159.0,
+        "y": 44.0
+      },
+      "orbitRadius": 115.0,
+      "tail": {
+        "height": 138,
+        "pivotX": 0.96721311,
+        "pivotY": 0.86231884,
+        "resource": "celestial_moon_tail",
+        "width": 122,
+        "x": 52,
+        "y": 51
+      }
+    },
+    "neptune": {
+      "icon": {
+        "height": 22,
+        "pivotX": 0.5,
+        "pivotY": 0.5,
+        "resource": "celestial_neptune_icon",
+        "width": 22,
+        "x": 159.0,
+        "y": 9.0
+      },
+      "orbitRadius": 150.0,
+      "tail": {
+        "height": 179,
+        "pivotX": 0.97452229,
+        "pivotY": 0.8603352,
+        "resource": "celestial_neptune_tail",
+        "width": 157,
+        "x": 17,
+        "y": 16
+      }
+    },
+    "saturn": {
+      "icon": {
+        "height": 22,
+        "pivotX": 0.5,
+        "pivotY": 0.5,
+        "resource": "celestial_saturn_icon",
+        "width": 22,
+        "x": 159.0,
+        "y": 19.0
+      },
+      "orbitRadius": 140.0,
+      "tail": {
+        "height": 168,
+        "pivotX": 0.97278912,
+        "pivotY": 0.85714286,
+        "resource": "celestial_saturn_tail",
+        "width": 147,
+        "x": 27,
+        "y": 26
+      }
+    },
+    "sun": {
+      "icon": {
+        "height": 22,
+        "pivotX": 0.5,
+        "pivotY": 0.5,
+        "resource": "celestial_sun_icon",
+        "width": 22,
+        "x": 159.0,
+        "y": 49.0
+      },
+      "orbitRadius": 110.0,
+      "tail": {
+        "height": 133,
+        "pivotX": 0.96581197,
+        "pivotY": 0.85714286,
+        "resource": "celestial_sun_tail",
+        "width": 117,
+        "x": 57,
+        "y": 56
+      }
+    },
+    "uranus": {
+      "icon": {
+        "height": 22,
+        "pivotX": 0.5,
+        "pivotY": 0.5,
+        "resource": "celestial_uranus_icon",
+        "width": 22,
+        "x": 159.0,
+        "y": 14.0
+      },
+      "orbitRadius": 145.0,
+      "tail": {
+        "height": 174,
+        "pivotX": 0.97368421,
+        "pivotY": 0.85632184,
+        "resource": "celestial_uranus_tail",
+        "width": 152,
+        "x": 22,
+        "y": 21
+      }
+    },
+    "venus": {
+      "icon": {
+        "height": 22,
+        "pivotX": 0.5,
+        "pivotY": 0.5,
+        "resource": "celestial_venus_icon",
+        "width": 22,
+        "x": 159.0,
+        "y": 34.0
+      },
+      "orbitRadius": 125.0,
+      "tail": {
+        "height": 150,
+        "pivotX": 0.96969697,
+        "pivotY": 0.86,
+        "resource": "celestial_venus_tail",
+        "width": 132,
+        "x": 42,
+        "y": 41
+      }
+    }
+  },
+  "coordinateSpace": {
+    "height": 340,
+    "width": 340
+  },
+  "iconBackground": "transparent",
+  "opaqueShadowBodies": [
+    "moon",
+    "venus"
+  ],
+  "orientation": "icons remain screen-upright; tails rotate around viewport center",
+  "referenceAngleDegrees": 0,
+  "schemaVersion": 1
+}

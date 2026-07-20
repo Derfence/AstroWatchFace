@@ -20,10 +20,10 @@ public class WatchFaceTimeHandsTest {
 
         assertEquals(0, document.getElementsByTagName("HourHand").getLength());
         assertTrue(document.getElementsByTagName("Transform").getLength() > 0);
-        assertEquals(6, document.getElementsByTagName("ComplicationSlot").getLength());
-        assertSlotOrder(document, "6", "1", "7", "2", "4", "5");
+        assertEquals(8, document.getElementsByTagName("ComplicationSlot").getLength());
+        assertSlotOrder(document, "6", "1", "7", "2", "3", "8", "4", "5");
         assertSlotsAreNotCustomizable(document);
-        assertNull(complicationSlotWithId(document, "3"));
+        assertNull(complicationSlotWithId(document, "9"));
 
         Element hourHandImage = partImageNamed(document, "Hour24hHand");
         assertNotNull(hourHandImage);
@@ -70,25 +70,34 @@ public class WatchFaceTimeHandsTest {
             firstChild(horizonSlot, "DefaultProviderPolicy").getAttribute("primaryProvider")
         );
 
-        Element celestialOverlaySlot = complicationSlotWithId(document, "2");
-        assertNotNull(celestialOverlaySlot);
-        assertEquals("@string/slot_celestial_overlay_name", celestialOverlaySlot.getAttribute("displayName"));
-        assertEquals("PHOTO_IMAGE EMPTY", celestialOverlaySlot.getAttribute("supportedTypes"));
-        assertEquals("55", celestialOverlaySlot.getAttribute("x"));
-        assertEquals("55", celestialOverlaySlot.getAttribute("y"));
-        assertEquals("340", celestialOverlaySlot.getAttribute("width"));
-        assertEquals("340", celestialOverlaySlot.getAttribute("height"));
-
-        Element overlayPolicy = firstChild(celestialOverlaySlot, "DefaultProviderPolicy");
-        assertEquals(
-            "com.derfence.astroface.wear/com.derfence.astroface.wear.complication.CelestialOverlayDataSourceService",
-            overlayPolicy.getAttribute("primaryProvider")
+        assertMotionSlot(
+            document,
+            "2",
+            "@string/slot_celestial_inner_name",
+            "CelestialInnerMotionDataSourceService"
         );
-        assertEquals("PHOTO_IMAGE", overlayPolicy.getAttribute("primaryProviderType"));
+        assertMotionSlot(
+            document,
+            "3",
+            "@string/slot_celestial_middle_name",
+            "CelestialMiddleMotionDataSourceService"
+        );
+        assertMotionSlot(
+            document,
+            "8",
+            "@string/slot_celestial_outer_name",
+            "CelestialOuterMotionDataSourceService"
+        );
 
-        Element overlayImage = firstChild(celestialOverlaySlot, "PartImage");
-        assertEquals("CelestialOverlayImage", overlayImage.getAttribute("name"));
-        assertEquals("[COMPLICATION.PHOTO_IMAGE]", firstChild(overlayImage, "Image").getAttribute("resource"));
+        assertMotionBody(document, "Sun", "celestial_sun", "RANGED_VALUE_MIN", null);
+        assertMotionBody(document, "Moon", "celestial_moon", "RANGED_VALUE_VALUE", "4194304");
+        assertMotionBody(document, "Mercury", "celestial_mercury", "RANGED_VALUE_MAX", "8388608");
+        assertMotionBody(document, "Venus", "celestial_venus", "RANGED_VALUE_MIN", null);
+        assertMotionBody(document, "Mars", "celestial_mars", "RANGED_VALUE_VALUE", "4194304");
+        assertMotionBody(document, "Jupiter", "celestial_jupiter", "RANGED_VALUE_MAX", "8388608");
+        assertMotionBody(document, "Saturn", "celestial_saturn", "RANGED_VALUE_MIN", null);
+        assertMotionBody(document, "Uranus", "celestial_uranus", "RANGED_VALUE_VALUE", "4194304");
+        assertMotionBody(document, "Neptune", "celestial_neptune", "RANGED_VALUE_MAX", "8388608");
 
         Element statusOverlaySlot = complicationSlotWithId(document, "4");
         assertNotNull(statusOverlaySlot);
@@ -145,7 +154,8 @@ public class WatchFaceTimeHandsTest {
 
         assertPartImageOrder(document, "CenterCap", "ModeOverlayImage");
         assertPartImageOrder(document, "NowSeparator", "CelestialHorizonImage");
-        assertPartImageOrder(document, "CelestialHorizonImage", "CelestialOverlayImage");
+        assertPartImageOrder(document, "CelestialHorizonImage", "SunTail");
+        assertPartImageOrder(document, "NeptuneIcon", "StatusOverlayImage");
 
         Element tapTarget = partDrawNamed(document, "ModeTapTarget");
         assertNotNull(tapTarget);
@@ -192,6 +202,70 @@ public class WatchFaceTimeHandsTest {
             }
         }
         return null;
+    }
+
+    private static Element groupNamed(Document document, String name) {
+        NodeList nodes = document.getElementsByTagName("Group");
+        for (int i = 0; i < nodes.getLength(); i += 1) {
+            Element element = (Element) nodes.item(i);
+            if (name.equals(element.getAttribute("name"))) {
+                return element;
+            }
+        }
+        return null;
+    }
+
+    private static void assertMotionSlot(
+        Document document,
+        String slotId,
+        String displayName,
+        String serviceName
+    ) {
+        Element slot = complicationSlotWithId(document, slotId);
+        assertNotNull(slot);
+        assertEquals(displayName, slot.getAttribute("displayName"));
+        assertEquals("RANGED_VALUE EMPTY", slot.getAttribute("supportedTypes"));
+        assertEquals("55", slot.getAttribute("x"));
+        assertEquals("55", slot.getAttribute("y"));
+        assertEquals("340", slot.getAttribute("width"));
+        assertEquals("340", slot.getAttribute("height"));
+        Element policy = firstChild(slot, "DefaultProviderPolicy");
+        assertEquals(
+            "com.derfence.astroface.wear/com.derfence.astroface.wear.complication." + serviceName,
+            policy.getAttribute("primaryProvider")
+        );
+        assertEquals("RANGED_VALUE", policy.getAttribute("primaryProviderType"));
+    }
+
+    private static void assertMotionBody(
+        Document document,
+        String bodyName,
+        String resourcePrefix,
+        String fieldName,
+        String band
+    ) {
+        Element group = groupNamed(document, bodyName + "Motion");
+        assertNotNull(group);
+        assertEquals("0.5", group.getAttribute("pivotX"));
+        assertEquals("0.5", group.getAttribute("pivotY"));
+        String angle = firstChild(group, "Transform").getAttribute("value");
+        assertTrue(angle.contains("[COMPLICATION." + fieldName + "]"));
+        assertTrue(angle.contains("[MINUTE] % 10"));
+        assertTrue(angle.contains("floor("));
+        assertTrue(angle.contains("% 2048"));
+        if (band != null) {
+            assertTrue(angle.contains("- " + band));
+        }
+
+        Element tail = partImageNamed(document, bodyName + "Tail");
+        Element icon = partImageNamed(document, bodyName + "Icon");
+        assertNotNull(tail);
+        assertNotNull(icon);
+        assertEquals(resourcePrefix + "_tail", firstChild(tail, "Image").getAttribute("resource"));
+        assertEquals(resourcePrefix + "_icon", firstChild(icon, "Image").getAttribute("resource"));
+        assertEquals("0.5", icon.getAttribute("pivotX"));
+        assertEquals("0.5", icon.getAttribute("pivotY"));
+        assertEquals("-" + angle, firstChild(icon, "Transform").getAttribute("value"));
     }
 
     private static void assertPartImageOrder(Document document, String firstName, String secondName) {

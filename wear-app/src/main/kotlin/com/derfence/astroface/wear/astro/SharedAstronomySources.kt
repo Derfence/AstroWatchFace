@@ -1,6 +1,9 @@
 package com.derfence.astroface.wear.astro
 
 object SharedAstronomySources {
+    val celestialPositionSource: CelestialPositionSource by lazy {
+        CachingCelestialPositionSource()
+    }
     val constellationSource: ConstellationSource by lazy {
         AstronomyEngineConstellationSource()
     }

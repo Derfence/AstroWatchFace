@@ -92,18 +92,54 @@
         </service>
 
         <service
-            android:name=".complication.CelestialOverlayDataSourceService"
+            android:name=".complication.CelestialInnerMotionDataSourceService"
             android:directBootAware="true"
             android:exported="true"
             android:icon="@drawable/ic_dial_24"
-            android:label="@string/celestial_overlay_service_label"
+            android:label="@string/celestial_inner_motion_service_label"
             android:permission="com.google.android.wearable.permission.BIND_COMPLICATION_PROVIDER">
             <intent-filter>
                 <action android:name="android.support.wearable.complications.ACTION_COMPLICATION_UPDATE_REQUEST" />
             </intent-filter>
             <meta-data
                 android:name="android.support.wearable.complications.SUPPORTED_TYPES"
-                android:value="LARGE_IMAGE" />
+                android:value="RANGED_VALUE" />
+            <meta-data
+                android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
+                android:value="7200" />
+        </service>
+
+        <service
+            android:name=".complication.CelestialMiddleMotionDataSourceService"
+            android:directBootAware="true"
+            android:exported="true"
+            android:icon="@drawable/ic_dial_24"
+            android:label="@string/celestial_middle_motion_service_label"
+            android:permission="com.google.android.wearable.permission.BIND_COMPLICATION_PROVIDER">
+            <intent-filter>
+                <action android:name="android.support.wearable.complications.ACTION_COMPLICATION_UPDATE_REQUEST" />
+            </intent-filter>
+            <meta-data
+                android:name="android.support.wearable.complications.SUPPORTED_TYPES"
+                android:value="RANGED_VALUE" />
+            <meta-data
+                android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
+                android:value="7200" />
+        </service>
+
+        <service
+            android:name=".complication.CelestialOuterMotionDataSourceService"
+            android:directBootAware="true"
+            android:exported="true"
+            android:icon="@drawable/ic_dial_24"
+            android:label="@string/celestial_outer_motion_service_label"
+            android:permission="com.google.android.wearable.permission.BIND_COMPLICATION_PROVIDER">
+            <intent-filter>
+                <action android:name="android.support.wearable.complications.ACTION_COMPLICATION_UPDATE_REQUEST" />
+            </intent-filter>
+            <meta-data
+                android:name="android.support.wearable.complications.SUPPORTED_TYPES"
+                android:value="RANGED_VALUE" />
             <meta-data
                 android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
                 android:value="7200" />

@@ -3,7 +3,9 @@
     <string name="slot_24h_name">Cadran 24 h</string>
     <string name="slot_constellation_background_name">Fond de constellations</string>
     <string name="slot_celestial_horizon_name">Horizon céleste</string>
-    <string name="slot_celestial_overlay_name">Positions célestes</string>
+    <string name="slot_celestial_inner_name">Astres intérieurs</string>
+    <string name="slot_celestial_middle_name">Astres intermédiaires</string>
+    <string name="slot_celestial_outer_name">Astres extérieurs</string>
     <string name="slot_status_overlay_name">Statut central</string>
     <string name="slot_mode_overlay_name">Modes astro</string>
 </resources>

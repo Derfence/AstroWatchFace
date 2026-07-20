@@ -135,7 +135,7 @@ class MainActivity : Activity() {
             appendLine(status.lastCelestialHorizon ?: "aucune")
             appendLine()
             appendLine("Dernière requête positions célestes :")
-            appendLine(status.lastCelestialOverlay ?: "aucune")
+            appendLine(status.lastCelestialMotion ?: "aucune")
             appendLine()
             appendLine("Dernière requête statut central :")
             appendLine(status.lastStatusOverlay ?: "aucune")

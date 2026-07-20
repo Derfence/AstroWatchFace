@@ -2,11 +2,15 @@
 
 AstroFace est une face Wear OS en deux APK :
 
-- `wear-app` calcule localement les événements Soleil/Lune et fournit six couches de complication : constellations, cadran 24 h, horizon, positions célestes, statut et modes astro.
+- `wear-app` calcule localement les événements Soleil/Lune et fournit huit complications : constellations, cadran 24 h, horizon, trois groupes de positions célestes, statut et modes astro.
 - `watch-face` est une Face WFF sans code, responsable de l'assemblage des couches, du séparateur « maintenant », des aiguilles et de la batterie.
 - L'aiguille des heures fait un tour en 24 h, l'aiguille des minutes fait un tour en 60 minutes, et la trotteuse avance par sauts d'une seconde.
 
-Les couches quotidiennes utilisent des caches bornés uniquement en mémoire. Le cadran et les positions gardent une précision de dix minutes sur une timeline de deux heures ; le statut suit ses échéances réelles.
+Les ressources des astres rendues et interpolées directement par WFF sont décrites
+dans [docs/celestial-assets.md](docs/celestial-assets.md). Elles peuvent être
+régénérées avec `python3 tools/generate_celestial_assets.py`.
+
+Les couches quotidiennes utilisent des caches bornés uniquement en mémoire. Le cadran garde une précision de dix minutes sur une timeline de deux heures. Les positions célestes sont calculées aux bornes de dix minutes, transportées sous forme numérique puis interpolées à la minute par WFF ; le statut suit ses échéances réelles.
 
 ## Build
 
@@ -23,4 +27,4 @@ adb install wear-app/build/outputs/apk/debug/wear-app-debug.apk
 adb install watch-face/build/outputs/apk/debug/watch-face-debug.apk
 ```
 
-Ensuite, sélectionne AstroFace comme face active sur la montre. L'app Wear OS affiche un diagnostic avec les deux services et la dernière demande reçue par la Face.
+Ensuite, sélectionne AstroFace comme face active sur la montre. L'app Wear OS affiche un diagnostic des services et la dernière demande reçue par la Face.

@@ -11,7 +11,7 @@ object RequestStatusRepository {
     private const val key24h = "last_24h"
     private const val keyConstellationBackground = "last_constellation_background"
     private const val keyCelestialHorizon = "last_celestial_horizon"
-    private const val keyCelestialOverlay = "last_celestial_overlay"
+    private const val keyCelestialMotion = "last_celestial_overlay"
     private const val keyStatusOverlay = "last_status_overlay"
     private const val keyModeOverlay = "last_mode_overlay"
     private const val keyManualRefresh = "last_manual_refresh"
@@ -20,7 +20,7 @@ object RequestStatusRepository {
         CONSTELLATION_BACKGROUND,
         DIAL_24H,
         CELESTIAL_HORIZON,
-        CELESTIAL_OVERLAY,
+        CELESTIAL_MOTION,
         STATUS_OVERLAY,
         MODE_OVERLAY
     }
@@ -29,7 +29,7 @@ object RequestStatusRepository {
         val lastConstellationBackground: String?,
         val last24h: String?,
         val lastCelestialHorizon: String?,
-        val lastCelestialOverlay: String?,
+        val lastCelestialMotion: String?,
         val lastStatusOverlay: String?,
         val lastModeOverlay: String?,
         val lastManualRefresh: String?
@@ -55,7 +55,7 @@ object RequestStatusRepository {
             lastConstellationBackground = prefs.getString(keyConstellationBackground, null),
             last24h = prefs.getString(key24h, null),
             lastCelestialHorizon = prefs.getString(keyCelestialHorizon, null),
-            lastCelestialOverlay = prefs.getString(keyCelestialOverlay, null),
+            lastCelestialMotion = prefs.getString(keyCelestialMotion, null),
             lastStatusOverlay = prefs.getString(keyStatusOverlay, null),
             lastModeOverlay = prefs.getString(keyModeOverlay, null),
             lastManualRefresh = prefs.getString(keyManualRefresh, null)
@@ -67,7 +67,7 @@ object RequestStatusRepository {
             DialKey.CONSTELLATION_BACKGROUND -> keyConstellationBackground
             DialKey.DIAL_24H -> key24h
             DialKey.CELESTIAL_HORIZON -> keyCelestialHorizon
-            DialKey.CELESTIAL_OVERLAY -> keyCelestialOverlay
+            DialKey.CELESTIAL_MOTION -> keyCelestialMotion
             DialKey.STATUS_OVERLAY -> keyStatusOverlay
             DialKey.MODE_OVERLAY -> keyModeOverlay
         }
