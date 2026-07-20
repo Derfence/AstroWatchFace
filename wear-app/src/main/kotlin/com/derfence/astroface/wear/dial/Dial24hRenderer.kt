@@ -12,8 +12,6 @@ import com.derfence.astroface.wear.astro.AstroInterval
 import com.derfence.astroface.wear.astro.AstroIntervalType
 import com.derfence.astroface.wear.astro.AstroObserver
 import com.derfence.astroface.wear.astro.AstroWindowCalculator
-import com.derfence.astroface.wear.astro.AstronomyEngineConstellationSource
-import com.derfence.astroface.wear.astro.ConstellationSource
 import com.derfence.astroface.wear.astro.RollingAstroWindow
 import java.time.Clock
 import java.time.Instant
@@ -21,10 +19,7 @@ import java.time.Instant
 class Dial24hRenderer(
     private val clock: Clock = Clock.system(AstroObserver.DEFAULT.zoneId),
     private val observer: AstroObserver = AstroObserver.DEFAULT,
-    private val astroWindowCalculator: AstroWindowCalculator = AstroWindowCalculator(),
-    private val constellationSource: ConstellationSource = AstronomyEngineConstellationSource(),
-    private val constellationBackgroundRenderer: ConstellationBackgroundRenderer =
-        ConstellationBackgroundRenderer()
+    private val astroWindowCalculator: AstroWindowCalculator = AstroWindowCalculator()
 ) : DialRenderer {
     override val contentDescription = "Cadran AstroFace 24 heures et constellations"
 
@@ -38,10 +33,8 @@ class Dial24hRenderer(
         )
         val canvas = Canvas(bitmap)
         val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-        val constellations = constellationSource.constellationsAt(instant, observer)
         val window = astroWindowCalculator.calculate(instant, observer)
 
-        constellationBackgroundRenderer.render(canvas, paint, constellations.lines)
         drawAstroIntervals(canvas, paint, window)
 
         paint.style = Paint.Style.STROKE
@@ -51,7 +44,6 @@ class Dial24hRenderer(
 
         drawTicks(canvas, paint)
         drawLabels(canvas, paint)
-        drawNowSeparator(canvas, paint, window)
         drawEventMarkers(canvas, paint, window.events)
 
         return bitmap
@@ -121,25 +113,6 @@ class Dial24hRenderer(
             }
     }
 
-    private fun drawNowSeparator(canvas: Canvas, paint: Paint, window: RollingAstroWindow) {
-        val angle = DialGeometry.angleForInstant(window.start, observer.zoneId)
-
-        paint.style = Paint.Style.STROKE
-        paint.strokeCap = Paint.Cap.SQUARE
-
-        paint.color = Color.BLACK
-        paint.strokeWidth = 12f
-        drawRadialLine(canvas, paint, angle, 184f, 222f)
-
-        paint.color = Color.argb(240, 229, 57, 53)
-        paint.strokeWidth = 3.5f
-        drawRadialLine(canvas, paint, angle, 186f, 222f)
-
-        paint.color = Color.argb(235, 255, 255, 255)
-        paint.strokeWidth = 1.3f
-        drawRadialLine(canvas, paint, angle, 192f, 218f)
-    }
-
     private fun drawEventMarkers(canvas: Canvas, paint: Paint, events: List<AstroEvent>) {
         paint.style = Paint.Style.FILL
         paint.strokeCap = Paint.Cap.ROUND
@@ -160,18 +133,6 @@ class Dial24hRenderer(
         canvas.drawCircle(point.x, point.y, style.size + 1.8f, paint)
         paint.color = style.color
         canvas.drawCircle(point.x, point.y, style.size, paint)
-    }
-
-    private fun drawRadialLine(
-        canvas: Canvas,
-        paint: Paint,
-        angle: Float,
-        innerRadius: Float,
-        outerRadius: Float
-    ) {
-        val inner = DialGeometry.point(innerRadius, angle)
-        val outer = DialGeometry.point(outerRadius, angle)
-        canvas.drawLine(inner.x, inner.y, outer.x, outer.y, paint)
     }
 
     private fun intervalStyle(type: AstroIntervalType): ArcStyle =

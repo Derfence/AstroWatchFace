@@ -17,10 +17,13 @@ class ModeOverlayDataSourceService : AstroFaceDialDataSourceService() {
 
     override val statusKey = RequestStatusRepository.DialKey.MODE_OVERLAY
 
-    override val timelineSchedule: DialTimelineSchedule?
+    override val imageEnabled: Boolean
+        get() = displayMode != DisplayMode.FULL_DIAL
+
+    override val timelinePlan: DialTimelinePlan?
         get() = when (displayMode) {
             DisplayMode.FULL_DIAL -> null
             DisplayMode.CONSTELLATIONS_NIGHT,
-            DisplayMode.SOLAR_SYSTEM -> DialTimelineSchedule.PassageMode
+            DisplayMode.SOLAR_SYSTEM -> DialTimelinePlan.Fixed(DialTimelineSchedule.PassageMode)
         }
 }

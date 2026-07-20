@@ -26,8 +26,11 @@ object DialGeometry {
     const val canvasSize = 450
     const val center = 225f
 
-    fun twentyFourHourTicks(): List<DialTick> =
+    private val cachedTwentyFourHourTicks: List<DialTick> by lazy {
         ticks(total = 24, labelEvery = 3) { it.toString().padStart(2, '0') }
+    }
+
+    fun twentyFourHourTicks(): List<DialTick> = cachedTwentyFourHourTicks
 
     fun point(radius: Float, angleDegrees: Float): DialPoint {
         val radians = angleDegrees * PI / 180.0

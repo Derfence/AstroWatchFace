@@ -29,6 +29,8 @@ import com.derfence.astroface.wear.astro.SolarSystemSnapshot
 import com.derfence.astroface.wear.astro.SkyPoint
 import com.derfence.astroface.wear.complication.DialComplicationDataFactory
 import com.derfence.astroface.wear.complication.DialTimelineSchedule
+import com.derfence.astroface.wear.complication.DialTimelinePlan
+import java.time.Duration
 import com.derfence.astroface.wear.display.DisplayMode
 import com.derfence.astroface.wear.status.WatchStatus
 import com.derfence.astroface.wear.status.WatchStatusSource
@@ -37,6 +39,7 @@ import java.time.Instant
 import java.time.ZoneOffset
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -45,12 +48,17 @@ import org.junit.runner.RunWith
 class DialRenderInstrumentedTest {
     @Test
     fun renderersProduceVisiblePixels() {
-        assertTrue(Dial24hRenderer(constellationSource = FakeConstellationSource()).render().hasVisiblePixel())
+        assertTrue(Dial24hRenderer().render().hasVisiblePixel())
+        assertTrue(
+            ConstellationLayerRenderer(
+                style = ConstellationLayerStyle.MAIN,
+                constellationSource = FakeConstellationSource()
+            ).render().hasVisiblePixel()
+        )
         assertTrue(
             CelestialOverlayRenderer(
                 clock = Clock.fixed(Instant.parse("2026-07-07T10:00:00Z"), ZoneOffset.UTC),
-                positionSource = FakeCelestialPositionSource(),
-                horizonSource = FakeCelestialHorizonSource()
+                positionSource = FakeCelestialPositionSource()
             ).render().hasVisiblePixel()
         )
         assertTrue(
@@ -65,7 +73,7 @@ class DialRenderInstrumentedTest {
     fun complicationFactoryReturnsPhotoImageData() {
         val time = Instant.parse("2026-07-07T10:00:00Z")
         val data = DialComplicationDataFactory.create(
-            Dial24hRenderer(constellationSource = FakeConstellationSource()),
+            Dial24hRenderer(),
             time
         )
 
@@ -76,21 +84,108 @@ class DialRenderInstrumentedTest {
     fun complicationFactoryReturnsTimelineEntries() {
         val time = Instant.parse("2026-07-07T10:00:00Z")
         val timeline = DialComplicationDataFactory.createTimeline(
-            renderer = Dial24hRenderer(constellationSource = FakeConstellationSource()),
+            renderer = Dial24hRenderer(),
             start = time,
             schedule = DialTimelineSchedule.WatchMode
         )
 
         assertEquals(12, timeline.timelineEntries.size)
         assertEquals(time, timeline.timelineEntries.first().validity.start)
+        assertSame(timeline.defaultComplicationData, timeline.timelineEntries.first().complicationData)
+    }
+
+    @Test
+    fun timelineRendersEachFixedInstantExactlyOnce() {
+        val renderer = CountingRenderer()
+
+        DialComplicationDataFactory.createTimeline(
+            renderer = renderer,
+            start = Instant.parse("2026-07-07T10:00:00Z"),
+            schedule = DialTimelineSchedule.WatchMode
+        )
+
+        assertEquals(12, renderer.renderCount)
+    }
+
+    @Test
+    fun validityTimelineUsesContiguousRendererBoundaries() {
+        val start = Instant.parse("2026-07-07T10:00:00Z")
+        val timeline = DialComplicationDataFactory.createTimeline(
+            renderer = ValidityRenderer(Duration.ofHours(12)),
+            start = start,
+            plan = DialTimelinePlan.ByValidity(Duration.ofHours(48))
+        )
+
+        assertEquals(4, timeline.timelineEntries.size)
+        timeline.timelineEntries.zipWithNext().forEach { (current, next) ->
+            assertEquals(current.validity.end, next.validity.start)
+        }
+        assertEquals(start.plus(Duration.ofHours(48)), timeline.timelineEntries.last().validity.end)
+    }
+
+    @Test
+    fun dailyConstellationFrameReusesBitmapInsideRefreshWindow() {
+        val renderer = ConstellationLayerRenderer(
+            style = ConstellationLayerStyle.MAIN,
+            constellationSource = FakeConstellationSource()
+        )
+
+        val first = renderer.renderFrameAt(Instant.parse("2026-07-07T10:00:00Z"))
+        val second = renderer.renderFrameAt(Instant.parse("2026-07-07T20:00:00Z"))
+
+        assertSame(first.bitmap, second.bitmap)
+        assertEquals(first.contentKey, second.contentKey)
+    }
+
+    @Test
+    fun croppedOverlaysReduceRawBitmapFootprint() {
+        val instant = Instant.parse("2026-07-07T10:00:00Z")
+        val celestial = CelestialOverlayRenderer(
+            positionSource = FakeCelestialPositionSource()
+        ).renderAt(instant)
+        val horizon = CelestialHorizonOverlayRenderer(
+            horizonSource = FakeCelestialHorizonSource()
+        ).renderAt(instant)
+        val status = StatusOverlayRenderer(
+            statusSource = FakeWatchStatusSource()
+        ).renderAt(instant)
+
+        assertEquals(340, celestial.width)
+        assertEquals(340, celestial.height)
+        assertEquals(340, horizon.width)
+        assertEquals(340, horizon.height)
+        assertEquals(200, status.width)
+        assertEquals(190, status.height)
+        val previousBytes = 3L * 13L * 450L * 450L * 4L
+        val optimizedBytes =
+            12L * 450L * 450L * 4L +
+                12L * 340L * 340L * 4L +
+                3L * 200L * 190L * 4L +
+                450L * 450L * 4L +
+                340L * 340L * 4L
+        assertTrue(optimizedBytes <= previousBytes * 60L / 100L)
+    }
+
+    @Test
+    fun dailyLayersExposeExactValidityBoundaries() {
+        val instant = Instant.parse("2026-07-07T10:00:00Z")
+        val constellation = ConstellationLayerRenderer(
+            style = ConstellationLayerStyle.MAIN,
+            constellationSource = FakeConstellationSource()
+        ).renderFrameAt(instant)
+        val horizon = CelestialHorizonOverlayRenderer(
+            horizonSource = FakeCelestialHorizonSource()
+        ).renderFrameAt(instant)
+
+        assertEquals(Instant.parse("2026-07-08T04:00:00Z"), constellation.validUntil)
+        assertEquals(Instant.parse("2026-07-07T22:00:00Z"), horizon.validUntil)
     }
 
     @Test
     fun render24hShowsInjectedAstroArcColor() {
         val renderer = Dial24hRenderer(
             clock = Clock.fixed(Instant.parse("2026-07-07T10:00:00Z"), ZoneOffset.UTC),
-            astroWindowCalculator = AstroWindowCalculator(FakeAstroEventSource()),
-            constellationSource = FakeConstellationSource()
+            astroWindowCalculator = AstroWindowCalculator(FakeAstroEventSource())
         )
 
         val bitmap = renderer.render()
@@ -103,7 +198,7 @@ class DialRenderInstrumentedTest {
         val bitmap = CelestialOverlayRenderer(
             clock = Clock.fixed(Instant.parse("2026-07-07T10:00:00Z"), ZoneOffset.UTC),
             positionSource = FakeCelestialPositionSource(),
-            horizonSource = FakeCelestialHorizonSource()
+            viewport = FULL_VIEWPORT
         ).render()
 
         assertTrue(bitmap.hasWarmPixelNear(225, 65))
@@ -114,7 +209,7 @@ class DialRenderInstrumentedTest {
         val bitmap = CelestialOverlayRenderer(
             clock = Clock.fixed(Instant.parse("2026-07-07T10:00:00Z"), ZoneOffset.UTC),
             positionSource = FakeCelestialPositionSource(positions = emptyList()),
-            horizonSource = FakeCelestialHorizonSource()
+            viewport = FULL_VIEWPORT
         ).render()
 
         assertFalse(bitmap.hasBrightPixelInCompassLabelAnnulus())
@@ -123,9 +218,8 @@ class DialRenderInstrumentedTest {
     @Test
     fun celestialOverlayDrawsHorizonMarkerOnBodyOrbit() {
         val markerTime = Instant.parse("2026-07-07T10:00:00Z")
-        val bitmap = CelestialOverlayRenderer(
+        val bitmap = CelestialHorizonOverlayRenderer(
             clock = Clock.fixed(markerTime, ZoneOffset.UTC),
-            positionSource = FakeCelestialPositionSource(),
             horizonSource = FakeCelestialHorizonSource(
                 markers = listOf(
                     CelestialHorizonMarker(
@@ -135,7 +229,8 @@ class DialRenderInstrumentedTest {
                         azimuthDegrees = 180.0
                     )
                 )
-            )
+            ),
+            viewport = FULL_VIEWPORT
         ).render()
 
         assertTrue(bitmap.hasRedPixelNear(225, 95))
@@ -197,7 +292,8 @@ class DialRenderInstrumentedTest {
     fun statusOverlayRendersCentralInformation() {
         val bitmap = StatusOverlayRenderer(
             clock = Clock.fixed(Instant.parse("2026-07-07T10:00:00Z"), ZoneOffset.UTC),
-            statusSource = FakeWatchStatusSource()
+            statusSource = FakeWatchStatusSource(),
+            viewport = FULL_VIEWPORT
         ).render()
 
         assertTrue(bitmap.hasBrightPixelNear(225, 155))
@@ -284,7 +380,8 @@ class DialRenderInstrumentedTest {
             clock = Clock.fixed(Instant.parse("2026-07-07T10:00:00Z"), ZoneOffset.UTC),
             statusSource = FakeWatchStatusSource(
                 phaseAngleDegrees = phaseAngleDegrees
-            )
+            ),
+            viewport = FULL_VIEWPORT
         ).render()
 
     private fun Bitmap.hasVisiblePixel(): Boolean {
@@ -708,6 +805,37 @@ class DialRenderInstrumentedTest {
         override fun moonAltitudeDegrees(time: Instant, observer: AstroObserver): Double = -2.0
     }
 
+    private class CountingRenderer : DialRenderer {
+        override val contentDescription = "Counting renderer"
+        var renderCount = 0
+            private set
+
+        override fun renderAt(instant: Instant): Bitmap {
+            renderCount += 1
+            return Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
+        }
+
+        override fun render(): Bitmap = renderAt(Instant.EPOCH)
+    }
+
+    private class ValidityRenderer(
+        private val validity: Duration
+    ) : DialRenderer {
+        override val contentDescription = "Validity renderer"
+
+        override fun renderAt(instant: Instant): Bitmap =
+            Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
+
+        override fun renderFrameAt(instant: Instant): RenderedDialFrame =
+            RenderedDialFrame(
+                bitmap = renderAt(instant),
+                contentKey = instant,
+                validUntil = instant.plus(validity)
+            )
+
+        override fun render(): Bitmap = renderAt(Instant.EPOCH)
+    }
+
     private class FakeCelestialPositionSource(
         private val positions: List<CelestialPosition> = listOf(
             CelestialPosition(CelestialBody.SUN, 180.0),
@@ -757,6 +885,7 @@ class DialRenderInstrumentedTest {
                 calculatedAt = time,
                 refreshInstant = Instant.parse("2026-07-07T04:00:00Z"),
                 targetMidnight = Instant.parse("2026-07-07T22:00:00Z"),
+                nextRefreshInstant = Instant.parse("2026-07-08T04:00:00Z"),
                 lines = lines
             )
     }
@@ -775,6 +904,10 @@ class DialRenderInstrumentedTest {
                     validUntil = time.plusSeconds(7200)
                 )
             )
+    }
+
+    private companion object {
+        val FULL_VIEWPORT = DialViewport(0, 0, DialGeometry.canvasSize, DialGeometry.canvasSize)
     }
 
     private class FakeSolarSystemPositionSource : SolarSystemPositionSource {

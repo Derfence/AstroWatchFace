@@ -45,10 +45,10 @@ class ConstellationBackgroundRenderer(
 
         paint.style = Paint.Style.FILL
         paint.color = starColor
-        lines.forEach { line ->
-            drawStar(canvas, paint, line.from)
-            drawStar(canvas, paint, line.to)
-        }
+        lines.asSequence()
+            .flatMap { sequenceOf(it.from, it.to) }
+            .distinct()
+            .forEach { drawStar(canvas, paint, it) }
 
         canvas.restore()
     }

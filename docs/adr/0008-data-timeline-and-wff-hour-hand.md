@@ -14,13 +14,13 @@ Les modes constellations et système solaire sont des modes de passage : l'utili
 
 Les complications image fournies par `wear-app`, sauf l'aiguille 24h, renvoient une `ComplicationDataTimeline`.
 
-Le cadran principal, les positions célestes et le statut central utilisent une cadence de 10 minutes avec un horizon de 6 heures. Les modes constellations et système solaire utilisent une cadence de 24 heures avec un horizon de 48 heures.
+Le cadran principal et les positions célestes utilisent une cadence de 10 minutes avec un horizon de 2 heures. ADR 0009 remplace la cadence uniforme du statut par ses échéances réelles et ajoute des timelines quotidiennes pour les constellations et l'horizon céleste. Les modes constellations et système solaire conservent un horizon de 48 heures.
 
 L'aiguille 24h n'est plus une complication image. Elle est déclarée dans la WFF avec un `PartImage` utilisant le PNG transparent `hour_hand_bitmap`.
 
 Les essais sur montre réelle ont isolé le défaut initial : le VectorDrawable `hour_hand` ne s'affichait pas dans un `PartImage`, tandis que sa version PNG s'affichait aux mêmes position et dimensions. Un second essai a confirmé que l'attribut statique `angle` et `Transform target="angle"` fonctionnent avec le PNG.
 
-Le validateur WFF officiel a révélé que les attributs `isCustomizable` utilisaient les booléens Android en minuscules. WFF version 1 exige `TRUE` ou `FALSE` ; les quatre slots utilisent désormais `FALSE`.
+Le validateur WFF officiel a révélé que les attributs `isCustomizable` utilisaient les booléens Android en minuscules. WFF version 1 exige `TRUE` ou `FALSE` ; tous les slots utilisent désormais `FALSE`.
 
 Le `PartImage` final utilise un pivot `(0.5, 0.97)` placé au centre du cadran et applique `Transform target="angle" value="[HOUR_0_23_MINUTE] * 15"`. La source WFF fournit l'heure locale 0–23 combinée aux minutes ; le facteur 15 convertit les 24 heures en 360 degrés avec la précision à la minute.
 

@@ -9,29 +9,50 @@ import com.derfence.astroface.wear.astro.AstroObserver
 import com.derfence.astroface.wear.status.WatchStatusSource
 import java.time.Clock
 import java.time.Instant
+import java.time.ZoneId
 
 class StatusOverlayRenderer(
     private val clock: Clock = Clock.system(AstroObserver.DEFAULT.zoneId),
-    private val statusSource: WatchStatusSource
+    private val statusSource: WatchStatusSource,
+    private val zoneId: ZoneId = AstroObserver.DEFAULT.zoneId,
+    private val viewport: DialViewport = DialViewport.STATUS
 ) : DialRenderer {
     override val contentDescription = "Date et phase de Lune AstroFace"
 
     override fun render(): Bitmap = renderAt(clock.instant())
 
-    override fun renderAt(instant: Instant): Bitmap {
+    override fun renderAt(instant: Instant): Bitmap = renderFrameAt(instant).bitmap
+
+    override fun renderFrameAt(instant: Instant): RenderedDialFrame {
+        val status = statusSource.statusAt(instant)
         val bitmap = Bitmap.createBitmap(
-            DialGeometry.canvasSize,
-            DialGeometry.canvasSize,
+            viewport.width,
+            viewport.height,
             Bitmap.Config.ARGB_8888
         )
         val canvas = Canvas(bitmap)
+        viewport.translate(canvas)
         val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-        val status = statusSource.statusAt(instant)
 
         drawMoonPhase(canvas, paint, status.moonPhase.phaseAngleDegrees)
         drawDate(canvas, paint, status.dateLabel)
 
-        return bitmap
+        val nextMidnight = instant.atZone(zoneId).toLocalDate()
+            .plusDays(1)
+            .atStartOfDay(zoneId)
+            .toInstant()
+        val validUntil = status.moonPhase.validUntil
+            ?.let { minOf(it, nextMidnight) }
+            ?: nextMidnight
+        return RenderedDialFrame(
+            bitmap = bitmap,
+            contentKey = ContentKey(
+                dateLabel = status.dateLabel,
+                moonTarget = status.moonPhase.targetTime,
+                phaseAngleDegrees = status.moonPhase.phaseAngleDegrees
+            ),
+            validUntil = validUntil
+        )
     }
 
     private fun drawMoonPhase(canvas: Canvas, paint: Paint, phaseAngleDegrees: Double) {
@@ -63,4 +84,10 @@ class StatusOverlayRenderer(
         private const val DATE_TEXT_SIZE = 18f
         private val STATUS_TEXT_COLOR = Color.rgb(245, 245, 242)
     }
+
+    private data class ContentKey(
+        val dateLabel: String,
+        val moonTarget: Instant,
+        val phaseAngleDegrees: Double
+    )
 }

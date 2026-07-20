@@ -1,7 +1,7 @@
 package com.derfence.astroface.wear.status
 
-import com.derfence.astroface.wear.astro.AstronomyEngineMoonPhaseSource
 import com.derfence.astroface.wear.astro.MoonPhaseSource
+import com.derfence.astroface.wear.astro.SharedAstronomySources
 import java.time.Instant
 
 interface WatchStatusSource {
@@ -9,7 +9,7 @@ interface WatchStatusSource {
 }
 
 class DefaultWatchStatusSource(
-    private val moonPhaseSource: MoonPhaseSource = AstronomyEngineMoonPhaseSource(),
+    private val moonPhaseSource: MoonPhaseSource = SharedAstronomySources.moonPhaseSource,
     private val dateStatusFormatter: DateStatusFormatter = DateStatusFormatter()
 ) : WatchStatusSource {
     override fun statusAt(time: Instant): WatchStatus =

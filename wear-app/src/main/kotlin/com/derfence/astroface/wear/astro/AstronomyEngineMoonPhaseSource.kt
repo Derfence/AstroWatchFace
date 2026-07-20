@@ -15,6 +15,8 @@ class AstronomyEngineMoonPhaseSource internal constructor(
     private val moonRiseSetSource: MoonRiseSetSource,
     private val moonPhaseCalculator: MoonPhaseCalculator
 ) : MoonPhaseSource {
+    private var cachedSnapshot: MoonPhaseSnapshot? = null
+
     constructor(
         observer: AstroObserver = AstroObserver.DEFAULT
     ) : this(
@@ -23,7 +25,18 @@ class AstronomyEngineMoonPhaseSource internal constructor(
         moonPhaseCalculator = AstronomyEngineMoonPhaseCalculator()
     )
 
+    @Synchronized
     override fun phaseAt(time: Instant): MoonPhaseSnapshot {
+        cachedSnapshot?.let { cached ->
+            val validUntil = cached.validUntil
+            if (
+                validUntil != null &&
+                !time.isBefore(cached.calculatedAt) &&
+                time.isBefore(validUntil)
+            ) {
+                return cached.copy(calculatedAt = time)
+            }
+        }
         val updateBoundary = moonRiseSetSource.previousMoonsetAtOrBefore(time, observer)
         val targetSearchStart = (updateBoundary ?: time).plus(SEARCH_STEP)
         val targetTime = moonRiseSetSource.nextMoonriseAfter(targetSearchStart, observer) ?: time
@@ -35,7 +48,7 @@ class AstronomyEngineMoonPhaseSource internal constructor(
             phaseAngleDegrees = values.phaseAngleDegrees,
             illuminationPercent = values.illuminationPercent,
             validUntil = moonRiseSetSource.nextMoonsetAfter(time.plus(SEARCH_STEP), observer)
-        )
+        ).also { cachedSnapshot = it }
     }
 
     private companion object {

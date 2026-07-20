@@ -15,23 +15,17 @@ import java.time.Instant
 import java.time.LocalDate
 
 class AstronomyEngineCelestialHorizonSource : CelestialHorizonSource {
-    private var cachedKey: CacheKey? = null
-    private var cachedSnapshot: CelestialHorizonSnapshot? = null
+    private val cache = SynchronizedLruCache<CacheKey, CelestialHorizonSnapshot>(MAX_CACHED_DATES)
 
+    @Synchronized
     override fun horizonMarkersAt(
         time: Instant,
         observer: AstroObserver
     ): CelestialHorizonSnapshot {
         val localDate = time.atZone(observer.zoneId).toLocalDate()
-        val cached = cachedSnapshot
-        if (cached != null && cachedKey == CacheKey(observer, localDate)) {
-            return cached.copy(calculatedAt = time)
-        }
-
-        val snapshot = buildSnapshot(time, observer, localDate)
-        cachedKey = CacheKey(observer, localDate)
-        cachedSnapshot = snapshot
-        return snapshot
+        return cache.getOrPut(CacheKey(observer, localDate)) {
+            buildSnapshot(time, observer, localDate)
+        }.copy(calculatedAt = time)
     }
 
     private fun buildSnapshot(
@@ -132,5 +126,6 @@ class AstronomyEngineCelestialHorizonSource : CelestialHorizonSource {
     private companion object {
         private const val MILLIS_PER_DAY = 86_400_000.0
         private const val SEARCH_MARGIN_DAYS = 0.08
+        private const val MAX_CACHED_DATES = 2
     }
 }

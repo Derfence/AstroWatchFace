@@ -7,7 +7,9 @@ import com.derfence.astroface.wear.status.RequestStatusRepository
 
 object DialUpdateRequester {
     fun requestAll(context: Context) {
+        request(context, ConstellationBackgroundDataSourceService::class.java)
         request(context, Dial24hDataSourceService::class.java)
+        request(context, CelestialHorizonDataSourceService::class.java)
         request(context, CelestialOverlayDataSourceService::class.java)
         request(context, StatusOverlayDataSourceService::class.java)
         request(context, ModeOverlayDataSourceService::class.java)

@@ -38,6 +38,24 @@
             android:theme="@style/Theme.AstroFaceModeCycle" />
 
         <service
+            android:name=".complication.ConstellationBackgroundDataSourceService"
+            android:directBootAware="true"
+            android:exported="true"
+            android:icon="@drawable/ic_dial_24"
+            android:label="@string/constellation_background_service_label"
+            android:permission="com.google.android.wearable.permission.BIND_COMPLICATION_PROVIDER">
+            <intent-filter>
+                <action android:name="android.support.wearable.complications.ACTION_COMPLICATION_UPDATE_REQUEST" />
+            </intent-filter>
+            <meta-data
+                android:name="android.support.wearable.complications.SUPPORTED_TYPES"
+                android:value="LARGE_IMAGE" />
+            <meta-data
+                android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
+                android:value="86400" />
+        </service>
+
+        <service
             android:name=".complication.Dial24hDataSourceService"
             android:directBootAware="true"
             android:exported="true"
@@ -52,7 +70,25 @@
                 android:value="LARGE_IMAGE" />
             <meta-data
                 android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
-                android:value="1800" />
+                android:value="7200" />
+        </service>
+
+        <service
+            android:name=".complication.CelestialHorizonDataSourceService"
+            android:directBootAware="true"
+            android:exported="true"
+            android:icon="@drawable/ic_dial_24"
+            android:label="@string/celestial_horizon_service_label"
+            android:permission="com.google.android.wearable.permission.BIND_COMPLICATION_PROVIDER">
+            <intent-filter>
+                <action android:name="android.support.wearable.complications.ACTION_COMPLICATION_UPDATE_REQUEST" />
+            </intent-filter>
+            <meta-data
+                android:name="android.support.wearable.complications.SUPPORTED_TYPES"
+                android:value="LARGE_IMAGE" />
+            <meta-data
+                android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
+                android:value="86400" />
         </service>
 
         <service
@@ -70,7 +106,7 @@
                 android:value="LARGE_IMAGE" />
             <meta-data
                 android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
-                android:value="1800" />
+                android:value="7200" />
         </service>
 
         <service
@@ -88,7 +124,7 @@
                 android:value="LARGE_IMAGE" />
             <meta-data
                 android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
-                android:value="1800" />
+                android:value="86400" />
         </service>
 
         <service

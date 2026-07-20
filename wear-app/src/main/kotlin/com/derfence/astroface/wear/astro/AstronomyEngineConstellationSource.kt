@@ -17,25 +17,18 @@ class AstronomyEngineConstellationSource internal constructor(
         refreshPolicy = ConstellationRefreshPolicy(AstronomyEngineSunriseProvider)
     )
 
-    private var cachedKey: CacheKey? = null
-    private var cachedSnapshot: ConstellationSnapshot? = null
+    private val cache = SynchronizedLruCache<CacheKey, ConstellationSnapshot>(MAX_CACHED_WINDOWS)
 
+    @Synchronized
     override fun constellationsAt(
         time: Instant,
         observer: AstroObserver
     ): ConstellationSnapshot {
-        val cached = cachedKey
-        val snapshot = cachedSnapshot
-
-        if (
-            cached != null &&
-            snapshot != null &&
-            cached.observer == observer &&
-            !time.isBefore(cached.refreshInstant) &&
-            time.isBefore(cached.nextRefreshInstant)
-        ) {
-            return snapshot.copy(calculatedAt = time)
-        }
+        cache.firstOrNull { key, _ ->
+            key.observer == observer &&
+                !time.isBefore(key.refreshInstant) &&
+                time.isBefore(key.nextRefreshInstant)
+        }?.let { return it.copy(calculatedAt = time) }
 
         val target = refreshPolicy.targetFor(time, observer)
         val key = CacheKey(
@@ -44,10 +37,9 @@ class AstronomyEngineConstellationSource internal constructor(
             targetMidnight = target.targetMidnight,
             nextRefreshInstant = target.nextRefreshInstant
         )
-        return buildSnapshot(time, observer, target).also {
-            cachedKey = key
-            cachedSnapshot = it
-        }
+        return cache.getOrPut(key) {
+            buildSnapshot(time, observer, target)
+        }.copy(calculatedAt = time)
     }
 
     private fun buildSnapshot(
@@ -88,6 +80,7 @@ class AstronomyEngineConstellationSource internal constructor(
             calculatedAt = time,
             refreshInstant = target.refreshInstant,
             targetMidnight = target.targetMidnight,
+            nextRefreshInstant = target.nextRefreshInstant,
             lines = lines
         )
     }
@@ -112,6 +105,7 @@ class AstronomyEngineConstellationSource internal constructor(
     private companion object {
         private const val FULL_CIRCLE_DEGREES = 360.0
         private const val ZENITH_RADIUS_DEGREES = 100.0
+        private const val MAX_CACHED_WINDOWS = 2
     }
 }
 

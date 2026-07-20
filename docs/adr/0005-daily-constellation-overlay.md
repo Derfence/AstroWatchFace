@@ -14,7 +14,7 @@ Les constellations sont calculées dans `wear-app`, avec un catalogue d'astéris
 
 Le catalogue embarqué est généré depuis un snapshot verrouillé de la culture de ciel moderne de Stellarium et des coordonnées Hipparcos/CDS nécessaires aux tracés. Le filtre de construction retient toutes les constellations dont au moins une étoile de tracé est visible depuis le point GPS fixe du projet au cours d'un balayage annuel des minuits locaux. Les tests relisent les sources normalisées et vérifient que les étoiles, les segments et les constellations retenues correspondent exactement au snapshot filtré.
 
-Le rendu est placé dans la couche du cadran 24 h, avant les arcs, les repères, l'overlay des planètes et les aiguilles. Les constellations forment donc un arrière-plan complet, limité au cercle de la montre. Le rayon céleste de sélection est porté à `90°` autour du zénith.
+Le rendu forme un arrière-plan complet, limité au cercle de la montre. ADR 0009 extrait ce fond du bitmap du cadran 24 h vers une complication quotidienne placée sous celui-ci. Le rayon céleste de sélection est porté à `90°` autour du zénith.
 
 Les constellations utilisent une orientation de carte du ciel, différente de celle des planètes : `12h = Nord`, `3h = Ouest`, `6h = Sud`, `9h = Est`, comme lorsqu'on regarde le ciel allongé dans l'herbe.
 
@@ -22,7 +22,8 @@ Le rafraîchissement logique des constellations a lieu une fois par jour au leve
 
 ## Conséquences
 
-- La face WFF reste inchangée : le cadran 24 h porte le fond de constellations et l'overlay céleste continue de porter les positions planétaires.
+- La face WFF assemble le fond quotidien dans un slot distinct sous le cadran 24 h.
 - Les constellations peuvent rester stables toute la journée, même si l'overlay est redemandé plus souvent pour les planètes.
+- Le snapshot est partagé en mémoire avec le mode nocturne ; les styles normal et rouge possèdent chacun leur bitmap rasterisé.
 - Le rendu utilise un clip circulaire à l'échelle complète de la montre.
 - Le catalogue embarqué est plus volumineux que la V1 initiale, mais il reste hors réseau, généré de manière déterministe et sans changement d'interface de rendu.

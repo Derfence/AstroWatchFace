@@ -1,0 +1,32 @@
+# ADR 0009 : Couches de rendu selon leur volatilité
+
+## Statut
+
+Accepté
+
+## Contexte
+
+Les timelines de deux heures produisent douze images à dix minutes d'intervalle. Le fond de constellations et les azimuts de lever/coucher étaient pourtant redessinés dans chaque image, tandis que le statut central utilisait un bitmap transparent plein écran. La première image d'une timeline était également générée une seconde fois comme donnée par défaut.
+
+## Décision
+
+La Face WFF assemble six complications, ordonnées selon leur volatilité : constellations quotidiennes, cadran glissant 24 h, horizon céleste quotidien, positions célestes, statut central et mode astro.
+
+- Les constellations sont valides d'un lever du Soleil au suivant.
+- Les marqueurs d'horizon sont valides jusqu'au prochain minuit local.
+- Le cadran et les positions conservent une cadence de dix minutes et un horizon de deux heures.
+- Le statut change au prochain minuit ou à l'expiration de la phase lunaire.
+- Le mode complet renvoie `EMPTY` au lieu d'un bitmap transparent.
+
+Les événements Soleil/Lune sont recherchés une fois pour une éphéméride de trois jours, indexée par observateur et date locale. Les fenêtres glissantes de 24 h filtrent ensuite cette éphéméride. Les caches sont bornés, synchronisés et uniquement en mémoire ; un redémarrage du processus provoque donc un recalcul normal.
+
+Les overlays célestes utilisent des bitmaps `340 × 340` placés à `(55, 55)` et le statut un bitmap `200 × 190` placé à `(125, 120)`. Le séparateur « maintenant » est déplacé dans WFF sous forme de PNG pivotant avec `[HOUR_0_23_MINUTE]`.
+
+## Conséquences
+
+- Les données quotidiennes ne sont plus recalculées ni redessinées dans chaque frame dynamique.
+- Une timeline de douze instants produit douze rendus, sans treizième rendu par défaut.
+- Le volume brut théorique des bitmaps du mode complet diminue d'au moins 40 %.
+- Les changements d'heure sont respectés grâce aux bornes basées sur les dates et fuseaux locaux.
+- La perte du processus invalide tous les caches ; aucune donnée astronomique ou position n'est écrite sur disque.
+- La validation visuelle finale des nouveaux viewports et du séparateur WFF doit être réalisée sur Galaxy Watch4 Classic, notamment en AOD.

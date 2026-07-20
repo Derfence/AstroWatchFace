@@ -20,8 +20,8 @@ public class WatchFaceTimeHandsTest {
 
         assertEquals(0, document.getElementsByTagName("HourHand").getLength());
         assertTrue(document.getElementsByTagName("Transform").getLength() > 0);
-        assertEquals(4, document.getElementsByTagName("ComplicationSlot").getLength());
-        assertSlotOrder(document, "1", "2", "4", "5");
+        assertEquals(6, document.getElementsByTagName("ComplicationSlot").getLength());
+        assertSlotOrder(document, "6", "1", "7", "2", "4", "5");
         assertSlotsAreNotCustomizable(document);
         assertNull(complicationSlotWithId(document, "3"));
 
@@ -41,10 +41,43 @@ public class WatchFaceTimeHandsTest {
         assertEquals("[HOUR_0_23_MINUTE] * 15", hourHandTransform.getAttribute("value"));
         PngAssetAssertions.assertPng(mainResourceFile("drawable-nodpi/hour_hand_bitmap.png"), 18, 140);
 
+        Element nowSeparator = partImageNamed(document, "NowSeparator");
+        assertNotNull(nowSeparator);
+        assertEquals("219", nowSeparator.getAttribute("x"));
+        assertEquals("3", nowSeparator.getAttribute("y"));
+        assertEquals("12", nowSeparator.getAttribute("width"));
+        assertEquals("222", nowSeparator.getAttribute("height"));
+        assertEquals("[HOUR_0_23_MINUTE] * 15", firstChild(nowSeparator, "Transform").getAttribute("value"));
+        PngAssetAssertions.assertPng(mainResourceFile("drawable-nodpi/now_separator.png"), 12, 222);
+
+        Element constellationSlot = complicationSlotWithId(document, "6");
+        assertNotNull(constellationSlot);
+        assertEquals("0", constellationSlot.getAttribute("x"));
+        assertEquals("450", constellationSlot.getAttribute("width"));
+        assertEquals(
+            "com.derfence.astroface.wear/com.derfence.astroface.wear.complication.ConstellationBackgroundDataSourceService",
+            firstChild(constellationSlot, "DefaultProviderPolicy").getAttribute("primaryProvider")
+        );
+
+        Element horizonSlot = complicationSlotWithId(document, "7");
+        assertNotNull(horizonSlot);
+        assertEquals("55", horizonSlot.getAttribute("x"));
+        assertEquals("55", horizonSlot.getAttribute("y"));
+        assertEquals("340", horizonSlot.getAttribute("width"));
+        assertEquals("340", horizonSlot.getAttribute("height"));
+        assertEquals(
+            "com.derfence.astroface.wear/com.derfence.astroface.wear.complication.CelestialHorizonDataSourceService",
+            firstChild(horizonSlot, "DefaultProviderPolicy").getAttribute("primaryProvider")
+        );
+
         Element celestialOverlaySlot = complicationSlotWithId(document, "2");
         assertNotNull(celestialOverlaySlot);
         assertEquals("@string/slot_celestial_overlay_name", celestialOverlaySlot.getAttribute("displayName"));
         assertEquals("PHOTO_IMAGE EMPTY", celestialOverlaySlot.getAttribute("supportedTypes"));
+        assertEquals("55", celestialOverlaySlot.getAttribute("x"));
+        assertEquals("55", celestialOverlaySlot.getAttribute("y"));
+        assertEquals("340", celestialOverlaySlot.getAttribute("width"));
+        assertEquals("340", celestialOverlaySlot.getAttribute("height"));
 
         Element overlayPolicy = firstChild(celestialOverlaySlot, "DefaultProviderPolicy");
         assertEquals(
@@ -61,6 +94,10 @@ public class WatchFaceTimeHandsTest {
         assertNotNull(statusOverlaySlot);
         assertEquals("@string/slot_status_overlay_name", statusOverlaySlot.getAttribute("displayName"));
         assertEquals("PHOTO_IMAGE EMPTY", statusOverlaySlot.getAttribute("supportedTypes"));
+        assertEquals("125", statusOverlaySlot.getAttribute("x"));
+        assertEquals("120", statusOverlaySlot.getAttribute("y"));
+        assertEquals("200", statusOverlaySlot.getAttribute("width"));
+        assertEquals("190", statusOverlaySlot.getAttribute("height"));
 
         Element statusPolicy = firstChild(statusOverlaySlot, "DefaultProviderPolicy");
         assertEquals(
@@ -107,6 +144,8 @@ public class WatchFaceTimeHandsTest {
         assertElementOrder(partDrawNamed(document, "BatteryFillDefault"), modeOverlaySlot);
 
         assertPartImageOrder(document, "CenterCap", "ModeOverlayImage");
+        assertPartImageOrder(document, "NowSeparator", "CelestialHorizonImage");
+        assertPartImageOrder(document, "CelestialHorizonImage", "CelestialOverlayImage");
 
         Element tapTarget = partDrawNamed(document, "ModeTapTarget");
         assertNotNull(tapTarget);

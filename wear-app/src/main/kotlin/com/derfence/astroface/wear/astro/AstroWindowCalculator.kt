@@ -5,7 +5,7 @@ import java.time.Instant
 import java.time.temporal.ChronoUnit
 
 class AstroWindowCalculator(
-    private val source: AstroEventSource = AstronomyEngineAstroEventSource()
+    private val source: AstroEventSource = SharedAstronomySources.astroEventSource
 ) {
     fun calculate(
         now: Instant,

@@ -5,9 +5,9 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import com.derfence.astroface.wear.astro.AstroObserver
-import com.derfence.astroface.wear.astro.AstronomyEngineConstellationSource
 import com.derfence.astroface.wear.astro.AstronomyEngineSolarSystemPositionSource
 import com.derfence.astroface.wear.astro.ConstellationSource
+import com.derfence.astroface.wear.astro.SharedAstronomySources
 import com.derfence.astroface.wear.astro.SolarSystemBody
 import com.derfence.astroface.wear.astro.SolarSystemPositionSource
 import com.derfence.astroface.wear.display.DisplayMode
@@ -18,7 +18,7 @@ class ModeOverlayRenderer(
     private val mode: DisplayMode,
     private val clock: Clock = Clock.system(AstroObserver.DEFAULT.zoneId),
     private val observer: AstroObserver = AstroObserver.DEFAULT,
-    private val constellationSource: ConstellationSource = AstronomyEngineConstellationSource(),
+    private val constellationSource: ConstellationSource = SharedAstronomySources.constellationSource,
     private val solarSystemPositionSource: SolarSystemPositionSource =
         AstronomyEngineSolarSystemPositionSource(),
     private val nightConstellationBackgroundRenderer: ConstellationBackgroundRenderer =
@@ -27,6 +27,13 @@ class ModeOverlayRenderer(
             starColor = Color.RED
         )
 ) : DialRenderer {
+    private val nightRenderer = ConstellationLayerRenderer(
+        style = ConstellationLayerStyle.NIGHT,
+        clock = clock,
+        observer = observer,
+        constellationSource = constellationSource,
+        backgroundRenderer = nightConstellationBackgroundRenderer
+    )
     override val contentDescription: String =
         when (mode) {
             DisplayMode.FULL_DIAL -> "Mode AstroFace complet"
@@ -36,7 +43,17 @@ class ModeOverlayRenderer(
 
     override fun render(): Bitmap = renderAt(clock.instant())
 
+    override fun renderFrameAt(instant: Instant): RenderedDialFrame =
+        if (mode == DisplayMode.CONSTELLATIONS_NIGHT) {
+            nightRenderer.renderFrameAt(instant)
+        } else {
+            super.renderFrameAt(instant)
+        }
+
     override fun renderAt(instant: Instant): Bitmap {
+        if (mode == DisplayMode.CONSTELLATIONS_NIGHT) {
+            return nightRenderer.renderAt(instant)
+        }
         val bitmap = Bitmap.createBitmap(
             DialGeometry.canvasSize,
             DialGeometry.canvasSize,
@@ -53,16 +70,11 @@ class ModeOverlayRenderer(
 
         when (mode) {
             DisplayMode.FULL_DIAL -> Unit
-            DisplayMode.CONSTELLATIONS_NIGHT -> drawNightConstellations(canvas, paint, instant)
+            DisplayMode.CONSTELLATIONS_NIGHT -> Unit
             DisplayMode.SOLAR_SYSTEM -> drawSolarSystem(canvas, paint, instant)
         }
 
         return bitmap
-    }
-
-    private fun drawNightConstellations(canvas: Canvas, paint: Paint, instant: Instant) {
-        val constellations = constellationSource.constellationsAt(instant, observer)
-        nightConstellationBackgroundRenderer.render(canvas, paint, constellations.lines)
     }
 
     private fun drawSolarSystem(canvas: Canvas, paint: Paint, instant: Instant) {

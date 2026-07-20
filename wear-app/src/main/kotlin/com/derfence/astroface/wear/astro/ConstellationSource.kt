@@ -13,6 +13,7 @@ data class ConstellationSnapshot(
     val calculatedAt: Instant,
     val refreshInstant: Instant,
     val targetMidnight: Instant,
+    val nextRefreshInstant: Instant,
     val lines: List<ConstellationLine>
 )
 
