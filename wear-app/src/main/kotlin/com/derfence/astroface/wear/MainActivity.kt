@@ -54,7 +54,7 @@ class MainActivity : Activity() {
             text = "Changer de mode"
             setOnClickListener {
                 val mode = DisplayModeRepository.cycleNext(this@MainActivity)
-                DialUpdateRequester.requestAll(this@MainActivity)
+                DialUpdateRequester.requestModeOverlay(this@MainActivity)
                 refreshStatus()
                 Toast.makeText(
                     this@MainActivity,

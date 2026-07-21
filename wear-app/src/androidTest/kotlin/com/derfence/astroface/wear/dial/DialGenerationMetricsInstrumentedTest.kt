@@ -8,6 +8,7 @@ import com.derfence.astroface.wear.complication.CelestialMotionComplicationDataF
 import com.derfence.astroface.wear.complication.CelestialMotionGroup
 import java.time.Instant
 import org.json.JSONObject
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -34,8 +35,9 @@ class DialGenerationMetricsInstrumentedTest {
         Log.i(
             TAG,
             JSONObject()
-                .put("name", "optimized_full_mode_2h")
+                .put("name", "optimized_full_mode_motion_10h")
                 .put("frames", bitmaps.size)
+                .put("celestialCoverageHours", 10)
                 .put("celestialTimelineEntries", motionEntries)
                 .put("celestialBitmapBytes", 0)
                 .put("elapsedNanos", elapsedNanos)
@@ -45,7 +47,7 @@ class DialGenerationMetricsInstrumentedTest {
 
         assertTrue(elapsedNanos > 0L)
         assertTrue(rawBytes > 0L)
-        assertTrue(motionEntries > 0)
+        assertEquals(180, motionEntries)
         bitmaps.forEach(Bitmap::recycle)
     }
 

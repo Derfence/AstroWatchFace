@@ -21,7 +21,7 @@ class CachingCelestialPositionSource(
         val time: Instant
     )
 
-    private companion object {
-        private const val DEFAULT_MAX_ENTRIES = 32
+    companion object {
+        internal const val DEFAULT_MAX_ENTRIES = 128
     }
 }

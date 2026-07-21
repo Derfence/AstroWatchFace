@@ -83,6 +83,6 @@ class CelestialMotionTimelinePlanner(
 
     companion object {
         val CADENCE: Duration = Duration.ofMinutes(10)
-        val HORIZON: Duration = Duration.ofHours(2)
+        val HORIZON: Duration = Duration.ofHours(10)
     }
 }

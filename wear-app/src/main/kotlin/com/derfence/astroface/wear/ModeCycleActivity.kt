@@ -10,7 +10,7 @@ class ModeCycleActivity : Activity() {
         super.onCreate(savedInstanceState)
 
         DisplayModeRepository.cycleNext(applicationContext)
-        DialUpdateRequester.requestAll(applicationContext)
+        DialUpdateRequester.requestModeOverlay(applicationContext)
         finish()
     }
 }

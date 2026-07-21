@@ -14,7 +14,7 @@ Les deux nouveaux modes doivent masquer la minuterie native et la trotteuse sans
 
 Conserver `watch-face` sans code et ajouter une complication plein écran supérieure, `ModeOverlayDataSourceService`, fournie par `wear-app`.
 
-Un état persistant `DisplayMode` est stocké dans `wear-app` avec trois valeurs : `FULL_DIAL`, `CONSTELLATIONS_NIGHT` et `SOLAR_SYSTEM`. Un élément central de la face WFF lance `ModeCycleActivity`, qui passe au mode suivant et demande la mise à jour de toutes les complications.
+Un état persistant `DisplayMode` est stocké dans `wear-app` avec trois valeurs : `FULL_DIAL`, `CONSTELLATIONS_NIGHT` et `SOLAR_SYSTEM`. Un élément central de la face WFF lance `ModeCycleActivity`, qui passe au mode suivant et demande uniquement la mise à jour de `ModeOverlayDataSourceService`. Le bouton de changement de mode de l'application suit le même chemin ciblé. La commande manuelle « Rafraîchir les éléments » reste la seule à solliciter les huit complications et à horodater un rafraîchissement manuel.
 
 En mode `FULL_DIAL`, l'overlay de mode rend un bitmap entièrement transparent. En modes `CONSTELLATIONS_NIGHT` et `SOLAR_SYSTEM`, il rend un bitmap noir opaque qui recouvre les aiguilles natives et toutes les couches inférieures.
 
@@ -22,7 +22,7 @@ Le mode constellations réutilise la position actuelle des constellations, mais 
 
 ## Conséquences
 
-- Le cycle des modes peut avoir une courte latence liée au rafraîchissement des complications.
+- Le cycle des modes peut avoir une courte latence liée au rafraîchissement de la complication de mode, sans recalculer les sept autres complications.
 - Les aiguilles minutes et secondes restent déclarées dans WFF, mais sont visuellement couvertes en modes astro.
 - Le rendu des icônes planétaires est partagé entre l'overlay céleste existant et le mode système solaire.
 - Le rendu des queues d'orbite est partagé entre l'overlay céleste existant et le mode système solaire.

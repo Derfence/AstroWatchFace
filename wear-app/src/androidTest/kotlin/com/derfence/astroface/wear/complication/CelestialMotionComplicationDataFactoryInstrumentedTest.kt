@@ -20,7 +20,7 @@ class CelestialMotionComplicationDataFactoryInstrumentedTest {
     @Test
     fun threeProvidersShareBoundaryCalculationsAndReturnRangedTimelines() {
         val delegate = CountingSource()
-        val cachedSource = CachingCelestialPositionSource(delegate, maxEntries = 32)
+        val cachedSource = CachingCelestialPositionSource(delegate, maxEntries = 128)
         val start = Instant.parse("2026-07-20T10:00:00Z")
 
         CelestialMotionGroup.entries.forEach { group ->
@@ -30,7 +30,7 @@ class CelestialMotionComplicationDataFactoryInstrumentedTest {
                 zoneId = ZoneOffset.UTC,
                 positionSource = cachedSource
             )
-            assertEquals(12, timeline.timelineEntries.size)
+            assertEquals(60, timeline.timelineEntries.size)
             assertEquals(ComplicationType.RANGED_VALUE, timeline.defaultComplicationData.type)
             assertSame(
                 timeline.defaultComplicationData,
@@ -38,7 +38,51 @@ class CelestialMotionComplicationDataFactoryInstrumentedTest {
             )
         }
 
-        assertEquals(13, delegate.calls)
+        assertEquals(61, delegate.calls)
+    }
+
+    @Test
+    fun unalignedRequestUsesAtMostSixtyTwoBoundaryCalculations() {
+        val delegate = CountingSource()
+        val cachedSource = CachingCelestialPositionSource(delegate, maxEntries = 128)
+        val start = Instant.parse("2026-07-20T10:07:25Z")
+
+        val timeline = CelestialMotionComplicationDataFactory.createTimeline(
+            group = CelestialMotionGroup.INNER,
+            start = start,
+            zoneId = ZoneOffset.UTC,
+            positionSource = cachedSource
+        )
+
+        assertEquals(61, timeline.timelineEntries.size)
+        assertEquals(62, delegate.calls)
+    }
+
+    @Test
+    fun eightHourRefreshReusesTheTwoHourOverlap() {
+        val delegate = CountingSource()
+        val cachedSource = CachingCelestialPositionSource(delegate, maxEntries = 128)
+        val start = Instant.parse("2026-07-20T10:00:00Z")
+
+        CelestialMotionGroup.entries.forEach { group ->
+            CelestialMotionComplicationDataFactory.createTimeline(
+                group = group,
+                start = start,
+                zoneId = ZoneOffset.UTC,
+                positionSource = cachedSource
+            )
+        }
+        CelestialMotionGroup.entries.forEach { group ->
+            val timeline = CelestialMotionComplicationDataFactory.createTimeline(
+                group = group,
+                start = start.plusSeconds(8 * 3600L),
+                zoneId = ZoneOffset.UTC,
+                positionSource = cachedSource
+            )
+            assertEquals(60, timeline.timelineEntries.size)
+        }
+
+        assertEquals(109, delegate.calls)
     }
 
     private class CountingSource : CelestialPositionSource {

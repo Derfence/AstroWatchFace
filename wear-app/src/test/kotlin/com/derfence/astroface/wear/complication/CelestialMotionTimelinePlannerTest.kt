@@ -16,32 +16,32 @@ class CelestialMotionTimelinePlannerTest {
     private val zoneId = ZoneId.of("Europe/Paris")
 
     @Test
-    fun alignedRequestProducesTwelveEntriesAndThirteenCalculations() {
+    fun alignedRequestProducesSixtyEntriesAndSixtyOneCalculations() {
         val source = CountingSource()
         val planner = planner(source)
         val start = Instant.parse("2026-07-20T10:00:00Z")
 
         val entries = planner.plan(start, CelestialMotionGroup.INNER)
 
-        assertEquals(12, entries.size)
-        assertEquals(13, source.calls)
+        assertEquals(60, entries.size)
+        assertEquals(61, source.calls)
         assertEquals(start, entries.first().start)
-        assertEquals(start.plus(Duration.ofHours(2)), entries.last().end)
+        assertEquals(start.plus(Duration.ofHours(10)), entries.last().end)
         assertContiguous(entries)
     }
 
     @Test
-    fun unalignedRequestProducesThirteenEntriesAndFourteenCalculations() {
+    fun unalignedRequestProducesSixtyOneEntriesAndSixtyTwoCalculations() {
         val source = CountingSource()
         val planner = planner(source)
         val start = Instant.parse("2026-07-20T10:07:25Z")
 
         val entries = planner.plan(start, CelestialMotionGroup.MIDDLE)
 
-        assertEquals(13, entries.size)
-        assertEquals(14, source.calls)
+        assertEquals(61, entries.size)
+        assertEquals(62, source.calls)
         assertEquals(start, entries.first().start)
-        assertEquals(start.plus(Duration.ofHours(2)), entries.last().end)
+        assertEquals(start.plus(Duration.ofHours(10)), entries.last().end)
         assertContiguous(entries)
     }
 

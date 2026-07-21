@@ -5,7 +5,6 @@ import javax.xml.parsers.DocumentBuilderFactory
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.w3c.dom.Document
 import org.w3c.dom.Element
@@ -48,32 +47,37 @@ class WearManifestStoreLinkTest {
             ".complication.CelestialOuterMotionDataSourceService"
         )
         val found = mutableSetOf<String>()
+        val eightHourProviders = mutableSetOf<String>()
 
         for (index in 0 until services.length) {
             val service = services.item(index) as Element
             val name = service.getAttribute("android:name")
             assertFalse(name.endsWith("CelestialOverlayDataSourceService"))
+            val metadata = service.getElementsByTagName("meta-data")
+            var supportedTypes: String? = null
+            var updatePeriod: String? = null
+            for (metadataIndex in 0 until metadata.length) {
+                val element = metadata.item(metadataIndex) as Element
+                when (element.getAttribute("android:name")) {
+                    "android.support.wearable.complications.SUPPORTED_TYPES" ->
+                        supportedTypes = element.getAttribute("android:value")
+                    "android.support.wearable.complications.UPDATE_PERIOD_SECONDS" ->
+                        updatePeriod = element.getAttribute("android:value")
+                }
+            }
+            if (updatePeriod == "28800") {
+                eightHourProviders += name
+            }
             if (name in expected) {
                 found += name
-                val metadata = service.getElementsByTagName("meta-data")
-                var supportedTypes: String? = null
-                var updatePeriod: String? = null
-                for (metadataIndex in 0 until metadata.length) {
-                    val element = metadata.item(metadataIndex) as Element
-                    when (element.getAttribute("android:name")) {
-                        "android.support.wearable.complications.SUPPORTED_TYPES" ->
-                            supportedTypes = element.getAttribute("android:value")
-                        "android.support.wearable.complications.UPDATE_PERIOD_SECONDS" ->
-                            updatePeriod = element.getAttribute("android:value")
-                    }
-                }
                 assertEquals("RANGED_VALUE", supportedTypes)
-                assertEquals("7200", updatePeriod)
+                assertEquals("28800", updatePeriod)
             }
         }
 
         assertEquals(expected, found)
-        assertTrue(found.size == 3)
+        assertEquals(expected, eightHourProviders)
+        assertEquals(3, found.size)
     }
 
     private fun loadManifest(): Document {
