@@ -297,6 +297,18 @@ public class WatchFaceTimeHandsTest {
         assertTrue(xml.contains("([COMPLICATION.RANGED_VALUE_VALUE] - 4194304) % 2048"));
         assertTrue(xml.contains("floor(([COMPLICATION.RANGED_VALUE_MAX] - 8388608) / 2048)"));
         assertTrue(xml.contains("([COMPLICATION.RANGED_VALUE_MAX] - 8388608) % 2048"));
+        assertTrue(xml.contains(
+            "0.25 * (([COMPLICATION.RANGED_VALUE_VALUE] - 4194304) % 2048)"
+        ));
+        assertTrue(xml.contains(
+            "0.25 * (([COMPLICATION.RANGED_VALUE_MAX] - 8388608) % 2048)"
+        ));
+        assertTrue(!xml.contains(
+            "0.25 * ([COMPLICATION.RANGED_VALUE_VALUE] - 4194304) % 2048"
+        ));
+        assertTrue(!xml.contains(
+            "0.25 * ([COMPLICATION.RANGED_VALUE_MAX] - 8388608) % 2048"
+        ));
         assertTrue(!xml.contains("[SECOND]"));
     }
 

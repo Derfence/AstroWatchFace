@@ -53,7 +53,7 @@
                         <PartDraw x="0" y="0" width="450" height="450" name="AstronomicalNightArc">
                             <Arc centerX="225" centerY="225" width="422" height="422" startAngle="0" endAngle="0" direction="CLOCKWISE">
                                 <Stroke color="#cd283476" thickness="8" />
-                                <Transform target="startAngle" value="0.25 * ([COMPLICATION.RANGED_VALUE_VALUE] - 4194304) % 2048" />
+                                <Transform target="startAngle" value="0.25 * (([COMPLICATION.RANGED_VALUE_VALUE] - 4194304) % 2048)" />
                                 <Transform target="endAngle" value="0.25 * floor([COMPLICATION.RANGED_VALUE_MIN] / 2048)" />
                             </Arc>
                         </PartDraw>
@@ -120,7 +120,7 @@
                             <Arc centerX="225" centerY="225" width="400" height="400" startAngle="0" endAngle="0" direction="CLOCKWISE">
                                 <Stroke color="#dce8e8dc" thickness="5" />
                                 <Transform target="startAngle" value="[HOUR_0_23_MINUTE] * 15" />
-                                <Transform target="endAngle" value="0.25 * ([COMPLICATION.RANGED_VALUE_MAX] - 8388608) % 2048" />
+                                <Transform target="endAngle" value="0.25 * (([COMPLICATION.RANGED_VALUE_MAX] - 8388608) % 2048)" />
                             </Arc>
                         </PartDraw>
                     </Compare>
@@ -138,7 +138,7 @@
                             <Arc centerX="225" centerY="225" width="400" height="400" startAngle="0" endAngle="0" direction="CLOCKWISE">
                                 <Stroke color="#dce8e8dc" thickness="5" />
                                 <Transform target="startAngle" value="0.25 * floor(([COMPLICATION.RANGED_VALUE_MAX] - 8388608) / 2048)" />
-                                <Transform target="endAngle" value="0.25 * ([COMPLICATION.RANGED_VALUE_MAX] - 8388608) % 2048" />
+                                <Transform target="endAngle" value="0.25 * (([COMPLICATION.RANGED_VALUE_MAX] - 8388608) % 2048)" />
                             </Arc>
                         </PartDraw>
                     </Compare>
