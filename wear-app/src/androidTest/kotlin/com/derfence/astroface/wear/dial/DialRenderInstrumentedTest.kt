@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import androidx.wear.watchface.complications.data.ComplicationType
 import com.derfence.astroface.wear.astro.AstroEvent
 import com.derfence.astroface.wear.astro.AstroEventSource
@@ -55,7 +56,8 @@ class DialRenderInstrumentedTest {
         assertTrue(
             StatusOverlayRenderer(
                 clock = Clock.fixed(Instant.parse("2026-07-07T10:00:00Z"), ZoneOffset.UTC),
-                statusSource = FakeWatchStatusSource()
+                statusSource = FakeWatchStatusSource(),
+                moonSurface = moonSurface
             ).render().hasVisiblePixel()
         )
     }
@@ -135,7 +137,8 @@ class DialRenderInstrumentedTest {
             horizonSource = FakeCelestialHorizonSource()
         ).renderAt(instant)
         val status = StatusOverlayRenderer(
-            statusSource = FakeWatchStatusSource()
+            statusSource = FakeWatchStatusSource(),
+            moonSurface = moonSurface
         ).renderAt(instant)
 
         assertEquals(340, horizon.width)
@@ -147,7 +150,8 @@ class DialRenderInstrumentedTest {
             12L * 450L * 450L * 4L +
                 3L * 200L * 190L * 4L +
                 450L * 450L * 4L +
-                340L * 340L * 4L
+                340L * 340L * 4L +
+                128L * 128L * 4L
         assertTrue(optimizedBytes <= previousBytes * 60L / 100L)
     }
 
@@ -256,6 +260,7 @@ class DialRenderInstrumentedTest {
         val bitmap = StatusOverlayRenderer(
             clock = Clock.fixed(Instant.parse("2026-07-07T10:00:00Z"), ZoneOffset.UTC),
             statusSource = FakeWatchStatusSource(),
+            moonSurface = moonSurface,
             viewport = FULL_VIEWPORT
         ).render()
 
@@ -283,6 +288,12 @@ class DialRenderInstrumentedTest {
         val bitmap = renderStatusOverlay(phaseAngleDegrees = 180.0)
 
         assertTrue(bitmap.hasFullMoonTextureVariation())
+    }
+
+    @Test
+    fun moonSurfaceTextureIsDownsampledForWatchRendering() {
+        assertEquals(128, moonSurface.width)
+        assertEquals(128, moonSurface.height)
     }
 
     @Test
@@ -344,8 +355,13 @@ class DialRenderInstrumentedTest {
             statusSource = FakeWatchStatusSource(
                 phaseAngleDegrees = phaseAngleDegrees
             ),
+            moonSurface = moonSurface,
             viewport = FULL_VIEWPORT
         ).render()
+
+    private val moonSurface: Bitmap by lazy {
+        MoonSurfaceTexture.decode(InstrumentationRegistry.getInstrumentation().targetContext.resources)
+    }
 
     private fun Bitmap.hasVisiblePixel(): Boolean {
         var x = 0

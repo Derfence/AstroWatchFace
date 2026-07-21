@@ -12,8 +12,9 @@ import java.time.Instant
 import java.time.ZoneId
 
 class StatusOverlayRenderer(
-    private val clock: Clock = Clock.system(AstroObserver.DEFAULT.zoneId),
     private val statusSource: WatchStatusSource,
+    private val moonSurface: Bitmap,
+    private val clock: Clock = Clock.system(AstroObserver.DEFAULT.zoneId),
     private val zoneId: ZoneId = AstroObserver.DEFAULT.zoneId,
     private val viewport: DialViewport = DialViewport.STATUS
 ) : DialRenderer {
@@ -59,6 +60,7 @@ class StatusOverlayRenderer(
         MoonPhasePainter.draw(
             canvas = canvas,
             paint = paint,
+            surface = moonSurface,
             centerX = MOON_CENTER_X,
             centerY = MOON_CENTER_Y,
             radius = MOON_RADIUS,
