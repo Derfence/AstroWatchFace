@@ -36,18 +36,597 @@
             height="450"
             slotId="1"
             displayName="@string/slot_24h_name"
-            supportedTypes="PHOTO_IMAGE EMPTY"
+            supportedTypes="RANGED_VALUE EMPTY"
             isCustomizable="FALSE">
             <BoundingOval x="0" y="0" width="450" height="450" />
             <DefaultProviderPolicy
                 primaryProvider="com.derfence.astroface.wear/com.derfence.astroface.wear.complication.Dial24hDataSourceService"
-                primaryProviderType="PHOTO_IMAGE"
+                primaryProviderType="RANGED_VALUE"
                 defaultSystemProvider="EMPTY"
                 defaultSystemProviderType="EMPTY" />
-            <Complication type="PHOTO_IMAGE">
-                <PartImage x="0" y="0" width="450" height="450" name="Dial24hImage">
-                    <Image resource="[COMPLICATION.PHOTO_IMAGE]" />
-                </PartImage>
+            <Complication type="RANGED_VALUE">
+                <Condition>
+                    <Expressions>
+                        <Expression name="HasNightArc"><![CDATA[([COMPLICATION.RANGED_VALUE_VALUE] - 4194304) % 2048 < 1440 && floor([COMPLICATION.RANGED_VALUE_MIN] / 2048) < 1440]]></Expression>
+                    </Expressions>
+                    <Compare expression="HasNightArc">
+                        <PartDraw x="0" y="0" width="450" height="450" name="AstronomicalNightArc">
+                            <Arc centerX="225" centerY="225" width="422" height="422" startAngle="0" endAngle="0" direction="CLOCKWISE">
+                                <Stroke color="#cd283476" thickness="8" />
+                                <Transform target="startAngle" value="0.25 * ([COMPLICATION.RANGED_VALUE_VALUE] - 4194304) % 2048" />
+                                <Transform target="endAngle" value="0.25 * floor([COMPLICATION.RANGED_VALUE_MIN] / 2048)" />
+                            </Arc>
+                        </PartDraw>
+                    </Compare>
+                </Condition>
+                <Condition>
+                    <Expressions>
+                        <Expression name="HasMorningTwilightArc"><![CDATA[floor([COMPLICATION.RANGED_VALUE_MIN] / 2048) < 1440 && [COMPLICATION.RANGED_VALUE_MIN] % 2048 < 1440]]></Expression>
+                    </Expressions>
+                    <Compare expression="HasMorningTwilightArc">
+                        <PartDraw x="0" y="0" width="450" height="450" name="MorningTwilightArc">
+                            <Arc centerX="225" centerY="225" width="422" height="422" startAngle="0" endAngle="0" direction="CLOCKWISE">
+                                <Stroke color="#cd4378d2" thickness="8" />
+                                <Transform target="startAngle" value="0.25 * floor([COMPLICATION.RANGED_VALUE_MIN] / 2048)" />
+                                <Transform target="endAngle" value="0.25 * ([COMPLICATION.RANGED_VALUE_MIN] % 2048)" />
+                            </Arc>
+                        </PartDraw>
+                    </Compare>
+                </Condition>
+                <Condition>
+                    <Expressions>
+                        <Expression name="HasSunlightArc"><![CDATA[[COMPLICATION.RANGED_VALUE_MIN] % 2048 < 1440 && floor(([COMPLICATION.RANGED_VALUE_VALUE] - 4194304) / 2048) < 1440]]></Expression>
+                    </Expressions>
+                    <Compare expression="HasSunlightArc">
+                        <PartDraw x="0" y="0" width="450" height="450" name="SunlightArc">
+                            <Arc centerX="225" centerY="225" width="422" height="422" startAngle="0" endAngle="0" direction="CLOCKWISE">
+                                <Stroke color="#d2ffb440" thickness="8" />
+                                <Transform target="startAngle" value="0.25 * ([COMPLICATION.RANGED_VALUE_MIN] % 2048)" />
+                                <Transform target="endAngle" value="0.25 * floor(([COMPLICATION.RANGED_VALUE_VALUE] - 4194304) / 2048)" />
+                            </Arc>
+                        </PartDraw>
+                    </Compare>
+                </Condition>
+                <Condition>
+                    <Expressions>
+                        <Expression name="HasEveningTwilightArc"><![CDATA[floor(([COMPLICATION.RANGED_VALUE_VALUE] - 4194304) / 2048) < 1440 && ([COMPLICATION.RANGED_VALUE_VALUE] - 4194304) % 2048 < 1440]]></Expression>
+                    </Expressions>
+                    <Compare expression="HasEveningTwilightArc">
+                        <PartDraw x="0" y="0" width="450" height="450" name="EveningTwilightArc">
+                            <Arc centerX="225" centerY="225" width="422" height="422" startAngle="0" endAngle="0" direction="CLOCKWISE">
+                                <Stroke color="#cd4378d2" thickness="8" />
+                                <Transform target="startAngle" value="0.25 * floor(([COMPLICATION.RANGED_VALUE_VALUE] - 4194304) / 2048)" />
+                                <Transform target="endAngle" value="0.25 * (([COMPLICATION.RANGED_VALUE_VALUE] - 4194304) % 2048)" />
+                            </Arc>
+                        </PartDraw>
+                    </Compare>
+                </Condition>
+                <Condition>
+                    <Expressions>
+                        <Expression name="MoonFullDay"><![CDATA[floor(([COMPLICATION.RANGED_VALUE_MAX] - 8388608) / 2048) == 2045 && ([COMPLICATION.RANGED_VALUE_MAX] - 8388608) % 2048 == 2045]]></Expression>
+                        <Expression name="MoonFromNow"><![CDATA[floor(([COMPLICATION.RANGED_VALUE_MAX] - 8388608) / 2048) == 2046 && ([COMPLICATION.RANGED_VALUE_MAX] - 8388608) % 2048 < 1440]]></Expression>
+                        <Expression name="MoonToNow"><![CDATA[floor(([COMPLICATION.RANGED_VALUE_MAX] - 8388608) / 2048) < 1440 && ([COMPLICATION.RANGED_VALUE_MAX] - 8388608) % 2048 == 2046]]></Expression>
+                        <Expression name="MoonBounded"><![CDATA[floor(([COMPLICATION.RANGED_VALUE_MAX] - 8388608) / 2048) < 1440 && ([COMPLICATION.RANGED_VALUE_MAX] - 8388608) % 2048 < 1440]]></Expression>
+                    </Expressions>
+                    <Compare expression="MoonFullDay">
+                        <PartDraw x="0" y="0" width="450" height="450" name="MoonVisibilityFullDay">
+                            <Ellipse x="25" y="25" width="400" height="400">
+                                <Stroke color="#dce8e8dc" thickness="5" />
+                            </Ellipse>
+                        </PartDraw>
+                    </Compare>
+                    <Compare expression="MoonFromNow">
+                        <PartDraw x="0" y="0" width="450" height="450" name="MoonVisibilityFromNow">
+                            <Arc centerX="225" centerY="225" width="400" height="400" startAngle="0" endAngle="0" direction="CLOCKWISE">
+                                <Stroke color="#dce8e8dc" thickness="5" />
+                                <Transform target="startAngle" value="[HOUR_0_23_MINUTE] * 15" />
+                                <Transform target="endAngle" value="0.25 * ([COMPLICATION.RANGED_VALUE_MAX] - 8388608) % 2048" />
+                            </Arc>
+                        </PartDraw>
+                    </Compare>
+                    <Compare expression="MoonToNow">
+                        <PartDraw x="0" y="0" width="450" height="450" name="MoonVisibilityToNow">
+                            <Arc centerX="225" centerY="225" width="400" height="400" startAngle="0" endAngle="0" direction="CLOCKWISE">
+                                <Stroke color="#dce8e8dc" thickness="5" />
+                                <Transform target="startAngle" value="0.25 * floor(([COMPLICATION.RANGED_VALUE_MAX] - 8388608) / 2048)" />
+                                <Transform target="endAngle" value="[HOUR_0_23_MINUTE] * 15" />
+                            </Arc>
+                        </PartDraw>
+                    </Compare>
+                    <Compare expression="MoonBounded">
+                        <PartDraw x="0" y="0" width="450" height="450" name="MoonVisibilityBounded">
+                            <Arc centerX="225" centerY="225" width="400" height="400" startAngle="0" endAngle="0" direction="CLOCKWISE">
+                                <Stroke color="#dce8e8dc" thickness="5" />
+                                <Transform target="startAngle" value="0.25 * floor(([COMPLICATION.RANGED_VALUE_MAX] - 8388608) / 2048)" />
+                                <Transform target="endAngle" value="0.25 * ([COMPLICATION.RANGED_VALUE_MAX] - 8388608) % 2048" />
+                            </Arc>
+                        </PartDraw>
+                    </Compare>
+                </Condition>
+                <PartDraw x="0" y="0" width="450" height="450" name="Dial24hOuterCircle">
+                    <Ellipse x="9" y="9" width="432" height="432">
+                        <Stroke color="#d2780c14" thickness="2.5" />
+                    </Ellipse>
+                </PartDraw>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="0" name="Dial24hTick0">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="29" endX="225" endY="9">
+                            <Stroke color="#ffffffff" thickness="2.4" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="7.5" name="Dial24hTick1">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="15" name="Dial24hTick2">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="22.5" name="Dial24hTick3">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="30" name="Dial24hTick4">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="37.5" name="Dial24hTick5">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="45" name="Dial24hTick6">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="29" endX="225" endY="9">
+                            <Stroke color="#ffffffff" thickness="2.4" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="52.5" name="Dial24hTick7">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="60" name="Dial24hTick8">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="67.5" name="Dial24hTick9">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="75" name="Dial24hTick10">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="82.5" name="Dial24hTick11">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="90" name="Dial24hTick12">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="29" endX="225" endY="9">
+                            <Stroke color="#ffffffff" thickness="2.4" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="97.5" name="Dial24hTick13">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="105" name="Dial24hTick14">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="112.5" name="Dial24hTick15">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="120" name="Dial24hTick16">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="127.5" name="Dial24hTick17">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="135" name="Dial24hTick18">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="29" endX="225" endY="9">
+                            <Stroke color="#ffffffff" thickness="2.4" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="142.5" name="Dial24hTick19">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="150" name="Dial24hTick20">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="157.5" name="Dial24hTick21">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="165" name="Dial24hTick22">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="172.5" name="Dial24hTick23">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="180" name="Dial24hTick24">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="29" endX="225" endY="9">
+                            <Stroke color="#ffffffff" thickness="2.4" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="187.5" name="Dial24hTick25">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="195" name="Dial24hTick26">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="202.5" name="Dial24hTick27">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="210" name="Dial24hTick28">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="217.5" name="Dial24hTick29">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="225" name="Dial24hTick30">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="29" endX="225" endY="9">
+                            <Stroke color="#ffffffff" thickness="2.4" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="232.5" name="Dial24hTick31">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="240" name="Dial24hTick32">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="247.5" name="Dial24hTick33">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="255" name="Dial24hTick34">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="262.5" name="Dial24hTick35">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="270" name="Dial24hTick36">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="29" endX="225" endY="9">
+                            <Stroke color="#ffffffff" thickness="2.4" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="277.5" name="Dial24hTick37">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="285" name="Dial24hTick38">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="292.5" name="Dial24hTick39">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="300" name="Dial24hTick40">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="307.5" name="Dial24hTick41">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="315" name="Dial24hTick42">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="29" endX="225" endY="9">
+                            <Stroke color="#ffffffff" thickness="2.4" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="322.5" name="Dial24hTick43">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="330" name="Dial24hTick44">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="337.5" name="Dial24hTick45">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="345" name="Dial24hTick46">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" angle="352.5" name="Dial24hTick47">
+                    <PartDraw x="0" y="0" width="450" height="450">
+                        <Line startX="225" startY="20" endX="225" endY="9">
+                            <Stroke color="#a5ffffff" thickness="1.3" />
+                        </Line>
+                    </PartDraw>
+                </Group>
+                <PartText x="333" y="87" width="36" height="24" name="Dial24hLabel03">
+                    <Text align="CENTER">
+                        <Font family="SYNC_TO_DEVICE" size="18" color="#ffffffff">03</Font>
+                    </Text>
+                </PartText>
+                <PartText x="385" y="213" width="36" height="24" name="Dial24hLabel06">
+                    <Text align="CENTER">
+                        <Font family="SYNC_TO_DEVICE" size="18" color="#ffffffff">06</Font>
+                    </Text>
+                </PartText>
+                <PartText x="333" y="339" width="36" height="24" name="Dial24hLabel09">
+                    <Text align="CENTER">
+                        <Font family="SYNC_TO_DEVICE" size="18" color="#ffffffff">09</Font>
+                    </Text>
+                </PartText>
+                <PartText x="207" y="391" width="36" height="24" name="Dial24hLabel12">
+                    <Text align="CENTER">
+                        <Font family="SYNC_TO_DEVICE" size="18" color="#ffffffff">12</Font>
+                    </Text>
+                </PartText>
+                <PartText x="81" y="339" width="36" height="24" name="Dial24hLabel15">
+                    <Text align="CENTER">
+                        <Font family="SYNC_TO_DEVICE" size="18" color="#ffffffff">15</Font>
+                    </Text>
+                </PartText>
+                <PartText x="29" y="213" width="36" height="24" name="Dial24hLabel18">
+                    <Text align="CENTER">
+                        <Font family="SYNC_TO_DEVICE" size="18" color="#ffffffff">18</Font>
+                    </Text>
+                </PartText>
+                <PartText x="81" y="87" width="36" height="24" name="Dial24hLabel21">
+                    <Text align="CENTER">
+                        <Font family="SYNC_TO_DEVICE" size="18" color="#ffffffff">21</Font>
+                    </Text>
+                </PartText>
+                <Condition>
+                    <Expressions>
+                        <Expression name="HasAstronomicalDawnMarker"><![CDATA[floor([COMPLICATION.RANGED_VALUE_MIN] / 2048) < 1440]]></Expression>
+                    </Expressions>
+                    <Compare expression="HasAstronomicalDawnMarker">
+                        <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" name="AstronomicalDawnMarker">
+                            <Transform target="angle" value="0.25 * floor([COMPLICATION.RANGED_VALUE_MIN] / 2048)" />
+                            <PartDraw x="0" y="0" width="450" height="450">
+                                <Ellipse x="219.4" y="8.4" width="11.2" height="11.2">
+                                    <Fill color="#ff000000" />
+                                </Ellipse>
+                                <Ellipse x="221.2" y="10.2" width="7.6" height="7.6">
+                                    <Fill color="#ff6c9ceb" />
+                                </Ellipse>
+                            </PartDraw>
+                        </Group>
+                    </Compare>
+                </Condition>
+                <Condition>
+                    <Expressions>
+                        <Expression name="HasSunriseMarker"><![CDATA[[COMPLICATION.RANGED_VALUE_MIN] % 2048 < 1440]]></Expression>
+                    </Expressions>
+                    <Compare expression="HasSunriseMarker">
+                        <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" name="SunriseMarker">
+                            <Transform target="angle" value="0.25 * ([COMPLICATION.RANGED_VALUE_MIN] % 2048)" />
+                            <PartDraw x="0" y="0" width="450" height="450">
+                                <Ellipse x="218.7" y="7.7" width="12.6" height="12.6">
+                                    <Fill color="#ff000000" />
+                                </Ellipse>
+                                <Ellipse x="220.5" y="9.5" width="9.0" height="9.0">
+                                    <Fill color="#ffffcd58" />
+                                </Ellipse>
+                            </PartDraw>
+                        </Group>
+                    </Compare>
+                </Condition>
+                <Condition>
+                    <Expressions>
+                        <Expression name="HasSunsetMarker"><![CDATA[floor(([COMPLICATION.RANGED_VALUE_VALUE] - 4194304) / 2048) < 1440]]></Expression>
+                    </Expressions>
+                    <Compare expression="HasSunsetMarker">
+                        <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" name="SunsetMarker">
+                            <Transform target="angle" value="0.25 * floor(([COMPLICATION.RANGED_VALUE_VALUE] - 4194304) / 2048)" />
+                            <PartDraw x="0" y="0" width="450" height="450">
+                                <Ellipse x="218.7" y="7.7" width="12.6" height="12.6">
+                                    <Fill color="#ff000000" />
+                                </Ellipse>
+                                <Ellipse x="220.5" y="9.5" width="9.0" height="9.0">
+                                    <Fill color="#ffffcd58" />
+                                </Ellipse>
+                            </PartDraw>
+                        </Group>
+                    </Compare>
+                </Condition>
+                <Condition>
+                    <Expressions>
+                        <Expression name="HasAstronomicalDuskMarker"><![CDATA[([COMPLICATION.RANGED_VALUE_VALUE] - 4194304) % 2048 < 1440]]></Expression>
+                    </Expressions>
+                    <Compare expression="HasAstronomicalDuskMarker">
+                        <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" name="AstronomicalDuskMarker">
+                            <Transform target="angle" value="0.25 * (([COMPLICATION.RANGED_VALUE_VALUE] - 4194304) % 2048)" />
+                            <PartDraw x="0" y="0" width="450" height="450">
+                                <Ellipse x="219.4" y="8.4" width="11.2" height="11.2">
+                                    <Fill color="#ff000000" />
+                                </Ellipse>
+                                <Ellipse x="221.2" y="10.2" width="7.6" height="7.6">
+                                    <Fill color="#ff6c9ceb" />
+                                </Ellipse>
+                            </PartDraw>
+                        </Group>
+                    </Compare>
+                </Condition>
+                <Condition>
+                    <Expressions>
+                        <Expression name="HasMoonriseMarker"><![CDATA[floor(([COMPLICATION.RANGED_VALUE_MAX] - 8388608) / 2048) < 1440]]></Expression>
+                    </Expressions>
+                    <Compare expression="HasMoonriseMarker">
+                        <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" name="MoonriseMarker">
+                            <Transform target="angle" value="0.25 * floor(([COMPLICATION.RANGED_VALUE_MAX] - 8388608) / 2048)" />
+                            <PartDraw x="0" y="0" width="450" height="450">
+                                <Ellipse x="219.4" y="19.4" width="11.2" height="11.2">
+                                    <Fill color="#ff000000" />
+                                </Ellipse>
+                                <Ellipse x="221.2" y="21.2" width="7.6" height="7.6">
+                                    <Fill color="#fff5f5e8" />
+                                </Ellipse>
+                            </PartDraw>
+                        </Group>
+                    </Compare>
+                </Condition>
+                <Condition>
+                    <Expressions>
+                        <Expression name="HasMoonsetMarker"><![CDATA[([COMPLICATION.RANGED_VALUE_MAX] - 8388608) % 2048 < 1440]]></Expression>
+                    </Expressions>
+                    <Compare expression="HasMoonsetMarker">
+                        <Group x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5" name="MoonsetMarker">
+                            <Transform target="angle" value="0.25 * (([COMPLICATION.RANGED_VALUE_MAX] - 8388608) % 2048)" />
+                            <PartDraw x="0" y="0" width="450" height="450">
+                                <Ellipse x="219.4" y="19.4" width="11.2" height="11.2">
+                                    <Fill color="#ff000000" />
+                                </Ellipse>
+                                <Ellipse x="221.2" y="21.2" width="7.6" height="7.6">
+                                    <Fill color="#fff5f5e8" />
+                                </Ellipse>
+                            </PartDraw>
+                        </Group>
+                    </Compare>
+                </Condition>
             </Complication>
             <Complication type="EMPTY" />
         </ComplicationSlot>

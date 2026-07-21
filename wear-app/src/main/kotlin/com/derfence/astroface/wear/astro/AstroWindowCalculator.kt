@@ -16,12 +16,20 @@ class AstroWindowCalculator(
         val events = source.eventsBetween(start, end, observer)
             .filter { !it.time.isBefore(start) && !it.time.isAfter(end) }
             .sortedBy { it.time }
+        val sunAltitudeAtStart = source.sunAltitudeDegrees(start, observer)
+        val moonAltitudeAtStart = source.moonAltitudeDegrees(start, observer)
 
         return RollingAstroWindow(
             start = start,
             end = end,
             events = events,
-            intervals = buildIntervals(start, end, events, observer)
+            intervals = buildIntervals(
+                start,
+                end,
+                events,
+                sunAltitudeAtStart,
+                moonAltitudeAtStart
+            )
         )
     }
 
@@ -29,12 +37,13 @@ class AstroWindowCalculator(
         start: Instant,
         end: Instant,
         events: List<AstroEvent>,
-        observer: AstroObserver
+        sunAltitudeAtStart: Double,
+        moonAltitudeAtStart: Double
     ): List<AstroInterval> =
         buildList {
             addAll(buildIntervalsFor(
                 type = AstroIntervalType.SUNLIGHT,
-                isActiveAtStart = source.sunAltitudeDegrees(start, observer) > SUNRISE_ALTITUDE_DEGREES,
+                isActiveAtStart = sunAltitudeAtStart > SUNRISE_ALTITUDE_DEGREES,
                 events = events,
                 startEvents = setOf(AstroEventType.SUNRISE),
                 endEvents = setOf(AstroEventType.SUNSET),
@@ -43,7 +52,7 @@ class AstroWindowCalculator(
             ))
             addAll(buildIntervalsFor(
                 type = AstroIntervalType.ASTRONOMICAL_TWILIGHT,
-                isActiveAtStart = source.sunAltitudeDegrees(start, observer)
+                isActiveAtStart = sunAltitudeAtStart
                     .let { it > ASTRONOMICAL_ALTITUDE_DEGREES && it <= SUNRISE_ALTITUDE_DEGREES },
                 events = events,
                 startEvents = setOf(AstroEventType.SUNSET, AstroEventType.ASTRONOMICAL_DAWN),
@@ -53,7 +62,7 @@ class AstroWindowCalculator(
             ))
             addAll(buildIntervalsFor(
                 type = AstroIntervalType.ASTRONOMICAL_NIGHT,
-                isActiveAtStart = source.sunAltitudeDegrees(start, observer) <= ASTRONOMICAL_ALTITUDE_DEGREES,
+                isActiveAtStart = sunAltitudeAtStart <= ASTRONOMICAL_ALTITUDE_DEGREES,
                 events = events,
                 startEvents = setOf(AstroEventType.ASTRONOMICAL_DUSK),
                 endEvents = setOf(AstroEventType.ASTRONOMICAL_DAWN),
@@ -62,7 +71,7 @@ class AstroWindowCalculator(
             ))
             addAll(buildIntervalsFor(
                 type = AstroIntervalType.MOON_VISIBLE,
-                isActiveAtStart = source.moonAltitudeDegrees(start, observer) > HORIZON_ALTITUDE_DEGREES,
+                isActiveAtStart = moonAltitudeAtStart > HORIZON_ALTITUDE_DEGREES,
                 events = events,
                 startEvents = setOf(AstroEventType.MOONRISE),
                 endEvents = setOf(AstroEventType.MOONSET),

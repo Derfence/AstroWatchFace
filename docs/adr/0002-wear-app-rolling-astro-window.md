@@ -2,7 +2,7 @@
 
 ## Statut
 
-Accepté
+Accepté — la décision de rendre le slot 1 en bitmap est remplacée par l'ADR 0011.
 
 ## Contexte
 
@@ -20,5 +20,5 @@ Astronomy Engine est utilisé comme dépendance locale pour les levers/couchers 
 
 - `watch-face` reste sans code et continue seulement d'assembler les complications.
 - Les calculs astro sont testables sans Android et pourront être déplacés vers `astro-core` plus tard.
-- La complication 24 h demande une mise à jour toutes les 15 minutes, sous réserve des décisions de planification de Wear OS.
+- La politique de mise à jour et le format de rendu du slot 1 sont remplacés par l'ADR 0011.
 - L'application n'a pas besoin de réseau ni de géolocalisation dynamique pour cet incrément.

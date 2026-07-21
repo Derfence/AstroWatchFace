@@ -78,6 +78,19 @@ class AstroWindowCalculatorTest {
         assertEquals(listOf(AstroInterval(AstroIntervalType.MOON_VISIBLE, window.start, moonset)), moonIntervals)
     }
 
+    @Test
+    fun readsEachStartingAltitudeOnlyOncePerProjection() {
+        val source = CountingAstroEventSource()
+
+        AstroWindowCalculator(source).calculate(
+            Instant.parse("2026-07-07T10:15:40Z"),
+            observer
+        )
+
+        assertEquals(1, source.sunAltitudeCalls)
+        assertEquals(1, source.moonAltitudeCalls)
+    }
+
     private class FakeAstroEventSource(
         private val events: List<AstroEvent> = emptyList(),
         private val sunAltitudeDegrees: Double = 12.0,
@@ -94,5 +107,26 @@ class AstroWindowCalculatorTest {
 
         override fun moonAltitudeDegrees(time: Instant, observer: AstroObserver): Double =
             moonAltitudeDegrees
+    }
+
+    private class CountingAstroEventSource : AstroEventSource {
+        var sunAltitudeCalls = 0
+        var moonAltitudeCalls = 0
+
+        override fun eventsBetween(
+            start: Instant,
+            end: Instant,
+            observer: AstroObserver
+        ): List<AstroEvent> = emptyList()
+
+        override fun sunAltitudeDegrees(time: Instant, observer: AstroObserver): Double {
+            sunAltitudeCalls += 1
+            return 0.0
+        }
+
+        override fun moonAltitudeDegrees(time: Instant, observer: AstroObserver): Double {
+            moonAltitudeCalls += 1
+            return 0.0
+        }
     }
 }

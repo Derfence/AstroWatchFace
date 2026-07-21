@@ -38,7 +38,7 @@ class WearManifestStoreLinkTest {
     }
 
     @Test
-    fun manifestDeclaresThreeRangedCelestialMotionProviders() {
+    fun manifestDeclaresFourEightHourRangedProviders() {
         val manifest = loadManifest()
         val services = manifest.getElementsByTagName("service")
         val expected = setOf(
@@ -48,6 +48,7 @@ class WearManifestStoreLinkTest {
         )
         val found = mutableSetOf<String>()
         val eightHourProviders = mutableSetOf<String>()
+        var dial24hSupportedTypes: String? = null
 
         for (index in 0 until services.length) {
             val service = services.item(index) as Element
@@ -68,6 +69,9 @@ class WearManifestStoreLinkTest {
             if (updatePeriod == "28800") {
                 eightHourProviders += name
             }
+            if (name == ".complication.Dial24hDataSourceService") {
+                dial24hSupportedTypes = supportedTypes
+            }
             if (name in expected) {
                 found += name
                 assertEquals("RANGED_VALUE", supportedTypes)
@@ -76,7 +80,8 @@ class WearManifestStoreLinkTest {
         }
 
         assertEquals(expected, found)
-        assertEquals(expected, eightHourProviders)
+        assertEquals(expected + ".complication.Dial24hDataSourceService", eightHourProviders)
+        assertEquals("RANGED_VALUE", dial24hSupportedTypes)
         assertEquals(3, found.size)
     }
 

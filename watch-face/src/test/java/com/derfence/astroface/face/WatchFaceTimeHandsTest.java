@@ -6,6 +6,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -58,6 +60,8 @@ public class WatchFaceTimeHandsTest {
             "com.derfence.astroface.wear/com.derfence.astroface.wear.complication.ConstellationBackgroundDataSourceService",
             firstChild(constellationSlot, "DefaultProviderPolicy").getAttribute("primaryProvider")
         );
+
+        assertNumericDialSlot(document);
 
         Element horizonSlot = complicationSlotWithId(document, "7");
         assertNotNull(horizonSlot);
@@ -235,6 +239,65 @@ public class WatchFaceTimeHandsTest {
             policy.getAttribute("primaryProvider")
         );
         assertEquals("RANGED_VALUE", policy.getAttribute("primaryProviderType"));
+    }
+
+    private static void assertNumericDialSlot(Document document) throws Exception {
+        Element slot = complicationSlotWithId(document, "1");
+        assertNotNull(slot);
+        assertEquals("RANGED_VALUE EMPTY", slot.getAttribute("supportedTypes"));
+        Element policy = firstChild(slot, "DefaultProviderPolicy");
+        assertEquals(
+            "com.derfence.astroface.wear/com.derfence.astroface.wear.complication.Dial24hDataSourceService",
+            policy.getAttribute("primaryProvider")
+        );
+        assertEquals("RANGED_VALUE", policy.getAttribute("primaryProviderType"));
+        assertNull(partImageNamed(document, "Dial24hImage"));
+
+        int tickCount = 0;
+        NodeList groups = document.getElementsByTagName("Group");
+        for (int i = 0; i < groups.getLength(); i += 1) {
+            Element group = (Element) groups.item(i);
+            if (group.getAttribute("name").startsWith("Dial24hTick")) {
+                tickCount += 1;
+            }
+        }
+        assertEquals(48, tickCount);
+        assertEquals(7, slot.getElementsByTagName("PartText").getLength());
+
+        String[] drawParts = {
+            "AstronomicalNightArc",
+            "MorningTwilightArc",
+            "SunlightArc",
+            "EveningTwilightArc",
+            "MoonVisibilityFullDay",
+            "Dial24hOuterCircle"
+        };
+        for (String partName : drawParts) {
+            assertNotNull(partDrawNamed(document, partName));
+        }
+        String[] markers = {
+            "AstronomicalDawnMarker",
+            "SunriseMarker",
+            "SunsetMarker",
+            "AstronomicalDuskMarker",
+            "MoonriseMarker",
+            "MoonsetMarker"
+        };
+        for (String markerName : markers) {
+            assertNotNull(groupNamed(document, markerName));
+        }
+
+        String xml = new String(
+            Files.readAllBytes(mainResourceFile("raw/watchface.xml").toPath()),
+            StandardCharsets.UTF_8
+        );
+        assertTrue(xml.contains("floor([COMPLICATION.RANGED_VALUE_MIN] / 2048)"));
+        assertTrue(xml.contains("[COMPLICATION.RANGED_VALUE_MIN] % 2048"));
+        assertTrue(xml.contains("floor(([COMPLICATION.RANGED_VALUE_VALUE] - 4194304) / 2048)"));
+        assertTrue(xml.contains("([COMPLICATION.RANGED_VALUE_VALUE] - 4194304) % 2048"));
+        assertTrue(xml.contains("floor(([COMPLICATION.RANGED_VALUE_MAX] - 8388608) / 2048)"));
+        assertTrue(xml.contains("([COMPLICATION.RANGED_VALUE_MAX] - 8388608) % 2048"));
+        assertTrue(!xml.contains("[SECOND]"));
     }
 
     private static void assertMotionBody(

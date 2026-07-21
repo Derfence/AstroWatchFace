@@ -2,7 +2,7 @@
 
 ## Statut
 
-Accepté
+Accepté — la timeline bitmap du slot 1 est remplacée par l'ADR 0011.
 
 ## Contexte
 
@@ -14,7 +14,7 @@ Les modes constellations et système solaire sont des modes de passage : l'utili
 
 Les complications dynamiques fournies par `wear-app`, sauf l'aiguille 24h, renvoient une `ComplicationDataTimeline`.
 
-Le cadran principal utilise une cadence de 10 minutes avec un horizon de 2 heures. Les positions célestes conservent ces bornes astronomiques, mais ADR 0010 remplace leurs bitmaps par trois timelines `RANGED_VALUE` interpolées dans WFF. ADR 0009 remplace la cadence uniforme du statut par ses échéances réelles et ajoute des timelines quotidiennes pour les constellations et l'horizon céleste. Les modes constellations et système solaire conservent un horizon de 48 heures.
+La cadence bitmap historique du cadran principal est remplacée par la timeline numérique événementielle de l'ADR 0011. Les positions célestes suivent l'ADR 0010 avec trois timelines `RANGED_VALUE` interpolées dans WFF. ADR 0009 remplace la cadence uniforme du statut par ses échéances réelles et ajoute des timelines quotidiennes pour les constellations et l'horizon céleste. Les modes constellations et système solaire conservent un horizon de 48 heures.
 
 L'aiguille 24h n'est plus une complication image. Elle est déclarée dans la WFF avec un `PartImage` utilisant le PNG transparent `hour_hand_bitmap`.
 

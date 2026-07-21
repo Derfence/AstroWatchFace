@@ -2,7 +2,7 @@
 
 ## Statut
 
-Accepté
+Accepté — les décisions bitmap du slot 1 sont remplacées par l'ADR 0011.
 
 ## Contexte
 
@@ -14,7 +14,7 @@ La Face WFF assemble huit complications, ordonnées selon leur volatilité : con
 
 - Les constellations sont valides d'un lever du Soleil au suivant.
 - Les marqueurs d'horizon sont valides jusqu'au prochain minuit local.
-- Le cadran et les positions conservent des bornes de dix minutes et un horizon d'au moins deux heures. ADR 0010 confie l'interpolation des positions à WFF.
+- Le cadran suit la timeline numérique événementielle de l'ADR 0011. ADR 0010 confie l'interpolation des positions à WFF.
 - Le statut change au prochain minuit ou à l'expiration de la phase lunaire.
 - Le mode complet renvoie `EMPTY` au lieu d'un bitmap transparent.
 
@@ -25,8 +25,8 @@ Les marqueurs d'horizon utilisent un bitmap `340 × 340` placé à `(55, 55)` et
 ## Conséquences
 
 - Les données quotidiennes ne sont plus recalculées ni redessinées dans chaque frame dynamique.
-- Une timeline de douze instants produit douze rendus, sans treizième rendu par défaut.
-- Le volume brut théorique des bitmaps du mode complet diminue d'au moins 40 %.
+- L'ancien renderer du cadran reste temporairement un oracle visuel et n'est plus appelé par le slot 1.
+- Le slot 1 ne produit plus aucun bitmap dynamique.
 - Les timelines de positions ne produisent plus aucun bitmap dynamique.
 - Les changements d'heure sont respectés grâce aux bornes basées sur les dates et fuseaux locaux.
 - La perte du processus invalide tous les caches ; aucune donnée astronomique ou position n'est écrite sur disque.

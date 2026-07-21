@@ -67,10 +67,10 @@
             </intent-filter>
             <meta-data
                 android:name="android.support.wearable.complications.SUPPORTED_TYPES"
-                android:value="LARGE_IMAGE" />
+                android:value="RANGED_VALUE" />
             <meta-data
                 android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
-                android:value="7200" />
+                android:value="28800" />
         </service>
 
         <service

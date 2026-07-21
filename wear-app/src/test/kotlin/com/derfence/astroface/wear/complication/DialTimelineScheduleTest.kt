@@ -7,7 +7,7 @@ import org.junit.Test
 
 class DialTimelineScheduleTest {
     @Test
-    fun watchModeCoversSixHoursWithThirtyMinuteEntries() {
+    fun legacyBitmapOracleCoversTwoHoursWithTenMinuteEntries() {
         val start = Instant.parse("2026-07-12T10:07:00Z")
         val intervals = DialTimelineSchedule.WatchMode.intervalsStartingAt(start)
 
