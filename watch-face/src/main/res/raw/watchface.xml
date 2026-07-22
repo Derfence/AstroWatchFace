@@ -732,6 +732,28 @@
             <Complication type="EMPTY" />
         </ComplicationSlot>
 
+        <Group
+            x="0"
+            y="0"
+            width="450"
+            height="450"
+            pivotX="0.5"
+            pivotY="0.5"
+            name="PolarisReticlePosition">
+            <Transform target="angle" value="((122.754941129 - 360.0 * ((([UTC_TIMESTAMP] - 1767225600000) % 86164091 + 86164091) % 86164091) / 86164091.0 + 0.001125874 * floor(([UTC_TIMESTAMP] - 1767225600000) / 86400000.0)) % 360 + 360) % 360" />
+            <PartImage
+                x="215"
+                y="-2"
+                width="20"
+                height="20"
+                pivotX="0.5"
+                pivotY="0.5"
+                name="PolarisReticleMarker">
+                <Image resource="polaris_reticle_marker" />
+                <Transform target="angle" value="-1 * (((122.754941129 - 360.0 * ((([UTC_TIMESTAMP] - 1767225600000) % 86164091 + 86164091) % 86164091) / 86164091.0 + 0.001125874 * floor(([UTC_TIMESTAMP] - 1767225600000) / 86400000.0)) % 360 + 360) % 360)" />
+            </PartImage>
+        </Group>
+
         <ComplicationSlot
             x="125"
             y="120"

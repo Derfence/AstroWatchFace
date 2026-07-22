@@ -44,8 +44,8 @@ L'utilisateur veut consulter rapidement, depuis sa montre :
 - Le cadran 24h affiche des repères horaires simples : petites barres perpendiculaires à chaque heure, chiffres toutes les 3h.
 - Les icônes astronomiques peuvent être placées entre le centre et le cadran extérieur 24h si le rendu est plus esthétique.
 - Le "lever/coucher astronomique" désigne le passage du Soleil à -18° sous l'horizon.
-- La position de la Polaire est une indication visuelle simple et esthétique, pas un outil de mise en station précis.
-- La Polaire est représentée par un élément graphique simple, cercle ou étoile, placé sur l'anneau 12h.
+- La position de la Polaire sert d'aide de mise en station sur un viseur polaire standard représenté comme un cadran 12h.
+- La Polaire est représentée par une petite étoile rouge à quatre branches placée sur l'anneau 12h.
 - Uranus et Neptune doivent être affichées avec les autres planètes.
 - Toutes les planètes restent visibles sur le cadran, même lorsqu'elles sont sous l'horizon.
 - Les icônes des corps célestes ne changent pas d'apparence lorsqu'elles sont sous l'horizon.
@@ -154,14 +154,15 @@ Donnée souhaitée :
 
 Interprétation fonctionnelle proposée :
 
-- Calculer l'angle horaire de la Polaire autour du pôle céleste nord.
-- Afficher cette position comme un cercle ou une petite étoile sur l'anneau 12h.
+- Calculer l'angle horaire local de la Polaire autour du pôle céleste nord.
+- Convertir cet angle en position de viseur avec la convention `6 h - angle horaire / 2`, ramenée sur 12 heures.
+- Afficher cette position comme une petite étoile rouge à quatre branches sur l'anneau 12h.
 
 Points d'attention :
 
 - Le rendu doit rester simple et graphique.
-- L'affichage ne doit pas être traité comme un outil de mise en station d'une monture réelle.
-- Le niveau de précision attendu est indicatif et esthétique.
+- Le viseur est supposé orienté avec 12h en haut, 3h à droite, 6h en bas et 9h à gauche.
+- L'erreur du modèle WFF doit rester inférieure à une minute de cadran entre 2020 et 2040.
 
 ### Planètes
 
@@ -520,6 +521,7 @@ Responsabilités :
 - Assemblage des éléments analogiques en WFF : aiguille des heures 24h et séparateur « maintenant » par `PartImage` et `Transform`, aiguille des minutes 60 minutes et secondes à ticks.
 - Rendu des anneaux temporels.
 - Rendu des icônes astronomiques.
+- Calcul et rendu direct de la position de mise en station de la Polaire à partir de l'heure UTC.
 - Rendu AOD.
 - Lecture des données précalculées ou complications.
 
@@ -548,7 +550,7 @@ Niveau de précision recommandé pour une première version :
 - Événements Soleil/Lune : précision à la minute.
 - Phase de Lune : précision visuelle suffisante, pourcentage arrondi.
 - Planètes, Soleil et Lune : azimut à l'instant courant, sans représentation de hauteur.
-- Polaire : précision suffisante pour usage indicatif et esthétique.
+- Polaire : erreur de position inférieure à une minute de cadran entre 2020 et 2040.
 - Constellations : affichage de toutes les constellations autour du zénith à minuit dans un rayon de 30°.
 
 Questions à clarifier :
@@ -587,6 +589,7 @@ Questions à clarifier :
 - Les heures exactes des événements astronomiques ne sont pas affichées en texte.
 - Le cadran extérieur 24h place minuit à 12h et affiche des repères horaires.
 - Les chiffres du cadran 24h sont affichés toutes les 3h en première intention.
+- Une étoile rouge à quatre branches indique où placer la Polaire sur un viseur 12h standard ; son rayon est supérieur à celui des marqueurs de lever et coucher du Soleil.
 - La date utilise le format "sam. 04 juil.".
 - La batterie affiche une icône seule.
 - Les icônes célestes sont de petites icônes graphiques colorées.
@@ -675,9 +678,9 @@ Mitigation :
 
 ### Polaire
 
-19. Question résolue : la Polaire est un élément graphique simple, cercle ou étoile, sur l'anneau 12h.
-20. Question résolue : l'affichage ne sert pas à aligner réellement une monture équatoriale.
-21. Question résolue : la Polaire est affichée sur l'anneau 12h.
+19. Question résolue : la Polaire est une petite étoile rouge à quatre branches sur l'anneau 12h.
+20. Question résolue : l'affichage donne la position où placer la Polaire pour mettre en station une monture équatoriale.
+21. Question résolue : la Polaire est affichée selon la convention d'un viseur 12h standard.
 
 ### Planètes
 

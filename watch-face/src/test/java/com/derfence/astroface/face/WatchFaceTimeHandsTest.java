@@ -102,6 +102,7 @@ public class WatchFaceTimeHandsTest {
         assertMotionBody(document, "Saturn", "celestial_saturn", "RANGED_VALUE_MIN", null);
         assertMotionBody(document, "Uranus", "celestial_uranus", "RANGED_VALUE_VALUE", "4194304");
         assertMotionBody(document, "Neptune", "celestial_neptune", "RANGED_VALUE_MAX", "8388608");
+        assertPolarisReticleMarker(document);
 
         Element statusOverlaySlot = complicationSlotWithId(document, "4");
         assertNotNull(statusOverlaySlot);
@@ -160,6 +161,8 @@ public class WatchFaceTimeHandsTest {
         assertPartImageOrder(document, "NowSeparator", "CelestialHorizonImage");
         assertPartImageOrder(document, "CelestialHorizonImage", "SunTail");
         assertPartImageOrder(document, "NeptuneIcon", "StatusOverlayImage");
+        assertElementOrder(complicationSlotWithId(document, "8"), groupNamed(document, "PolarisReticlePosition"));
+        assertElementOrder(groupNamed(document, "PolarisReticlePosition"), modeOverlaySlot);
 
         Element tapTarget = partDrawNamed(document, "ModeTapTarget");
         assertNotNull(tapTarget);
@@ -365,6 +368,55 @@ public class WatchFaceTimeHandsTest {
         assertEquals("0.5", icon.getAttribute("pivotX"));
         assertEquals("0.5", icon.getAttribute("pivotY"));
         assertEquals("-" + angle, firstChild(icon, "Transform").getAttribute("value"));
+    }
+
+    private static void assertPolarisReticleMarker(Document document) throws Exception {
+        Element group = groupNamed(document, "PolarisReticlePosition");
+        assertNotNull(group);
+        assertEquals("0.5", group.getAttribute("pivotX"));
+        assertEquals("0.5", group.getAttribute("pivotY"));
+
+        String angle = firstChild(group, "Transform").getAttribute("value");
+        assertTrue(angle.contains("[UTC_TIMESTAMP]"));
+        assertTrue(angle.contains("1767225600000"));
+        assertTrue(angle.contains("% 86164091"));
+        assertTrue(angle.contains("0.001125874"));
+
+        Element marker = partImageNamed(document, "PolarisReticleMarker");
+        assertNotNull(marker);
+        assertEquals("215", marker.getAttribute("x"));
+        assertEquals("-2", marker.getAttribute("y"));
+        assertEquals("20", marker.getAttribute("width"));
+        assertEquals("20", marker.getAttribute("height"));
+        assertEquals("0.5", marker.getAttribute("pivotX"));
+        assertEquals("0.5", marker.getAttribute("pivotY"));
+        assertEquals(
+            "polaris_reticle_marker",
+            firstChild(marker, "Image").getAttribute("resource")
+        );
+        assertEquals(
+            "-1 * (" + angle + ")",
+            firstChild(marker, "Transform").getAttribute("value")
+        );
+
+        double markerCenterX = Double.parseDouble(marker.getAttribute("x"))
+            + Double.parseDouble(marker.getAttribute("width")) / 2.0;
+        double markerCenterY = Double.parseDouble(marker.getAttribute("y"))
+            + Double.parseDouble(marker.getAttribute("height")) / 2.0;
+        double radius = Math.hypot(markerCenterX - 225.0, markerCenterY - 225.0);
+        assertEquals(217.0, radius, 0.001);
+        assertTrue(radius > 211.0);
+        assertEquals(
+            227.0,
+            radius + Double.parseDouble(marker.getAttribute("height")) / 2.0,
+            0.001
+        );
+
+        PngAssetAssertions.assertPng(
+            mainResourceFile("drawable-nodpi/polaris_reticle_marker.png"),
+            20,
+            20
+        );
     }
 
     private static void assertPartImageOrder(Document document, String firstName, String secondName) {
