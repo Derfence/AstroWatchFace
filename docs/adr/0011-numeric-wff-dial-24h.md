@@ -42,8 +42,10 @@ Les payloads identiques partagent la même instance de
 
 WFF décode les six bornes avec `floor`, `% 2048` et les décalages de bande. Il
 dessine les arcs du jour, des crépuscules, de la nuit astronomique et de la
-visibilité lunaire, les six marqueurs, le cercle extérieur, 48 graduations et
-les libellés civils sauf `00`, réservé à la batterie. `NOW` utilise
+visibilité lunaire, les six marqueurs, le cercle extérieur, 24 graduations
+horaires et 12 points correspondant aux pas de cinq minutes de l'aiguille des
+minutes. Les graduations horaires multiples de trois restent plus longues et
+portent les libellés civils sauf `00`, réservé à la batterie. `NOW` utilise
 `[HOUR_0_23_MINUTE] * 15` sans marqueur, `ABSENT` masque l'arc et `FULL_DAY`
 dessine un cercle complet. Aucune expression ne dépend de `[SECOND]`.
 

@@ -22,6 +22,14 @@ class DialGeometryTest {
     }
 
     @Test
+    fun minuteHandDialHasOneTickEveryFiveMinutes() {
+        assertEquals(
+            listOf(0f, 30f, 60f, 90f, 120f, 150f, 180f, 210f, 240f, 270f, 300f, 330f),
+            DialGeometry.fiveMinuteAngles()
+        )
+    }
+
+    @Test
     fun midnightIsAtTop() {
         val midnight = DialGeometry.twentyFourHourTicks().first()
         val point = DialGeometry.point(radius = 100f, angleDegrees = midnight.angleDegrees)

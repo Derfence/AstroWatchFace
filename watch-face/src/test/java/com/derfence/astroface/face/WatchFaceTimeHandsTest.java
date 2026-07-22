@@ -253,15 +253,39 @@ public class WatchFaceTimeHandsTest {
         assertEquals("RANGED_VALUE", policy.getAttribute("primaryProviderType"));
         assertNull(partImageNamed(document, "Dial24hImage"));
 
-        int tickCount = 0;
+        int hourTickCount = 0;
+        int majorHourTickCount = 0;
+        int minuteTickCount = 0;
         NodeList groups = document.getElementsByTagName("Group");
         for (int i = 0; i < groups.getLength(); i += 1) {
             Element group = (Element) groups.item(i);
-            if (group.getAttribute("name").startsWith("Dial24hTick")) {
-                tickCount += 1;
+            String name = group.getAttribute("name");
+            if (name.startsWith("Dial24hHourTick")) {
+                int hour = Integer.parseInt(name.substring("Dial24hHourTick".length()));
+                assertEquals(hour * 15.0, Double.parseDouble(group.getAttribute("angle")), 0.001);
+                assertEquals(1, group.getElementsByTagName("Line").getLength());
+                assertEquals(0, group.getElementsByTagName("Ellipse").getLength());
+
+                Element line = (Element) group.getElementsByTagName("Line").item(0);
+                if (hour % 3 == 0) {
+                    assertEquals("29", line.getAttribute("startY"));
+                    majorHourTickCount += 1;
+                } else {
+                    assertEquals("20", line.getAttribute("startY"));
+                }
+                hourTickCount += 1;
+            } else if (name.startsWith("DialMinuteTick")) {
+                int minute = Integer.parseInt(name.substring("DialMinuteTick".length()));
+                assertEquals(0, minute % 5);
+                assertEquals(minute * 6.0, Double.parseDouble(group.getAttribute("angle")), 0.001);
+                assertEquals(0, group.getElementsByTagName("Line").getLength());
+                assertEquals(1, group.getElementsByTagName("Ellipse").getLength());
+                minuteTickCount += 1;
             }
         }
-        assertEquals(48, tickCount);
+        assertEquals(24, hourTickCount);
+        assertEquals(8, majorHourTickCount);
+        assertEquals(12, minuteTickCount);
         assertEquals(7, slot.getElementsByTagName("PartText").getLength());
 
         String[] drawParts = {

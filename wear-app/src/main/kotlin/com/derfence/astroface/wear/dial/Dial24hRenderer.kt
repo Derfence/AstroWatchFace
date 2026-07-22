@@ -96,6 +96,13 @@ class Dial24hRenderer(
             paint.strokeWidth = if (tick.label != null) 2.4f else 1.3f
             canvas.drawLine(inner.x, inner.y, outer.x, outer.y, paint)
         }
+
+        paint.style = Paint.Style.FILL
+        paint.color = Color.argb(165, 255, 255, 255)
+        DialGeometry.fiveMinuteAngles().forEach { angleDegrees ->
+            val point = DialGeometry.point(MINUTE_TICK_RADIUS, angleDegrees)
+            canvas.drawCircle(point.x, point.y, MINUTE_TICK_SIZE, paint)
+        }
     }
 
     private fun drawLabels(canvas: Canvas, paint: Paint) {
@@ -201,5 +208,7 @@ class Dial24hRenderer(
         private const val REPLACED_BY_BATTERY_LABEL = "00"
         private const val SUN_TRACK_RADIUS = 211f
         private const val MOON_TRACK_RADIUS = 200f
+        private const val MINUTE_TICK_RADIUS = 191f
+        private const val MINUTE_TICK_SIZE = 2f
     }
 }

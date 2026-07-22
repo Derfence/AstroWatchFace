@@ -32,6 +32,11 @@ object DialGeometry {
 
     fun twentyFourHourTicks(): List<DialTick> = cachedTwentyFourHourTicks
 
+    fun fiveMinuteAngles(): List<Float> =
+        (0 until FIVE_MINUTE_TICK_COUNT).map { index ->
+            index * FULL_CIRCLE_DEGREES_FLOAT / FIVE_MINUTE_TICK_COUNT
+        }
+
     fun point(radius: Float, angleDegrees: Float): DialPoint {
         val radians = angleDegrees * PI / 180.0
         return DialPoint(
@@ -121,4 +126,5 @@ object DialGeometry {
     private const val FULL_CIRCLE_DEGREES_FLOAT = 360f
     private const val FULL_CIRCLE_DEGREES = 360.0
     private const val SOUTH_AZIMUTH_DEGREES = 180.0
+    private const val FIVE_MINUTE_TICK_COUNT = 12
 }
